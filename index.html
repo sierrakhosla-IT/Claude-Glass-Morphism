@@ -504,16 +504,17 @@ body{
 
 /* Always-visible fields — everything shows, nothing hidden behind a click */
 .field-row{ display:flex; gap:6px; margin-top:8px; }
-.field-row .mini-input{
+.mini-input{
   font-family:inherit; font-size:11.5px; color:var(--ink);
   background:rgba(255,255,255,0.4);
   border:1px solid var(--glass-border-soft);
   border-radius:8px; padding:6px 9px;
-  outline:none; flex:1; min-width:0;
+  outline:none; min-width:0;
   transition:background var(--dur), box-shadow var(--dur);
 }
-.field-row .mini-input:focus{ background:var(--white); box-shadow:0 0 0 3px rgba(180,163,230,0.28); }
-.field-row .mini-input::placeholder{ color:var(--ink-faint); }
+.field-row .mini-input{ flex:1; }
+.mini-input:focus{ background:var(--white); box-shadow:0 0 0 3px rgba(180,163,230,0.28); }
+.mini-input::placeholder{ color:var(--ink-faint); }
 .mini-input.required-empty{
   border-color:rgba(237,142,118,0.6);
   background:rgba(243,181,140,0.12);
