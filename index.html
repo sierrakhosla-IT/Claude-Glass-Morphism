@@ -504,6 +504,19 @@ body{
 .pin-btn.pinned{ opacity:1; background:rgba(180,163,230,0.3); }
 .pin-btn.pinned svg{ color:var(--violet-soft); }
 
+/* In Progress — distinct from Pin (important) — this is "I'm actively touching this today" */
+.progress-btn{
+  width:20px;height:20px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0; cursor:pointer; opacity:0.35;
+  transition:opacity var(--dur), background var(--dur);
+}
+.progress-btn svg{ width:13px;height:13px; stroke-width:1.75; color:var(--ink-soft); }
+.progress-btn:hover{ opacity:0.75; background:rgba(255,255,255,0.4); }
+.progress-btn.active{ opacity:1; background:rgba(122,178,138,0.28); }
+.progress-btn.active svg{ color:#4E8F63; }
+.task-card.in-progress{ border-left:3px solid #7AB28A; }
+
 /* Always-visible fields — everything shows, nothing hidden behind a click */
 .field-row{ display:flex; gap:6px; margin-top:8px; }
 .mini-input{
@@ -912,7 +925,8 @@ const ICONS = {
   'tag': '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle>',
   'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
   'pin': '<path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1Z"></path>',
-  'maximize-2': '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>'
+  'maximize-2': '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>',
+  'play-circle': '<circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon>'
 };
 
 const lucide = {
@@ -1067,7 +1081,7 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
     const flaggedNeedsContext = needsContext(item, laneKey);
 
     const card = document.createElement('div');
-    card.className = 'task-card' + (doneStyle ? ' done-card' : '') + (flaggedNeedsContext ? ' needs-context' : '');
+    card.className = 'task-card' + (doneStyle ? ' done-card' : '') + (flaggedNeedsContext ? ' needs-context' : '') + (item.inProgress ? ' in-progress' : '');
     card.draggable = true;
     card.dataset.id = item.id;
     card.dataset.lane = laneKey;
@@ -1145,6 +1159,7 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
     card.innerHTML = `
       <div class="task-head">
         <div class="pin-btn ${item.pinned?'pinned':''}" data-pin="${item.id}" title="Pin to top"><i data-lucide="pin"></i></div>
+        <div class="progress-btn ${item.inProgress?'active':''}" data-progress="${item.id}" title="Mark in progress"><i data-lucide="play-circle"></i></div>
         <div class="task-title">${escapeHtml(item.text)}</div>
         ${flaggedNeedsContext ? `<span class="task-chip warn"><i data-lucide="alert-triangle"></i>Needs context</span>` : ''}
         <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
@@ -1179,6 +1194,12 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
     card.querySelector('.pin-btn').addEventListener('click', e=>{
       e.stopPropagation();
       item.pinned = !item.pinned;
+      save(); renderAll();
+    });
+
+    card.querySelector('.progress-btn').addEventListener('click', e=>{
+      e.stopPropagation();
+      item.inProgress = !item.inProgress;
       save(); renderAll();
     });
 
