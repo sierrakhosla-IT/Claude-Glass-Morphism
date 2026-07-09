@@ -203,6 +203,21 @@ body{
 }
 .brand-name{ font-weight:700; font-size:15.5px; letter-spacing:-0.01em; }
 
+.glance-strip{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 var(--s-1) var(--s-2);
+}
+.glance-stat{
+  background:rgba(255,255,255,0.4);
+  border:1px solid var(--glass-border-soft);
+  border-radius:var(--r-md);
+  padding:9px 10px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.glance-num{ font-size:19px; font-weight:800; color:var(--ink); line-height:1.1; }
+.glance-label{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
+
 .nav{ display:flex; flex-direction:column; gap:2px; flex:1; }
 .nav-item{
   display:flex; align-items:center; gap:11px;
@@ -724,6 +739,13 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
     <div class="brand">
       <div class="brand-mark"></div>
       <div class="brand-name">Execution Tower</div>
+    </div>
+
+    <div class="glance-strip">
+      <div class="glance-stat"><span class="glance-num" id="glanceCompleted">0</span><span class="glance-label">Completed</span></div>
+      <div class="glance-stat"><span class="glance-num" id="glanceActive">0</span><span class="glance-label">Active</span></div>
+      <div class="glance-stat"><span class="glance-num" id="glanceWaiting">0</span><span class="glance-label">Waiting</span></div>
+      <div class="glance-stat"><span class="glance-num" id="glanceQueue">0</span><span class="glance-label">Queue</span></div>
     </div>
 
     <nav class="nav" id="navList">
@@ -1334,6 +1356,13 @@ function renderAll(){
   document.getElementById('navQueueBadge').textContent = state.queue.length;
   document.getElementById('navPendingBadge').textContent = state.pending.length;
   document.getElementById('notesInput').value = state.notes || '';
+
+  const activeCount = [...state.queue, ...state.pending].filter(i=>i.inProgress).length;
+  document.getElementById('glanceCompleted').textContent = state.done.length;
+  document.getElementById('glanceActive').textContent = activeCount;
+  document.getElementById('glanceWaiting').textContent = state.pending.length;
+  document.getElementById('glanceQueue').textContent = state.queue.length;
+
   lucide.createIcons();
 }
 
