@@ -524,6 +524,20 @@ body{
   width:100%; resize:none; min-height:36px; line-height:1.4; font-size:11.5px;
 }
 
+/* Task size — determines how much of the structured block shows */
+.size-tabs{ display:flex; gap:3px; margin-top:8px; }
+.size-tab{
+  flex:1; text-align:center;
+  font-size:10px; font-weight:700; letter-spacing:.02em;
+  color:var(--ink-faint);
+  background:rgba(255,255,255,0.35);
+  border:1px solid var(--glass-border-soft);
+  border-radius:8px; padding:5px 4px;
+  cursor:pointer; transition:background var(--dur), color var(--dur);
+}
+.size-tab:hover{ background:rgba(255,255,255,0.6); }
+.size-tab.active{ background:rgba(180,163,230,0.35); color:var(--ink); }
+
 .field-ticket-wrap{ position:relative; flex:1 1 auto; }
 .field-ticket-wrap .mini-input{ width:100%; padding-right:26px; }
 .ticket-link-btn{
@@ -1049,6 +1063,7 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
 
     /* ---------- QUEUE / PENDING: everything visible, no drilling down ---------- */
     const link = ticketLink(item.ticket);
+    const size = item.size || 'quick';
     const ticketBtn = `
       <div class="field-ticket-wrap">
         <input class="mini-input" data-field="ticket" data-id="${item.id}" value="${escapeHtml(item.ticket||'')}" placeholder="RITM / INC or paste ticket link">
@@ -1061,11 +1076,35 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
         <input class="mini-input ${flaggedNeedsContext && !item.nextAction ? 'required-empty' : ''}" data-field="nextAction" data-id="${item.id}" value="${escapeHtml(item.nextAction||'')}" placeholder="Next action">
       </div>` : '';
 
+    const sizeTabs = `
+      <div class="size-tabs">
+        <div class="size-tab ${size==='quick'?'active':''}" data-size="quick" data-id="${item.id}">Quick</div>
+        <div class="size-tab ${size==='medium'?'active':''}" data-size="medium" data-id="${item.id}">Medium</div>
+        <div class="size-tab ${size==='project'?'active':''}" data-size="project" data-id="${item.id}">Project</div>
+      </div>`;
+
     const structField = (key, label, placeholder) => `
       <div class="field-block">
         <span class="field-label">${label}</span>
         <textarea class="mini-input" data-field="${key}" data-id="${item.id}" placeholder="${placeholder}">${escapeHtml(item[key]||'')}</textarea>
       </div>`;
+
+    /* Next Action is the renamed "Actions" field — a single executable step, not a checklist.
+       Skipped on Pending cards since Waiting On / Next Action already covers it above, always visible. */
+    const showNextAction = laneKey !== 'pending';
+    let structuredFields = structField('objective', 'Objective', "What this task is trying to accomplish");
+    if(size === 'quick'){
+      if(showNextAction) structuredFields += structField('actions', 'Next Action', "The one next step — not a checklist");
+    } else if(size === 'medium'){
+      structuredFields += structField('currentStatus', 'Current Status', "Where this stands right now");
+      if(showNextAction) structuredFields += structField('actions', 'Next Action', "The one next step — not a checklist");
+      structuredFields += structField('successCriteria', 'Success Criteria', "Done looks like…");
+    } else { // project
+      structuredFields += structField('businessImpact', 'Business Impact', "Why this matters / what happens if it doesn't move");
+      structuredFields += structField('currentStatus', 'Current Status', "Where this stands right now");
+      if(showNextAction) structuredFields += structField('actions', 'Next Action', "The one next step — not a checklist");
+      structuredFields += structField('successCriteria', 'Success Criteria', "Done looks like…");
+    }
 
     card.innerHTML = `
       <div class="task-head">
@@ -1077,18 +1116,23 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
         ${ticketBtn}
         <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
       </div>
+      ${sizeTabs}
       ${pendingRow}
-      ${structField('objective', 'Objective', "What this task is trying to accomplish")}
-      ${structField('businessImpact', 'Business Impact', "Why this matters / what happens if it doesn't move")}
-      ${structField('currentStatus', 'Current Status', "Where this stands right now")}
-      ${structField('actions', 'Actions', "Steps taken or planned")}
-      ${structField('successCriteria', 'Success Criteria', "Done looks like…")}
+      ${structuredFields}
     `;
 
     card.querySelector('.pin-btn').addEventListener('click', e=>{
       e.stopPropagation();
       item.pinned = !item.pinned;
       save(); renderAll();
+    });
+
+    card.querySelectorAll('.size-tab').forEach(tab=>{
+      tab.addEventListener('click', e=>{
+        e.stopPropagation();
+        item.size = tab.dataset.size;
+        save(); renderAll();
+      });
     });
 
     card.querySelectorAll('[data-field]').forEach(el=>{
@@ -1287,9 +1331,9 @@ document.getElementById('captureInput').addEventListener('keydown', e=>{
   if(isTicket){
     // In this interpretation, tickets route to the Tickets panel conceptually;
     // dropped into Queue so nothing is lost without the original tickets store.
-    state.queue.push({ id:cid(), text:val });
+    state.queue.push({ id:cid(), text:val, size:'quick' });
   }else{
-    state.queue.push({ id:cid(), text:val });
+    state.queue.push({ id:cid(), text:val, size:'quick' });
   }
   e.target.value = '';
   save(); renderAll();
@@ -1299,7 +1343,7 @@ document.getElementById('queueInput').addEventListener('keydown', e=>{
   if(e.key !== 'Enter') return;
   const val = e.target.value.trim();
   if(!val) return;
-  state.queue.push({ id:cid(), text:val });
+  state.queue.push({ id:cid(), text:val, size:'quick' });
   e.target.value = '';
   save(); renderAll();
 });
