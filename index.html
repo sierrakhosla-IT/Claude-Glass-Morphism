@@ -489,6 +489,8 @@ body{
 }
 .task-chip.warn{ color:#9A5B3E; background:rgba(237,142,118,0.28); }
 .task-chip svg{ width:10px;height:10px; stroke-width:2.25; }
+.task-chip.linkable{ cursor:pointer; color:var(--violet-soft); background:rgba(180,163,230,0.22); }
+.task-chip.linkable:hover{ background:rgba(180,163,230,0.38); }
 
 /* Pin */
 .pin-btn{
@@ -522,6 +524,24 @@ body{
 .field-block{ margin-top:8px; }
 .field-block textarea.mini-input{
   width:100%; resize:none; min-height:36px; line-height:1.4; font-size:11.5px;
+}
+
+/* Card-level collapse — independent of size tier, just for saving space */
+.task-collapse-btn{
+  width:20px;height:20px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.4); flex-shrink:0; cursor:pointer;
+  margin-left:auto;
+  transition:transform var(--dur), background var(--dur);
+}
+.task-collapse-btn svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); transition:transform var(--dur); }
+.task-collapse-btn:hover{ background:var(--white); }
+.task-collapse-btn.collapsed svg{ transform:rotate(-90deg); }
+.task-card.card-collapsed .task-body{ display:none; }
+.task-card.card-collapsed .collapsed-preview{ display:flex; }
+.collapsed-preview{
+  display:none; align-items:center; gap:6px; flex-wrap:wrap;
+  margin-top:6px;
 }
 
 /* Task size — determines how much of the structured block shows */
@@ -1004,6 +1024,9 @@ function needsContext(item, laneKey){
   return laneKey === 'pending' && (!item.waitingOn || !item.nextAction);
 }
 
+/* Card-level collapse — session only, not persisted. Independent of size tier. */
+const cardCollapsedIds = new Set();
+
 function isUrl(str){
   return /^https?:\/\//i.test((str||'').trim());
 }
@@ -1078,6 +1101,7 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
 
     const sizeTabs = `
       <div class="size-tabs">
+        <div class="size-tab ${size==='none'?'active':''}" data-size="none" data-id="${item.id}">None</div>
         <div class="size-tab ${size==='quick'?'active':''}" data-size="quick" data-id="${item.id}">Quick</div>
         <div class="size-tab ${size==='medium'?'active':''}" data-size="medium" data-id="${item.id}">Medium</div>
         <div class="size-tab ${size==='project'?'active':''}" data-size="project" data-id="${item.id}">Project</div>
@@ -1092,34 +1116,65 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
     /* Next Action is the renamed "Actions" field — a single executable step, not a checklist.
        Skipped on Pending cards since Waiting On / Next Action already covers it above, always visible. */
     const showNextAction = laneKey !== 'pending';
-    let structuredFields = structField('objective', 'Objective', "What this task is trying to accomplish");
-    if(size === 'quick'){
+    let structuredFields = '';
+    if(size === 'none'){
+      // no structured fields — just title, ticket, due
+    } else if(size === 'quick'){
+      structuredFields += structField('objective', 'Objective', "What this task is trying to accomplish");
       if(showNextAction) structuredFields += structField('actions', 'Next Action', "The one next step — not a checklist");
     } else if(size === 'medium'){
+      structuredFields += structField('objective', 'Objective', "What this task is trying to accomplish");
       structuredFields += structField('currentStatus', 'Current Status', "Where this stands right now");
       if(showNextAction) structuredFields += structField('actions', 'Next Action', "The one next step — not a checklist");
       structuredFields += structField('successCriteria', 'Success Criteria', "Done looks like…");
     } else { // project
+      structuredFields += structField('objective', 'Objective', "What this task is trying to accomplish");
       structuredFields += structField('businessImpact', 'Business Impact', "Why this matters / what happens if it doesn't move");
       structuredFields += structField('currentStatus', 'Current Status', "Where this stands right now");
       if(showNextAction) structuredFields += structField('actions', 'Next Action', "The one next step — not a checklist");
       structuredFields += structField('successCriteria', 'Success Criteria', "Done looks like…");
     }
 
+    const isCollapsed = cardCollapsedIds.has(item.id);
+    if(isCollapsed) card.classList.add('card-collapsed');
+
+    const previewChips = [];
+    if(item.ticket) previewChips.push(`<span class="task-chip ${link ? 'linkable' : ''}" ${link ? `data-open-link="${escapeHtml(link)}"` : ''}>${link ? '<i data-lucide="external-link"></i>' : ''}${escapeHtml(item.ticket)}</span>`);
+    if(item.due) previewChips.push(`<span class="task-chip">Due ${escapeHtml(item.due)}</span>`);
+
     card.innerHTML = `
       <div class="task-head">
         <div class="pin-btn ${item.pinned?'pinned':''}" data-pin="${item.id}" title="Pin to top"><i data-lucide="pin"></i></div>
         <div class="task-title">${escapeHtml(item.text)}</div>
         ${flaggedNeedsContext ? `<span class="task-chip warn"><i data-lucide="alert-triangle"></i>Needs context</span>` : ''}
+        <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
       </div>
-      <div class="field-row">
-        ${ticketBtn}
-        <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
+      <div class="collapsed-preview">${previewChips.join('')}</div>
+      <div class="task-body">
+        <div class="field-row">
+          ${ticketBtn}
+          <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
+        </div>
+        ${sizeTabs}
+        ${pendingRow}
+        ${structuredFields}
       </div>
-      ${sizeTabs}
-      ${pendingRow}
-      ${structuredFields}
     `;
+
+    card.querySelector('.task-collapse-btn').addEventListener('click', e=>{
+      e.stopPropagation();
+      if(cardCollapsedIds.has(item.id)) cardCollapsedIds.delete(item.id);
+      else cardCollapsedIds.add(item.id);
+      renderAll();
+    });
+
+    const previewLink = card.querySelector('.collapsed-preview [data-open-link]');
+    if(previewLink){
+      previewLink.addEventListener('click', e=>{
+        e.stopPropagation();
+        window.open(previewLink.dataset.openLink, '_blank', 'noopener');
+      });
+    }
 
     card.querySelector('.pin-btn').addEventListener('click', e=>{
       e.stopPropagation();
@@ -1331,9 +1386,9 @@ document.getElementById('captureInput').addEventListener('keydown', e=>{
   if(isTicket){
     // In this interpretation, tickets route to the Tickets panel conceptually;
     // dropped into Queue so nothing is lost without the original tickets store.
-    state.queue.push({ id:cid(), text:val, size:'quick' });
+    state.queue.push({ id:cid(), text:val, size:'none' });
   }else{
-    state.queue.push({ id:cid(), text:val, size:'quick' });
+    state.queue.push({ id:cid(), text:val, size:'none' });
   }
   e.target.value = '';
   save(); renderAll();
@@ -1343,7 +1398,7 @@ document.getElementById('queueInput').addEventListener('keydown', e=>{
   if(e.key !== 'Enter') return;
   const val = e.target.value.trim();
   if(!val) return;
-  state.queue.push({ id:cid(), text:val, size:'quick' });
+  state.queue.push({ id:cid(), text:val, size:'none' });
   e.target.value = '';
   save(); renderAll();
 });
