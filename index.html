@@ -49,35 +49,35 @@
    EXECUTIVE GLASS — DESIGN TOKENS
    ============================================================ */
 :root{
-  /* Core palette */
-  --cream-light: #FBEADD;
-  --peach-mid: #F0A868;
-  --coral-deep: #B54E2A;
+  /* Core palette — lavender glass */
+  --lav-light: #EDE9FB;
+  --violet-mid: #8B7CF0;
+  --violet-deep: #5B4BD4;
   --white: #FFFFFF;
-  --gray-light: #FBF3E9;
-  --ink: #4A3428;
-  --ink-soft: #7A5A46;
-  --ink-faint: #A6836C;
+  --gray-light: #F3F0FB;
+  --ink: #2E2A40;
+  --ink-soft: #5C5574;
+  --ink-faint: #9990B0;
 
   /* Accents — state only, never decorative */
-  --peach: #F3B58C;
-  --coral: #ED8E76;
-  --apricot: #F6B99A;
-  --success: #8FBF9F;
+  --lilac: #C4B5FD;
+  --pink: #F2A9D8;
+  --periwinkle: #A5B4FC;
+  --success: #7CC5A4;
 
   /* Glass surface */
-  --glass-fill: rgba(255,255,255,0.36);
-  --glass-fill-strong: rgba(255,255,255,0.50);
-  --glass-fill-soft: rgba(255,255,255,0.22);
-  --glass-border: rgba(255,247,238,0.55);
-  --glass-border-soft: rgba(255,255,255,0.30);
-  --glass-blur: 44px;
-  --glass-sat: 165%;
+  --glass-fill: rgba(255,255,255,0.42);
+  --glass-fill-strong: rgba(255,255,255,0.58);
+  --glass-fill-soft: rgba(255,255,255,0.26);
+  --glass-border: rgba(255,255,255,0.65);
+  --glass-border-soft: rgba(255,255,255,0.38);
+  --glass-blur: 56px;
+  --glass-sat: 180%;
 
   /* Elevation */
-  --shadow-1: 0 2px 6px rgba(90,50,20,0.10), 0 1px 1px rgba(255,255,255,0.5) inset;
-  --shadow-2: 0 14px 36px rgba(90,50,20,0.22), 0 1px 1px rgba(255,255,255,0.6) inset;
-  --shadow-3: 0 26px 64px rgba(90,50,20,0.30), 0 1px 1px rgba(255,255,255,0.7) inset;
+  --shadow-1: 0 2px 6px rgba(76,60,150,0.10), 0 1px 1px rgba(255,255,255,0.55) inset;
+  --shadow-2: 0 14px 36px rgba(76,60,150,0.16), 0 1px 1px rgba(255,255,255,0.65) inset;
+  --shadow-3: 0 26px 64px rgba(76,60,150,0.22), 0 1px 1px rgba(255,255,255,0.75) inset;
 
   /* Radius scale */
   --r-sm: 8px;
@@ -88,7 +88,7 @@
   /* Spacing (8px system) */
   --s-1: 8px;
   --s-2: 16px;
-  --s-3: 24px;
+  --s-3: 28px;
   --s-4: 32px;
   --s-5: 40px;
 
@@ -115,11 +115,11 @@ body{
   inset:0;
   z-index:-2;
   background:
-    radial-gradient(ellipse 900px 700px at 12% 8%, rgba(181,78,42,0.06), transparent 60%),
-    radial-gradient(ellipse 1100px 900px at 85% 15%, rgba(181,78,42,0.08), transparent 60%),
-    radial-gradient(ellipse 1200px 1000px at 20% 90%, rgba(214,178,138,0.18), transparent 65%),
-    radial-gradient(ellipse 900px 800px at 90% 95%, rgba(214,178,138,0.10), transparent 60%),
-    linear-gradient(160deg, #FDFAF4 0%, #F9F2E5 45%, #F5EAD4 100%);
+    radial-gradient(ellipse 900px 700px at 12% 8%, rgba(139,124,240,0.10), transparent 60%),
+    radial-gradient(ellipse 1100px 900px at 85% 15%, rgba(165,180,252,0.18), transparent 60%),
+    radial-gradient(ellipse 1200px 1000px at 20% 90%, rgba(242,169,216,0.16), transparent 65%),
+    radial-gradient(ellipse 900px 800px at 90% 95%, rgba(196,181,253,0.16), transparent 60%),
+    linear-gradient(160deg, #F7F5FE 0%, #EFEBFB 45%, #F8F0FA 100%);
 }
 .wallpaper::after{
   content:"";
@@ -131,18 +131,41 @@ body{
 .blob{
   position:fixed;
   border-radius:50%;
-  filter:blur(110px);
+  filter:blur(75px);
   z-index:-1;
-  opacity:0.24;
+  opacity:0.42;
   animation: drift 34s var(--ease) infinite alternate;
 }
-.blob-1{ width:640px; height:640px; top:-160px; left:-120px; background:radial-gradient(circle, var(--coral-deep), transparent 70%); }
-.blob-2{ width:560px; height:560px; bottom:-180px; right:-100px; background:radial-gradient(circle, #D6AE7F, transparent 70%); animation-delay:-12s; }
-.blob-3{ width:480px; height:480px; top:35%; right:15%; background:radial-gradient(circle, var(--coral-deep), transparent 72%); opacity:0.18; animation-delay:-22s; }
+.blob-1{ width:720px; height:720px; top:-200px; left:-160px; background:radial-gradient(circle, var(--violet-mid), transparent 68%); }
+.blob-2{ width:620px; height:620px; bottom:-220px; right:-140px; background:radial-gradient(circle, var(--periwinkle), transparent 68%); animation-delay:-12s; }
+.blob-3{ width:520px; height:520px; top:32%; right:8%; background:radial-gradient(circle, var(--pink), transparent 70%); opacity:0.30; animation-delay:-22s; }
+.blob-4{ width:140px; height:140px; top:12%; left:38%; background:radial-gradient(circle, var(--lilac), transparent 72%); opacity:0.5; filter:blur(28px); animation-delay:-6s; }
+.blob-5{ width:90px; height:90px; top:62%; left:6%; background:radial-gradient(circle, var(--violet-mid), transparent 72%); opacity:0.45; filter:blur(20px); animation-delay:-28s; }
 
 @keyframes drift{
   0%{ transform:translate(0,0) scale(1); }
   100%{ transform:translate(30px,-20px) scale(1.05); }
+}
+
+/* Ambient sparkles — tiny, slow, behind everything */
+.sparkle{
+  position:fixed;
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,0.9);
+  box-shadow:0 0 10px 3px rgba(196,181,253,0.65);
+  z-index:-1;
+  opacity:0;
+  animation:twinkle 6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes twinkle{
+  0%,100%{ opacity:0; transform:scale(0.6); }
+  50%{ opacity:0.85; transform:scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .blob, .sparkle, .brand-mark, .mode-dot{ animation:none; }
+  .sparkle{ opacity:0.4; }
 }
 
 /* ============================================================
@@ -158,17 +181,17 @@ body{
   position:relative;
 }
 .glass::before{
-  /* top edge lighting */
+  /* top edge lighting — brighter, wider rim light like a real glass card catching light */
   content:"";
   position:absolute;
-  top:0; left:var(--r-xl); right:var(--r-xl); height:1px;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  top:0; left:12%; right:12%; height:1.5px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,1), transparent);
 }
 .glass::after{
-  /* metallic bronze edge — thin gradient ring, catches light like real metal */
+  /* glowing hairline edge — bright white-lilac ring, glass pane catching light */
   content:"";
   position:absolute; inset:0; border-radius:var(--r-xl); padding:1px;
-  background:linear-gradient(135deg, rgba(214,158,90,0.65), rgba(181,78,42,0.12) 40%, rgba(214,158,90,0.05) 70%, rgba(214,158,90,0.45));
+  background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(196,181,253,0.40) 40%, rgba(255,255,255,0.10) 70%, rgba(255,255,255,0.80));
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
@@ -239,9 +262,14 @@ body{
 }
 .brand-mark{
   width:34px;height:34px;border-radius:11px;
-  background:linear-gradient(145deg, var(--peach-mid), var(--coral-deep));
-  box-shadow:0 4px 14px rgba(224,110,55,0.35), inset 0 1px 1px rgba(255,255,255,0.6);
+  background:linear-gradient(145deg, var(--violet-mid), var(--violet-deep));
+  box-shadow:0 4px 14px rgba(91,75,212,0.35), 0 0 22px rgba(139,124,240,0.50), inset 0 1px 1px rgba(255,255,255,0.6);
   flex-shrink:0;
+  animation:brandGlow 5s ease-in-out infinite;
+}
+@keyframes brandGlow{
+  0%,100%{ box-shadow:0 4px 14px rgba(91,75,212,0.35), 0 0 22px rgba(139,124,240,0.50), inset 0 1px 1px rgba(255,255,255,0.6); }
+  50%{ box-shadow:0 4px 14px rgba(91,75,212,0.35), 0 0 34px rgba(139,124,240,0.75), inset 0 1px 1px rgba(255,255,255,0.6); }
 }
 .brand-name{ font-weight:700; font-size:15.5px; letter-spacing:0.01em; }
 
@@ -277,10 +305,10 @@ body{
 .nav-item.active{
   background:var(--glass-fill-strong);
   color:var(--ink);
-  box-shadow:var(--shadow-1);
+  box-shadow:var(--shadow-1), 0 0 16px rgba(139,124,240,0.28);
   font-weight:600;
 }
-.nav-item.active svg{ opacity:1; color:var(--coral-deep); }
+.nav-item.active svg{ opacity:1; color:var(--violet-deep); }
 .nav-badge{
   margin-left:auto;
   font-size:11px; font-weight:700;
@@ -297,6 +325,19 @@ body{
 .clock-date{ font-size:13px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
 .clock-time{ font-size:27px; font-weight:800; letter-spacing:-0.02em; color:var(--ink); }
 .clock-quote{ font-size:11.5px; color:var(--ink-faint); margin-top:8px; line-height:1.4; }
+.clock-mode{
+  display:flex; align-items:center; gap:7px;
+  margin-top:6px;
+  font-size:11.5px; font-weight:700; color:var(--ink-soft);
+}
+.mode-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--violet-mid);
+  box-shadow:0 0 8px rgba(139,124,240,0.8);
+  animation:modePulse 2.6s ease-in-out infinite;
+}
+.clock-mode.mode-stop .mode-dot{ background:var(--success); box-shadow:0 0 8px rgba(124,197,164,0.8); animation:none; }
+@keyframes modePulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.45; } }
 
 /* ---------- Main column ---------- */
 .main{
@@ -308,7 +349,7 @@ body{
   padding-right:4px;
 }
 .main::-webkit-scrollbar{ width:6px; }
-.main::-webkit-scrollbar-thumb{ background:rgba(224,110,55,0.25); border-radius:10px; }
+.main::-webkit-scrollbar-thumb{ background:rgba(139,124,240,0.30); border-radius:10px; }
 
 /* Topbar */
 .topbar{
@@ -325,7 +366,7 @@ body{
   box-shadow:inset 0 1px 2px rgba(255,255,255,0.5);
   transition:box-shadow var(--dur) var(--ease);
 }
-.capture:focus-within{ box-shadow: 0 0 0 3px rgba(232,112,63,0.35), inset 0 1px 2px rgba(255,255,255,0.5); }
+.capture:focus-within{ box-shadow: 0 0 0 3px rgba(139,124,240,0.40), inset 0 1px 2px rgba(255,255,255,0.5); }
 .capture svg{ width:16px; height:16px; stroke-width:1.5; color:var(--ink-faint); flex-shrink:0; }
 .capture input{
   flex:1; border:none; background:none; outline:none;
@@ -358,15 +399,15 @@ body{
 .btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow-2); background:var(--white); }
 .btn:active{ transform:translateY(0); }
 .btn-primary{
-  background:linear-gradient(145deg, var(--peach-mid), var(--coral-deep));
-  color:#4A2A16;
+  background:linear-gradient(145deg, var(--violet-mid), var(--violet-deep));
+  color:#FFFFFF;
   border:1px solid rgba(255,255,255,0.5);
-  box-shadow:0 6px 20px rgba(224,110,55,0.35), inset 0 1px 1px rgba(255,255,255,0.6);
+  box-shadow:0 6px 20px rgba(91,75,212,0.35), 0 0 18px rgba(139,124,240,0.40), inset 0 1px 1px rgba(255,255,255,0.6);
 }
-.btn-primary:hover{ box-shadow:0 8px 26px rgba(224,110,55,0.45), inset 0 1px 1px rgba(255,255,255,0.7); }
+.btn-primary:hover{ box-shadow:0 8px 26px rgba(91,75,212,0.45), 0 0 28px rgba(139,124,240,0.60), inset 0 1px 1px rgba(255,255,255,0.7); }
 .avatar{
   width:38px;height:38px;border-radius:50%;
-  background:linear-gradient(145deg, var(--peach), var(--coral));
+  background:linear-gradient(145deg, var(--lilac), var(--pink));
   display:flex;align-items:center;justify-content:center;
   color:#fff; font-weight:700; font-size:14px;
   box-shadow:var(--shadow-1);
@@ -419,9 +460,9 @@ body{
   white-space:nowrap;
 }
 .dot{ width:6px;height:6px;border-radius:50%; flex-shrink:0; }
-.dot-high{ background:var(--coral); }
-.dot-time{ background:var(--coral-deep); }
-.dot-personal{ background:var(--peach); }
+.dot-high{ background:var(--pink); }
+.dot-time{ background:var(--violet-deep); }
+.dot-personal{ background:var(--lilac); }
 
 .focus-card{ display:flex; flex-direction:column; height:100%; }
 .focus-empty{
@@ -434,9 +475,13 @@ body{
   display:flex;align-items:center;justify-content:center;
   box-shadow:var(--shadow-1);
 }
-.focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--coral-deep); }
+.focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--violet-deep); }
 .focus-active{ font-size:13px; font-weight:600; color:var(--ink-faint); }
 .focus-set-text{ font-size:15px; font-weight:700; color:var(--ink); max-width:220px; }
+.focus-card.drop-hover{ box-shadow:0 0 0 2px var(--violet-deep), var(--shadow-2); }
+.focus-card.focus-glow{
+  box-shadow:0 0 0 1px rgba(196,181,253,0.7), 0 0 38px rgba(139,124,240,0.35), var(--shadow-2);
+}
 
 .field-label{
   font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
@@ -471,7 +516,7 @@ body{
 .lane-backdrop{
   display:none;
   position:fixed; inset:0; z-index:59;
-  background:rgba(110,65,30,0.28);
+  background:rgba(70,58,120,0.26);
   backdrop-filter:blur(3px);
 }
 .lane-backdrop.show{ display:block; }
@@ -480,7 +525,7 @@ body{
   top:4vh; left:4vw; right:4vw; bottom:4vh;
   z-index:60;
   max-height:none;
-  box-shadow:0 30px 80px rgba(110,55,20,0.35);
+  box-shadow:0 30px 80px rgba(70,58,120,0.30);
 }
 .lane.expanded .lane-body{ overflow-y:auto; }
 .lane-ctrl-btn[data-maximize] svg{ transition:transform var(--dur); }
@@ -528,13 +573,13 @@ body{
   font-size:12.5px; font-weight:500; color:var(--ink);
   cursor:grab;
   position:relative;
-  box-shadow:0 3px 10px rgba(90,50,20,0.07);
+  box-shadow:0 3px 10px rgba(76,60,150,0.08);
   transition:transform var(--dur), box-shadow var(--dur), background var(--dur);
 }
 .task-card::after{
   content:"";
   position:absolute; inset:0; border-radius:var(--r-md); padding:1px;
-  background:linear-gradient(135deg, rgba(214,158,90,0.35), rgba(181,78,42,0.05) 45%, transparent 70%, rgba(214,158,90,0.22));
+  background:linear-gradient(135deg, rgba(255,255,255,0.85), rgba(196,181,253,0.20) 45%, transparent 70%, rgba(255,255,255,0.55));
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
@@ -544,7 +589,7 @@ body{
 .task-card:active{ cursor:grabbing; }
 .task-card.dragging{ opacity:0.4; }
 .task-card.done-card .task-title{ text-decoration:line-through; color:var(--ink-faint); }
-.task-card.needs-context{ border:1px solid rgba(237,142,118,0.55); background:rgba(243,181,140,0.14); }
+.task-card.needs-context{ border:1px solid rgba(242,169,216,0.65); background:rgba(242,169,216,0.14); }
 
 .task-head{ display:flex; align-items:flex-start; gap:8px; }
 .task-title{ flex:1; font-weight:500; line-height:1.4; }
@@ -555,35 +600,31 @@ body{
   padding:2px 8px; border-radius:20px;
   display:flex; align-items:center; gap:4px;
 }
-.task-chip.warn{ color:#9A5B3E; background:rgba(237,142,118,0.28); }
+.task-chip.warn{ color:#A34D8C; background:rgba(242,169,216,0.35); }
 .task-chip svg{ width:10px;height:10px; stroke-width:2.25; }
-.task-chip.linkable{ cursor:pointer; color:var(--coral-deep); background:rgba(232,112,63,0.22); }
-.task-chip.linkable:hover{ background:rgba(232,112,63,0.38); }
+.task-chip.linkable{ cursor:pointer; color:var(--violet-deep); background:rgba(139,124,240,0.22); }
+.task-chip.linkable:hover{ background:rgba(139,124,240,0.38); }
+.task-chip.chip-due-today{ color:#A34D8C; background:rgba(242,169,216,0.35); }
+.task-chip.chip-overdue{
+  color:#fff; background:linear-gradient(145deg, #D96BB4, #B24390);
+  box-shadow:0 0 12px rgba(217,107,180,0.45);
+}
+.task-chip.chip-age{ color:var(--ink-soft); background:rgba(165,180,252,0.30); }
+.task-chip.chip-age-hot{
+  color:#fff; background:linear-gradient(145deg, var(--violet-mid), var(--violet-deep));
+  box-shadow:0 0 12px rgba(139,124,240,0.50);
+}
 
-/* Pin */
-.pin-btn{
+/* One-click Set Focus — no prompt dialog */
+.focus-btn{
   width:20px;height:20px;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0; cursor:pointer; opacity:0.35;
   transition:opacity var(--dur), background var(--dur);
 }
-.pin-btn svg{ width:13px;height:13px; stroke-width:1.75; color:var(--ink-soft); }
-.pin-btn:hover{ opacity:0.75; background:rgba(255,255,255,0.4); }
-.pin-btn.pinned{ opacity:1; background:rgba(232,112,63,0.3); }
-.pin-btn.pinned svg{ color:var(--coral-deep); }
-
-/* In Progress — distinct from Pin (important) — this is "I'm actively touching this today" */
-.progress-btn{
-  width:20px;height:20px;border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0; cursor:pointer; opacity:0.35;
-  transition:opacity var(--dur), background var(--dur);
-}
-.progress-btn svg{ width:13px;height:13px; stroke-width:1.75; color:var(--ink-soft); }
-.progress-btn:hover{ opacity:0.75; background:rgba(255,255,255,0.4); }
-.progress-btn.active{ opacity:1; background:rgba(122,178,138,0.28); }
-.progress-btn.active svg{ color:#4E8F63; }
-.task-card.in-progress{ border-left:3px solid #7AB28A; background:rgba(122,178,138,0.14); }
+.focus-btn svg{ width:13px;height:13px; stroke-width:1.75; color:var(--ink-soft); }
+.focus-btn:hover{ opacity:1; background:rgba(139,124,240,0.32); }
+.focus-btn:hover svg{ color:var(--violet-deep); }
 
 /* Always-visible fields — everything shows, nothing hidden behind a click */
 .field-row{ display:flex; gap:6px; margin-top:8px; }
@@ -596,11 +637,11 @@ body{
   transition:background var(--dur), box-shadow var(--dur);
 }
 .field-row .mini-input{ flex:1; }
-.mini-input:focus{ background:var(--white); box-shadow:0 0 0 3px rgba(232,112,63,0.28); }
+.mini-input:focus{ background:var(--white); box-shadow:0 0 0 3px rgba(139,124,240,0.32); }
 .mini-input::placeholder{ color:var(--ink-faint); }
 .mini-input.required-empty{
-  border-color:rgba(237,142,118,0.6);
-  background:rgba(243,181,140,0.12);
+  border-color:rgba(242,169,216,0.7);
+  background:rgba(242,169,216,0.12);
 }
 .field-block{ margin-top:8px; }
 .field-block textarea.mini-input{
@@ -625,19 +666,15 @@ body{
   margin-top:6px;
 }
 
-/* Task size — determines how much of the structured block shows */
-.size-tabs{ display:flex; gap:3px; margin-top:8px; }
-.size-tab{
-  flex:1; text-align:center;
-  font-size:10px; font-weight:700; letter-spacing:.02em;
-  color:var(--ink-faint);
-  background:rgba(255,255,255,0.35);
-  border:1px solid var(--glass-border-soft);
-  border-radius:8px; padding:5px 4px;
-  cursor:pointer; transition:background var(--dur), color var(--dur);
+/* Context toggle — one optional free-text field, hidden until needed */
+.context-toggle{
+  margin-top:8px;
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px; font-weight:700; letter-spacing:.02em;
+  color:var(--ink-faint); cursor:pointer;
+  transition:color var(--dur);
 }
-.size-tab:hover{ background:rgba(255,255,255,0.6); }
-.size-tab.active{ background:rgba(232,112,63,0.35); color:var(--ink); }
+.context-toggle:hover{ color:var(--violet-deep); }
 
 .field-ticket-wrap{ position:relative; flex:1 1 auto; }
 .field-ticket-wrap .mini-input{ width:100%; padding-right:26px; }
@@ -645,12 +682,12 @@ body{
   position:absolute; right:4px; top:50%; transform:translateY(-50%);
   width:20px; height:20px; border-radius:6px;
   display:none; align-items:center; justify-content:center;
-  background:rgba(232,112,63,0.25); cursor:pointer;
+  background:rgba(139,124,240,0.25); cursor:pointer;
   transition:background var(--dur);
 }
 .ticket-link-btn.show{ display:flex; }
-.ticket-link-btn:hover{ background:rgba(232,112,63,0.45); }
-.ticket-link-btn svg{ width:11px;height:11px; stroke-width:2; color:var(--coral-deep); }
+.ticket-link-btn:hover{ background:rgba(139,124,240,0.45); }
+.ticket-link-btn svg{ width:11px;height:11px; stroke-width:2; color:var(--violet-deep); }
 
 
 .lane-empty{
@@ -679,32 +716,12 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   display:flex; align-items:center; gap:14px;
   padding:16px var(--s-2) var(--s-2);
 }
-.tickets-empty svg, .recent-empty svg{ width:34px;height:34px; stroke-width:1.25; color:var(--coral-deep); opacity:0.6; }
+.tickets-empty svg, .recent-empty svg{ width:34px;height:34px; stroke-width:1.25; color:var(--violet-deep); opacity:0.6; }
 
 .recent-row{
   display:flex; align-items:center; justify-content:space-between;
   padding:var(--s-2);
 }
-.in-progress-section{ border-left:3px solid #7AB28A; }
-.progress-row{
-  display:flex; align-items:center; gap:12px;
-  padding:11px var(--s-2);
-  border-top:1px solid var(--glass-border-soft);
-  background:rgba(122,178,138,0.08);
-}
-.progress-row:first-child{ border-top:none; }
-.progress-row .progress-title{ flex:1; font-size:12.5px; color:var(--ink); font-weight:600; }
-.progress-row .progress-lane-badge{
-  font-size:10.5px; font-weight:700; color:#4E8F63;
-  background:rgba(122,178,138,0.2);
-  padding:2px 9px; border-radius:20px; white-space:nowrap;
-}
-.progress-row .progress-chip{
-  font-size:10.5px; font-weight:700; color:var(--ink-soft);
-  background:rgba(255,255,255,0.5);
-  padding:2px 8px; border-radius:20px; white-space:nowrap;
-}
-
 .ticket-row{
   display:flex; align-items:center; gap:12px;
   padding:11px var(--s-2);
@@ -712,7 +729,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 }
 .ticket-row:first-child{ border-top:none; }
 .ticket-row .ticket-num{
-  font-size:12.5px; font-weight:700; color:var(--coral-deep);
+  font-size:12.5px; font-weight:700; color:var(--violet-deep);
   display:flex; align-items:center; gap:4px;
   flex-shrink:0; min-width:110px;
 }
@@ -725,14 +742,14 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   background:rgba(255,255,255,0.5);
   padding:2px 9px; border-radius:20px; white-space:nowrap;
 }
-.ticket-row .ticket-lane-badge.pending{ color:#9A5B3E; background:rgba(237,142,118,0.22); }
+.ticket-row .ticket-lane-badge.pending{ color:#A34D8C; background:rgba(242,169,216,0.28); }
 .recent-row .btn{ padding:8px 14px; }
 
 /* Add-commitment modal */
 .modal-backdrop{
   display:none;
   position:fixed; inset:0; z-index:80;
-  background:rgba(110,65,30,0.32);
+  background:rgba(70,58,120,0.30);
   backdrop-filter:blur(4px);
   align-items:center; justify-content:center;
 }
@@ -757,7 +774,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   transition:background var(--dur), box-shadow var(--dur);
 }
 .modal .drawer-field input:focus, .modal .drawer-field select:focus{
-  background:var(--white); box-shadow:0 0 0 3px rgba(232,112,63,0.28);
+  background:var(--white); box-shadow:0 0 0 3px rgba(139,124,240,0.32);
 }
 .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
 
@@ -765,7 +782,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 /* Utility */
 .flex{ display:flex; align-items:center; }
 .gap-1{ gap:8px; } .gap-2{ gap:12px; }
-::selection{ background:rgba(232,112,63,0.4); }
+::selection{ background:rgba(139,124,240,0.4); }
 
 @media (max-width:1180px){
   .lane-grid{ grid-template-columns:repeat(2,1fr); }
@@ -779,9 +796,27 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+<div class="blob blob-5"></div>
+<div class="sparkle" style="top:14%; left:22%;"></div>
+<div class="sparkle" style="top:9%; left:68%; animation-delay:-1.8s;"></div>
+<div class="sparkle" style="top:38%; left:88%; animation-delay:-3.1s;"></div>
+<div class="sparkle" style="top:72%; left:12%; animation-delay:-2.4s;"></div>
+<div class="sparkle" style="top:86%; left:56%; animation-delay:-4.2s;"></div>
 
 <div class="app" id="appRoot">
 <div class="lane-backdrop" id="laneBackdrop"></div>
+
+<div class="modal-backdrop" id="planModalBackdrop">
+  <div class="modal glass" style="width:560px; max-height:82vh; overflow-y:auto;">
+    <div class="modal-title" id="planModalTitle">Today's Plan</div>
+    <div id="planBody" style="display:flex; flex-direction:column; gap:12px;"></div>
+    <div class="modal-actions">
+      <button class="btn" id="planCopyBtn"><i data-lucide="copy"></i>Copy plan</button>
+      <button class="btn btn-primary" id="planCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-backdrop" id="commitModalBackdrop">
   <div class="modal glass" id="commitModal">
@@ -817,7 +852,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
     <div class="glance-strip">
       <div class="glance-stat"><span class="glance-num" id="glanceCompleted">0</span><span class="glance-label">Completed</span></div>
-      <div class="glance-stat"><span class="glance-num" id="glanceActive">0</span><span class="glance-label">Active</span></div>
+      <div class="glance-stat"><span class="glance-num" id="glanceActive">0</span><span class="glance-label">Tickets</span></div>
       <div class="glance-stat"><span class="glance-num" id="glanceWaiting">0</span><span class="glance-label">Waiting</span></div>
       <div class="glance-stat"><span class="glance-num" id="glanceQueue">0</span><span class="glance-label">Queue</span></div>
     </div>
@@ -838,6 +873,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="clock-day" id="clockDay">Wednesday</div>
       <div class="clock-date" id="clockDate">Jul 8, 2026</div>
       <div class="clock-time" id="clockTime">9:41 AM</div>
+      <div class="clock-mode" id="clockMode"><span class="mode-dot"></span><span id="clockModeText">Deep work</span></div>
       <div class="clock-quote">Focus on progress, not perfection.</div>
     </div>
   </aside>
@@ -850,14 +886,16 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="capture">
         <i data-lucide="plus"></i>
         <input id="captureInput" type="text" placeholder="Capture… (RITM/INC → ticket · anything else → Queue)">
-        <span class="kbd">⌘K</span>
+        <span class="kbd">/</span>
       </div>
-      <div class="topbar-stat glass-soft" style="border-radius:var(--r-lg);">Done Today: <span id="doneCount">0</span></div>
+      <button class="btn" id="recapBtn" title="Copy an end-of-day recap for Teams or email"><i data-lucide="clipboard-check"></i>Day Recap</button>
       <button class="btn" id="backupBtn" title="Download a backup file"><i data-lucide="download"></i>Backup</button>
       <input type="file" id="restoreInput" accept="application/json" style="display:none;">
       <button class="btn" id="restoreBtn" title="Restore from a backup file"><i data-lucide="upload"></i>Restore</button>
       <button class="btn" id="newDayBtn"><i data-lucide="sunrise"></i>New Day</button>
-      <button class="btn btn-primary" id="cleanSessionBtn"><i data-lucide="sparkles"></i>Start Clean Session</button>
+      <button class="btn" id="cleanSessionBtn"><i data-lucide="sparkles"></i>Clean Session</button>
+      <button class="btn" id="sendClaudeBtn" title="Copy the full board as a prompt for Claude"><i data-lucide="send"></i>Send to Claude</button>
+      <button class="btn btn-primary" id="planDayBtn" title="Rank the board by your priority hierarchy"><i data-lucide="route"></i>Plan My Day</button>
       <div class="avatar">S</div>
     </div>
 
@@ -874,10 +912,10 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <div class="panel-body" id="commitList"></div>
       </section>
 
-      <section class="glass focus-card">
+      <section class="glass focus-card" id="focusCard">
         <div class="panel-head" style="padding-bottom:0;">
           <div class="flex gap-2">
-            <i data-lucide="target" style="width:18px;height:18px;stroke-width:1.5;color:var(--coral-deep);"></i>
+            <i data-lucide="target" style="width:18px;height:18px;stroke-width:1.5;color:var(--violet-deep);"></i>
             <div>
               <div class="section-title" style="font-size:15px;">Current Focus</div>
             </div>
@@ -890,14 +928,6 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         </div>
       </section>
     </div>
-
-    <!-- In Progress — auto-grouped, no dragging. Toggling the button on any card puts it here. -->
-    <section class="glass in-progress-section" id="inProgressSection" style="display:none;">
-      <div class="panel-head">
-        <div class="flex gap-1"><i data-lucide="play-circle" style="width:17px;height:17px;stroke-width:1.5;color:#4E8F63;"></i><span class="section-title" style="font-size:14.5px;">In Progress</span><span class="lane-count" id="countInProgress">0</span></div>
-      </div>
-      <div id="inProgressList" class="panel-body"></div>
-    </section>
 
     <!-- Lanes -->
     <div class="lane-grid">
@@ -1031,7 +1061,9 @@ const ICONS = {
   'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
   'pin': '<path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1Z"></path>',
   'maximize-2': '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>',
-  'play-circle': '<circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon>'
+  'route': '<circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle>',
+  'send': '<path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path>',
+  'copy': '<rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>'
 };
 
 const lucide = {
@@ -1082,6 +1114,30 @@ const state = Object.assign({
 }, load());
 
 function cid(){ return Math.random().toString(36).slice(2,9); }
+
+/* One-time cleanup of legacy fields: In Progress flags are dropped, and the old
+   structured fields (Objective / Impact / Status / Next Action / Success Criteria)
+   are folded into the single Context field so nothing typed is ever lost. */
+function migrateItems(){
+  ['queue','pending','done'].forEach(k=>{
+    (state[k]||[]).forEach(i=>{
+      const legacy = [];
+      if(i.objective) legacy.push('Objective: ' + i.objective);
+      if(i.businessImpact) legacy.push('Impact: ' + i.businessImpact);
+      if(i.currentStatus) legacy.push('Status: ' + i.currentStatus);
+      if(i.actions) legacy.push('Next: ' + i.actions);
+      if(i.nextAction) legacy.push('Next: ' + i.nextAction);
+      if(i.successCriteria) legacy.push('Done when: ' + i.successCriteria);
+      if(legacy.length && !i.context) i.context = legacy.join('\n');
+      if(!i.createdAt) i.createdAt = Date.now();
+      if(k === 'pending' && !i.waitingSince) i.waitingSince = Date.now();
+      delete i.inProgress; delete i.size;
+      delete i.objective; delete i.businessImpact; delete i.currentStatus;
+      delete i.actions; delete i.nextAction; delete i.successCriteria;
+    });
+  });
+}
+migrateItems();
 function load(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -1126,36 +1182,66 @@ function renderCommitments(){
 function renderFocus(){
   const label = document.getElementById('focusLabel');
   const btn = document.getElementById('setFocusBtn');
+  const fCard = document.getElementById('focusCard');
   if(state.focus){
     label.textContent = state.focus;
     label.classList.add('focus-set-text');
     btn.innerHTML = '<i data-lucide="refresh-ccw"></i>Change Focus';
+    fCard.classList.add('focus-glow');
   }else{
     label.textContent = 'No active focus';
     label.classList.remove('focus-set-text');
     btn.innerHTML = '<i data-lucide="target"></i>Set Focus';
+    fCard.classList.remove('focus-glow');
   }
   lucide.createIcons();
 }
 
 
 function needsContext(item, laneKey){
-  return laneKey === 'pending' && (!item.waitingOn || !item.nextAction);
+  return laneKey === 'pending' && !item.waitingOn;
 }
+
+/* Session-only: which cards have the Context field revealed */
+const contextRevealIds = new Set();
 
 /* Card-level collapse — session only, not persisted. Independent of size tier. */
 const cardCollapsedIds = new Set();
 
-function isUrl(str){
-  return /^https?:\/\//i.test((str||'').trim());
+/* Free-text due parsing — "Jul 11", "7/11", "today", "tomorrow" */
+const MONTHS = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+function parseDueDate(str){
+  if(!str) return null;
+  const t = str.trim();
+  const now = new Date();
+  const yr = now.getFullYear();
+  if(/^today$/i.test(t)) return new Date(yr, now.getMonth(), now.getDate());
+  if(/^tomorrow$/i.test(t)) return new Date(yr, now.getMonth(), now.getDate() + 1);
+  let m = t.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
+  if(m){
+    const y = m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : yr;
+    return new Date(y, +m[1] - 1, +m[2]);
+  }
+  m = t.match(/^([a-zA-Z]{3,9})\.?\s+(\d{1,2})(?:,?\s*(\d{4}))?$/);
+  if(m){
+    const mo = MONTHS[m[1].slice(0,3).toLowerCase()];
+    if(mo === undefined) return null;
+    return new Date(m[3] ? +m[3] : yr, mo, +m[2]);
+  }
+  return null;
+}
+function dueStatus(str){
+  const d = parseDueDate(str);
+  if(!d || isNaN(d)) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  if(d.getTime() < today) return 'overdue';
+  if(d.getTime() === today) return 'today';
+  return null;
 }
 
-/* Pin-based ordering only — no algorithmic sort. Pinned items float to top,
-   everything else keeps whatever order the person dragged it into. */
-function pinnedFirst(items){
-  const pinned = items.filter(i=>i.pinned);
-  const rest = items.filter(i=>!i.pinned);
-  return [...pinned, ...rest];
+function isUrl(str){
+  return /^https?:\/\//i.test((str||'').trim());
 }
 
 /* Resolve a ticket value to an openable URL, or null if it isn't linkable yet. */
@@ -1171,201 +1257,197 @@ function ticketLink(ticketValue){
   return null;
 }
 
+/* Signal chips — deadlines and stale blockers surface without reading */
+function dueChipHtml(item){
+  const st = dueStatus(item.due);
+  if(st === 'overdue') return `<span class="task-chip chip-overdue"><i data-lucide="alert-triangle"></i>Overdue</span>`;
+  if(st === 'today') return `<span class="task-chip chip-due-today">Due today</span>`;
+  return '';
+}
+function ageChipHtml(item, laneKey){
+  if(laneKey !== 'pending') return '';
+  const d = waitingDaysChip(item);
+  if(d === null) return '';
+  const hot = d >= 3;
+  return `<span class="task-chip ${hot ? 'chip-age-hot' : 'chip-age'}">${d < 1 ? 'Waiting <1d' : 'Waiting ' + d + 'd'}</span>`;
+}
+function waitingDaysChip(item){
+  if(!item.waitingSince) return null;
+  return Math.floor((Date.now() - item.waitingSince) / 86400000);
+}
+
+function buildTaskCard(item, laneKey){
+  const flaggedNeedsContext = needsContext(item, laneKey);
+
+  const card = document.createElement('div');
+  card.className = 'task-card' + (flaggedNeedsContext ? ' needs-context' : '');
+  card.draggable = true;
+  card.dataset.id = item.id;
+  card.dataset.lane = laneKey;
+
+  const link = ticketLink(item.ticket);
+  const ticketBtn = `
+    <div class="field-ticket-wrap">
+      <input class="mini-input" data-field="ticket" data-id="${item.id}" value="${escapeHtml(item.ticket||'')}" placeholder="RITM / INC or paste ticket link">
+      <div class="ticket-link-btn ${link ? 'show' : ''}" data-open-ticket="${item.id}" title="Open ticket"><i data-lucide="external-link"></i></div>
+    </div>`;
+
+  const pendingRow = laneKey === 'pending' ? `
+    <div class="field-row">
+      <input class="mini-input ${flaggedNeedsContext ? 'required-empty' : ''}" data-field="waitingOn" data-id="${item.id}" value="${escapeHtml(item.waitingOn||'')}" placeholder="Waiting on — who / what">
+    </div>` : '';
+
+  /* One optional Context field. Hidden behind a toggle until it has content. */
+  const showContext = !!item.context || contextRevealIds.has(item.id);
+  const contextBlock = showContext ? `
+    <div class="field-block">
+      <span class="field-label">Context</span>
+      <textarea class="mini-input" data-field="context" data-id="${item.id}" placeholder="Anything worth remembering — links, names, next step">${escapeHtml(item.context||'')}</textarea>
+    </div>` : `
+    <div class="context-toggle" data-context-toggle="${item.id}">+ Context</div>`;
+
+  const isCollapsed = cardCollapsedIds.has(item.id);
+  if(isCollapsed) card.classList.add('card-collapsed');
+
+  const previewChips = [];
+  if(item.ticket) previewChips.push(`<span class="task-chip ${link ? 'linkable' : ''}" ${link ? `data-open-link="${escapeHtml(link)}"` : ''}>${link ? '<i data-lucide="external-link"></i>' : ''}${escapeHtml(item.ticket)}</span>`);
+  if(item.due) previewChips.push(`<span class="task-chip">Due ${escapeHtml(item.due)}</span>`);
+  const pvDue = dueChipHtml(item); if(pvDue) previewChips.push(pvDue);
+  const pvAge = ageChipHtml(item, laneKey); if(pvAge) previewChips.push(pvAge);
+
+  card.innerHTML = `
+    <div class="task-head">
+      <div class="focus-btn" data-focus="${item.id}" title="Set as current focus"><i data-lucide="target"></i></div>
+      <div class="task-title">${escapeHtml(item.text)}</div>
+      ${dueChipHtml(item)}${ageChipHtml(item, laneKey)}${flaggedNeedsContext ? `<span class="task-chip warn"><i data-lucide="alert-triangle"></i>Needs context</span>` : ''}
+      <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
+    </div>
+    <div class="collapsed-preview">${previewChips.join('')}</div>
+    <div class="task-body">
+      <div class="field-row">
+        ${ticketBtn}
+        <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
+      </div>
+      ${pendingRow}
+      ${contextBlock}
+    </div>
+  `;
+
+  card.querySelector('.task-collapse-btn').addEventListener('click', e=>{
+    e.stopPropagation();
+    if(cardCollapsedIds.has(item.id)) cardCollapsedIds.delete(item.id);
+    else cardCollapsedIds.add(item.id);
+    renderAll();
+  });
+
+  const previewLink = card.querySelector('.collapsed-preview [data-open-link]');
+  if(previewLink){
+    previewLink.addEventListener('click', e=>{
+      e.stopPropagation();
+      window.open(previewLink.dataset.openLink, '_blank', 'noopener');
+    });
+  }
+
+  card.querySelector('.focus-btn').addEventListener('click', e=>{
+    e.stopPropagation();
+    state.focus = item.text;
+    save(); renderAll();
+  });
+
+  const ctxToggle = card.querySelector('[data-context-toggle]');
+  if(ctxToggle){
+    ctxToggle.addEventListener('click', e=>{
+      e.stopPropagation();
+      contextRevealIds.add(item.id);
+      renderAll();
+      const ta = document.querySelector(`textarea[data-field="context"][data-id="${item.id}"]`);
+      if(ta) ta.focus();
+    });
+    ctxToggle.addEventListener('mousedown', e=> e.stopPropagation());
+  }
+
+  card.querySelectorAll('[data-field]').forEach(el=>{
+    el.addEventListener('click', e=> e.stopPropagation());
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('input', e=>{
+      if(el.dataset.field === 'ticket'){
+        const btn = card.querySelector('.ticket-link-btn');
+        if(btn) btn.classList.toggle('show', !!ticketLink(el.value));
+      }
+    });
+    el.addEventListener('change', e=>{
+      item[el.dataset.field] = el.value;
+      save();
+      if(el.dataset.field === 'ticket' || el.dataset.field === 'due' || el.dataset.field === 'waitingOn'){
+        renderAll();
+      }
+    });
+  });
+
+  const linkBtn = card.querySelector('.ticket-link-btn');
+  if(linkBtn){
+    linkBtn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const l = ticketLink(item.ticket);
+      if(l) window.open(l, '_blank', 'noopener');
+    });
+    linkBtn.addEventListener('mousedown', e=> e.stopPropagation());
+  }
+
+  card.addEventListener('dragstart', e=>{
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey, text:item.text }));
+  });
+  card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+
+  /* Intra-lane reorder — drop a card onto another card in the same lane to reposition it */
+  card.addEventListener('dragover', e=> e.preventDefault());
+  card.addEventListener('drop', e=>{
+    let data;
+    try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
+    if(!data || data.from !== laneKey || data.id === item.id) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const arr = state[laneKey];
+    const fromIdx = arr.findIndex(i=>i.id === data.id);
+    if(fromIdx === -1) return;
+    const [moved] = arr.splice(fromIdx, 1);
+    const toIdx = arr.findIndex(i=>i.id === item.id);
+    arr.splice(toIdx === -1 ? arr.length : toIdx, 0, moved);
+    save(); renderAll();
+  });
+
+  return card;
+}
+
 function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
   const wrap = document.getElementById(itemsElId);
   const empty = document.getElementById(emptyElId);
   const count = document.getElementById(countElId);
   const items = state[laneKey];
   wrap.innerHTML = '';
-  count.textContent = items.length;
-  empty.style.display = items.length ? 'none' : 'flex';
 
-  const display = doneStyle ? items : pinnedFirst(items);
+  const display = items;
+  count.textContent = display.length;
+  empty.style.display = display.length ? 'none' : 'flex';
 
   display.forEach(item=>{
-    const flaggedNeedsContext = needsContext(item, laneKey);
-
-    const card = document.createElement('div');
-    card.className = 'task-card' + (doneStyle ? ' done-card' : '') + (flaggedNeedsContext ? ' needs-context' : '') + (item.inProgress ? ' in-progress' : '');
-    card.draggable = true;
-    card.dataset.id = item.id;
-    card.dataset.lane = laneKey;
-
-    /* ---------- DONE: title only, nothing else matters ---------- */
     if(doneStyle){
+      const card = document.createElement('div');
+      card.className = 'task-card done-card';
+      card.draggable = true;
+      card.dataset.id = item.id;
+      card.dataset.lane = laneKey;
       card.innerHTML = `<div class="task-head"><div class="task-title">${escapeHtml(item.text)}</div></div>`;
       card.addEventListener('dragstart', e=>{
         card.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey }));
+        e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey, text:item.text }));
       });
       card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
       wrap.appendChild(card);
       return;
     }
-
-    /* ---------- QUEUE / PENDING: everything visible, no drilling down ---------- */
-    const link = ticketLink(item.ticket);
-    let size = item.size || 'none';
-    if(size === 'quick' || size === 'medium') size = 'standard'; // legacy tiers collapse into Standard
-    const ticketBtn = `
-      <div class="field-ticket-wrap">
-        <input class="mini-input" data-field="ticket" data-id="${item.id}" value="${escapeHtml(item.ticket||'')}" placeholder="RITM / INC or paste ticket link">
-        <div class="ticket-link-btn ${link ? 'show' : ''}" data-open-ticket="${item.id}" title="Open ticket"><i data-lucide="external-link"></i></div>
-      </div>`;
-
-    const pendingRow = laneKey === 'pending' ? `
-      <div class="field-row">
-        <input class="mini-input ${flaggedNeedsContext && !item.waitingOn ? 'required-empty' : ''}" data-field="waitingOn" data-id="${item.id}" value="${escapeHtml(item.waitingOn||'')}" placeholder="Waiting on — who / what">
-        <input class="mini-input ${flaggedNeedsContext && !item.nextAction ? 'required-empty' : ''}" data-field="nextAction" data-id="${item.id}" value="${escapeHtml(item.nextAction||'')}" placeholder="Next action">
-      </div>` : '';
-
-    const sizeTabs = `
-      <div class="size-tabs">
-        <div class="size-tab ${size==='none'?'active':''}" data-size="none" data-id="${item.id}">None</div>
-        <div class="size-tab ${size==='standard'?'active':''}" data-size="standard" data-id="${item.id}">Standard</div>
-        <div class="size-tab ${size==='project'?'active':''}" data-size="project" data-id="${item.id}">Project</div>
-      </div>`;
-
-    const structField = (key, label, placeholder) => `
-      <div class="field-block">
-        <span class="field-label">${label}</span>
-        <textarea class="mini-input" data-field="${key}" data-id="${item.id}" placeholder="${placeholder}">${escapeHtml(item[key]||'')}</textarea>
-      </div>`;
-
-    /* Next Action is the renamed "Actions" field — a single executable step, not a checklist.
-       Skipped on Pending cards since Waiting On / Next Action already covers it above, always visible. */
-    const showNextAction = laneKey !== 'pending';
-    let structuredFields = '';
-    if(size === 'none'){
-      // no structured fields — just title, ticket, due
-    } else if(size === 'standard'){
-      // The three fields that actually change day to day — one sentence each
-      structuredFields += structField('objective', 'Objective', "The end goal — one sentence");
-      structuredFields += structField('currentStatus', 'Status', "Where it sits right now — one sentence");
-      if(showNextAction) structuredFields += structField('actions', 'Next Action', "The next thing you physically do — one sentence");
-    } else { // project
-      structuredFields += structField('objective', 'Objective', "The end goal — one sentence");
-      structuredFields += structField('businessImpact', 'Business Impact', "Why this matters / what happens if it doesn't move");
-      structuredFields += structField('currentStatus', 'Status', "Where it sits right now — one sentence");
-      if(showNextAction) structuredFields += structField('actions', 'Next Action', "The next thing you physically do — one sentence");
-      structuredFields += structField('successCriteria', 'Success Criteria', "Done looks like…");
-    }
-
-    const isCollapsed = cardCollapsedIds.has(item.id);
-    if(isCollapsed) card.classList.add('card-collapsed');
-
-    const previewChips = [];
-    if(item.ticket) previewChips.push(`<span class="task-chip ${link ? 'linkable' : ''}" ${link ? `data-open-link="${escapeHtml(link)}"` : ''}>${link ? '<i data-lucide="external-link"></i>' : ''}${escapeHtml(item.ticket)}</span>`);
-    if(item.due) previewChips.push(`<span class="task-chip">Due ${escapeHtml(item.due)}</span>`);
-
-    card.innerHTML = `
-      <div class="task-head">
-        <div class="pin-btn ${item.pinned?'pinned':''}" data-pin="${item.id}" title="Pin to top"><i data-lucide="pin"></i></div>
-        <div class="progress-btn ${item.inProgress?'active':''}" data-progress="${item.id}" title="Mark in progress"><i data-lucide="play-circle"></i></div>
-        <div class="task-title">${escapeHtml(item.text)}</div>
-        ${flaggedNeedsContext ? `<span class="task-chip warn"><i data-lucide="alert-triangle"></i>Needs context</span>` : ''}
-        <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
-      </div>
-      <div class="collapsed-preview">${previewChips.join('')}</div>
-      <div class="task-body">
-        <div class="field-row">
-          ${ticketBtn}
-          <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
-        </div>
-        ${sizeTabs}
-        ${pendingRow}
-        ${structuredFields}
-      </div>
-    `;
-
-    card.querySelector('.task-collapse-btn').addEventListener('click', e=>{
-      e.stopPropagation();
-      if(cardCollapsedIds.has(item.id)) cardCollapsedIds.delete(item.id);
-      else cardCollapsedIds.add(item.id);
-      renderAll();
-    });
-
-    const previewLink = card.querySelector('.collapsed-preview [data-open-link]');
-    if(previewLink){
-      previewLink.addEventListener('click', e=>{
-        e.stopPropagation();
-        window.open(previewLink.dataset.openLink, '_blank', 'noopener');
-      });
-    }
-
-    card.querySelector('.pin-btn').addEventListener('click', e=>{
-      e.stopPropagation();
-      item.pinned = !item.pinned;
-      save(); renderAll();
-    });
-
-    card.querySelector('.progress-btn').addEventListener('click', e=>{
-      e.stopPropagation();
-      item.inProgress = !item.inProgress;
-      save(); renderAll();
-    });
-
-    card.querySelectorAll('.size-tab').forEach(tab=>{
-      tab.addEventListener('click', e=>{
-        e.stopPropagation();
-        item.size = tab.dataset.size;
-        save(); renderAll();
-      });
-    });
-
-    card.querySelectorAll('[data-field]').forEach(el=>{
-      el.addEventListener('click', e=> e.stopPropagation());
-      el.addEventListener('mousedown', e=> e.stopPropagation());
-      el.addEventListener('input', e=>{
-        if(el.dataset.field === 'ticket'){
-          const btn = card.querySelector('.ticket-link-btn');
-          if(btn) btn.classList.toggle('show', !!ticketLink(el.value));
-        }
-      });
-      el.addEventListener('change', e=>{
-        item[el.dataset.field] = el.value;
-        save();
-        if(el.dataset.field === 'ticket' || el.dataset.field === 'due' || el.dataset.field === 'waitingOn' || el.dataset.field === 'nextAction'){
-          renderAll();
-        }
-      });
-    });
-
-    const linkBtn = card.querySelector('.ticket-link-btn');
-    if(linkBtn){
-      linkBtn.addEventListener('click', e=>{
-        e.stopPropagation();
-        const l = ticketLink(item.ticket);
-        if(l) window.open(l, '_blank', 'noopener');
-      });
-      linkBtn.addEventListener('mousedown', e=> e.stopPropagation());
-    }
-
-    /* Cross-lane drag (existing) */
-    card.addEventListener('dragstart', e=>{
-      card.classList.add('dragging');
-      e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey }));
-    });
-    card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
-
-    /* Intra-lane reorder — drop a card onto another card in the same lane to reposition it */
-    card.addEventListener('dragover', e=> e.preventDefault());
-    card.addEventListener('drop', e=>{
-      let data;
-      try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
-      if(!data || data.from !== laneKey || data.id === item.id) return;
-      e.stopPropagation();
-      e.preventDefault();
-      const arr = state[laneKey];
-      const fromIdx = arr.findIndex(i=>i.id === data.id);
-      if(fromIdx === -1) return;
-      const [moved] = arr.splice(fromIdx, 1);
-      const toIdx = arr.findIndex(i=>i.id === item.id);
-      arr.splice(toIdx === -1 ? arr.length : toIdx, 0, moved);
-      save(); renderAll();
-    });
-
-    wrap.appendChild(card);
+    wrap.appendChild(buildTaskCard(item, laneKey));
   });
 }
 
@@ -1391,43 +1473,6 @@ function renderRecentDays(){
     wrap.appendChild(row);
   });
 }
-
-function renderInProgress(){
-  const section = document.getElementById('inProgressSection');
-  const wrap = document.getElementById('inProgressList');
-  const count = document.getElementById('countInProgress');
-  wrap.innerHTML = '';
-
-  /* Auto-grouped, no dragging — toggling the play-circle button on any Queue/Pending
-     card is what puts it here or takes it out. */
-  const rows = [
-    ...state.queue.filter(i=>i.inProgress).map(i=>({ item:i, lane:'queue' })),
-    ...state.pending.filter(i=>i.inProgress).map(i=>({ item:i, lane:'pending' })),
-  ];
-
-  count.textContent = rows.length;
-  section.style.display = rows.length ? 'block' : 'none';
-
-  rows.forEach(({item, lane})=>{
-    const link = ticketLink(item.ticket);
-    const row = document.createElement('div');
-    row.className = 'progress-row';
-    const chips = [];
-    if(item.ticket) chips.push(`<span class="progress-chip ${link?'linkable':''}" ${link?`data-open-link="${escapeHtml(link)}"`:''}>${escapeHtml(item.ticket)}</span>`);
-    if(item.due) chips.push(`<span class="progress-chip">Due ${escapeHtml(item.due)}</span>`);
-    row.innerHTML = `
-      <span class="progress-title">${escapeHtml(item.text)}</span>
-      ${chips.join('')}
-      <span class="progress-lane-badge">${lane === 'pending' ? 'Pending' : 'Queue'}</span>
-    `;
-    const chipLink = row.querySelector('[data-open-link]');
-    if(chipLink){
-      chipLink.addEventListener('click', ()=> window.open(chipLink.dataset.openLink, '_blank', 'noopener'));
-    }
-    wrap.appendChild(row);
-  });
-}
-
 
 function renderActiveTickets(){
   const wrap = document.getElementById('ticketsList');
@@ -1469,15 +1514,13 @@ function renderAll(){
   renderLane('done','doneItems','doneEmpty','countDone', true);
   renderRecentDays();
   renderActiveTickets();
-  renderInProgress();
-  document.getElementById('doneCount').textContent = state.done.length;
   document.getElementById('navQueueBadge').textContent = state.queue.length;
   document.getElementById('navPendingBadge').textContent = state.pending.length;
   document.getElementById('notesInput').value = state.notes || '';
 
-  const activeCount = [...state.queue, ...state.pending].filter(i=>i.inProgress).length;
+  const ticketCount = [...state.queue, ...state.pending].filter(i=>i.ticket).length;
   document.getElementById('glanceCompleted').textContent = state.done.length;
-  document.getElementById('glanceActive').textContent = activeCount;
+  document.getElementById('glanceActive').textContent = ticketCount;
   document.getElementById('glanceWaiting').textContent = state.pending.length;
   document.getElementById('glanceQueue').textContent = state.queue.length;
 
@@ -1503,6 +1546,8 @@ function onDrop(e, targetLane){
   const idx = fromArr.findIndex(i=>i.id === data.id);
   if(idx === -1) return;
   const [moved] = fromArr.splice(idx,1);
+  if(targetLane === 'pending'){ moved.waitingSince = Date.now(); }
+  else{ delete moved.waitingSince; }
   state[targetLane].push(moved);
   save(); renderAll();
 }
@@ -1546,18 +1591,60 @@ document.getElementById('setFocusBtn').addEventListener('click', ()=>{
   save(); renderFocus();
 });
 
+/* Drag any card straight onto Current Focus to set it — no prompt needed */
+const focusCard = document.getElementById('focusCard');
+focusCard.addEventListener('dragover', e=>{
+  e.preventDefault();
+  focusCard.classList.add('drop-hover');
+});
+focusCard.addEventListener('dragleave', ()=> focusCard.classList.remove('drop-hover'));
+focusCard.addEventListener('drop', e=>{
+  e.preventDefault();
+  focusCard.classList.remove('drop-hover');
+  let data;
+  try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
+  if(!data || !data.text) return;
+  state.focus = data.text;
+  save(); renderFocus();
+});
+
+/* Deterministic capture cleanup — no AI call, works fully offline and inside GitHub Pages.
+   Trims noise, strips filler prefixes, fixes capitalization. Doesn't rewrite your wording,
+   just removes the busywork of cleaning it up by hand every time. */
+function cleanupCaptureText(raw){
+  let text = raw.trim().replace(/\s+/g, ' ');
+  const fillerPrefixes = [
+    /^please\s+/i, /^need to\s+/i, /^needs to\s+/i, /^i need to\s+/i,
+    /^gotta\s+/i, /^have to\s+/i, /^i have to\s+/i, /^should\s+/i,
+    /^todo:?\s+/i, /^task:?\s+/i, /^to do:?\s+/i, /^reminder:?\s+/i
+  ];
+  for(const re of fillerPrefixes){
+    if(re.test(text)){ text = text.replace(re, ''); break; }
+  }
+  text = text.trim();
+  if(text.length && /[a-z]/.test(text[0]) && text[0] === text[0].toLowerCase()){
+    text = text[0].toUpperCase() + text.slice(1);
+  }
+  return text;
+}
+
+/* Real ticket parsing — pull a RITM/INC/REQ number out of the capture text and
+   populate the ticket field automatically, instead of leaving it as part of the title. */
+function parseTicketFromCapture(raw){
+  const m = raw.match(/^(RITM|INC|REQ)\s*0*([0-9]+)\b\s*(.*)$/i);
+  if(!m) return { ticket: '', text: cleanupCaptureText(raw) };
+  const ticket = m[1].toUpperCase() + m[2];
+  const rest = m[3].trim();
+  const text = rest ? cleanupCaptureText(rest) : ticket;
+  return { ticket, text };
+}
+
 document.getElementById('captureInput').addEventListener('keydown', e=>{
   if(e.key !== 'Enter') return;
   const val = e.target.value.trim();
   if(!val) return;
-  const isTicket = /^(RITM|INC)\d*/i.test(val);
-  if(isTicket){
-    // In this interpretation, tickets route to the Tickets panel conceptually;
-    // dropped into Queue so nothing is lost without the original tickets store.
-    state.queue.push({ id:cid(), text:val, size:'none' });
-  }else{
-    state.queue.push({ id:cid(), text:val, size:'none' });
-  }
+  const { ticket, text } = parseTicketFromCapture(val);
+  state.queue.push({ id:cid(), text, ticket, createdAt: Date.now() });
   e.target.value = '';
   save(); renderAll();
 });
@@ -1566,7 +1653,8 @@ document.getElementById('queueInput').addEventListener('keydown', e=>{
   if(e.key !== 'Enter') return;
   const val = e.target.value.trim();
   if(!val) return;
-  state.queue.push({ id:cid(), text:val, size:'none' });
+  const { ticket, text } = parseTicketFromCapture(val);
+  state.queue.push({ id:cid(), text, ticket, createdAt: Date.now() });
   e.target.value = '';
   save(); renderAll();
 });
@@ -1662,6 +1750,7 @@ document.getElementById('restoreInput').addEventListener('change', e=>{
         notes: parsed.notes || '',
         settings: parsed.settings || { snowTemplate: '' }
       });
+      migrateItems();
       save(); renderAll();
     }catch(err){
       alert('That file could not be read as a valid backup.');
@@ -1676,10 +1765,49 @@ document.getElementById('restoreInput').addEventListener('change', e=>{
   const last = parseInt(localStorage.getItem('executionTower_lastBackup') || '0', 10);
   const days = (Date.now() - last) / (1000*60*60*24);
   if(!last || days > 3){
-    const stat = document.querySelector('.topbar-stat');
-    if(stat){ stat.title = 'Tip: back up your data — it has been a while.'; }
+    const btn = document.getElementById('backupBtn');
+    if(btn){ btn.title = 'Tip: back up your data — it has been a while.'; }
   }
 })();
+
+/* ============================================================
+   DAY RECAP — one click, paste into Teams or an EOD email.
+   Completed, tickets touched, blocked-and-on-whom, open queue.
+   ============================================================ */
+function waitingDays(item){
+  if(!item.waitingSince) return 0;
+  return Math.floor((Date.now() - item.waitingSince) / 86400000);
+}
+
+function dayRecapText(){
+  const L = [];
+  L.push('DAY RECAP — ' + todayLabel());
+  L.push('');
+  L.push('Completed (' + state.done.length + '):');
+  if(state.done.length === 0) L.push('- none yet');
+  state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  const tickets = [...state.queue, ...state.pending].filter(i=>i.ticket);
+  if(tickets.length){
+    L.push('');
+    L.push('Active tickets (' + tickets.length + '):');
+    tickets.forEach(i=> L.push('- ' + i.ticket + ' — ' + i.text));
+  }
+  if(state.pending.length){
+    L.push('');
+    L.push('Blocked / waiting (' + state.pending.length + '):');
+    state.pending.forEach(i=>{
+      const d = waitingDays(i);
+      L.push('- ' + i.text + (i.waitingOn ? ' — waiting on ' + i.waitingOn : '') + (d >= 1 ? ' (' + d + 'd)' : ''));
+    });
+  }
+  L.push('');
+  L.push('Open in queue: ' + state.queue.length);
+  return L.join('\n');
+}
+
+document.getElementById('recapBtn').addEventListener('click', ()=>{
+  copyText(dayRecapText(), document.getElementById('recapBtn'), 'Day Recap', 'clipboard-check');
+});
 
 document.getElementById('newDayBtn').addEventListener('click', ()=>{
   if(!confirm('Start a new day? Done Today moves to Recent Days.')) return;
@@ -1754,6 +1882,226 @@ document.querySelectorAll('.nav-item').forEach(item=>{
   });
 });
 
+/* ============================================================
+   PLAN MY DAY — deterministic ranking, no AI, works offline.
+   Priority hierarchy: Leadership visibility → Deadlines → Vendors
+   → Juan → Tickets → Strategic → Admin. Deep work 8–11 AM,
+   15-min buffers, hard stop 4 PM.
+   ============================================================ */
+const PLAN_TIERS = [
+  { label:'Leadership visibility', test:(t,i)=>/(enrique|karin|carolina|director|leadership|exec)/i.test(t) },
+  { label:'Deadlines',             test:(t,i)=>!!i.due || /deadline|\beod\b|end of day|by today|by tomorrow/i.test(t) },
+  { label:'Vendors',               test:(t,i)=>/(at&t|\batt\b|verizon|t.?mobile|vendor|carrier|edil|montoya)/i.test(t) },
+  { label:'Juan',                  test:(t,i)=>/\bjuan\b/i.test(t) },
+  { label:'Tickets',               test:(t,i)=>!!i.ticket || /\b(ritm|inc|req)\s*\d+/i.test(t) },
+  { label:'Strategic',             test:(t,i)=>/(power ?bi|dashboard|report|inventory|reconcil|asset|presentation|deck|guide|onboard)/i.test(t) },
+  { label:'Admin',                 test:()=>true }
+];
+
+function planTier(item){
+  const t = [item.text, item.ticket, item.waitingOn, item.context].filter(Boolean).join(' ');
+  for(let i = 0; i < PLAN_TIERS.length; i++){
+    if(PLAN_TIERS[i].test(t, item)) return i;
+  }
+  return PLAN_TIERS.length - 1;
+}
+
+function buildPlanEntries(){
+  const entries = [];
+  state.commitments.filter(c=>!c.done).forEach(c=>{
+    entries.push({ text:c.text, src:'Commitment', item:{ text:c.text, due: c.tag==='time' ? 'today' : '' } });
+  });
+  state.queue.forEach(i=> entries.push({ text:i.text, src:'Queue', item:i }));
+  state.pending.forEach(i=> entries.push({ text:i.text, src:'Pending', item:i }));
+  entries.forEach(e=>{ e.tier = planTier(e.item); });
+  entries.sort((a,b)=> a.tier - b.tier || (b.item.due?1:0) - (a.item.due?1:0));
+  return entries;
+}
+
+function planEntryMeta(e){
+  const bits = [];
+  if(e.item.ticket) bits.push(e.item.ticket);
+  if(e.item.due) bits.push('due ' + e.item.due);
+  if(e.src === 'Pending' && e.item.waitingOn) bits.push('waiting on ' + e.item.waitingOn);
+  return bits.join(' · ');
+}
+
+function planAsText(entries){
+  const lines = [];
+  lines.push('PLAN — ' + todayLabel());
+  lines.push('Deep work 8:00–11:00 AM. 15-min buffers. Hard stop 4:00 PM.');
+  lines.push('');
+  let rank = 0, lastTier = -1;
+  entries.forEach(e=>{
+    if(e.tier !== lastTier){
+      lines.push(PLAN_TIERS[e.tier].label.toUpperCase());
+      lastTier = e.tier;
+    }
+    rank++;
+    const meta = planEntryMeta(e);
+    lines.push('  ' + rank + '. ' + e.text + (meta ? ' (' + meta + ')' : ''));
+  });
+  if(rank === 0) lines.push('Board is empty — capture something first.');
+  return lines.join('\n');
+}
+
+function openPlanModal(){
+  const entries = buildPlanEntries();
+  const body = document.getElementById('planBody');
+  body.innerHTML = '';
+
+  const note = document.createElement('div');
+  note.style.cssText = 'font-size:12px; color:var(--ink-faint); font-weight:600;';
+  note.textContent = 'Deep work 8:00–11:00 AM · 15-min buffers · hard stop 4:00 PM';
+  body.appendChild(note);
+
+  if(entries.length === 0){
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12.5px; color:var(--ink-soft); padding:8px 0;';
+    empty.textContent = 'Board is empty — capture something first.';
+    body.appendChild(empty);
+  }
+
+  let rank = 0, lastTier = -1;
+  entries.forEach(e=>{
+    if(e.tier !== lastTier){
+      const h = document.createElement('div');
+      h.className = 'field-label';
+      h.style.cssText = 'margin:6px 0 0;';
+      h.textContent = PLAN_TIERS[e.tier].label;
+      body.appendChild(h);
+      lastTier = e.tier;
+    }
+    rank++;
+    const meta = planEntryMeta(e);
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex; align-items:baseline; gap:10px; padding:9px 12px; background:rgba(255,255,255,0.35); border:1px solid var(--glass-border-soft); border-radius:10px;';
+    row.innerHTML = '<span style="font-size:12px; font-weight:800; color:var(--violet-deep); min-width:18px;">' + rank + '</span>'
+      + '<span style="flex:1; font-size:12.5px; font-weight:500; color:var(--ink);">' + escapeHtml(e.text)
+      + (meta ? ' <span style="color:var(--ink-faint); font-weight:600; font-size:11px;">— ' + escapeHtml(meta) + '</span>' : '')
+      + '</span>'
+      + '<span class="task-chip">' + e.src + '</span>';
+    body.appendChild(row);
+  });
+
+  document.getElementById('planModalBackdrop').classList.add('show');
+  lucide.createIcons();
+}
+
+document.getElementById('planDayBtn').addEventListener('click', openPlanModal);
+document.getElementById('planCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('planModalBackdrop').classList.remove('show');
+});
+document.getElementById('planModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'planModalBackdrop') e.target.classList.remove('show');
+});
+document.getElementById('planCopyBtn').addEventListener('click', ()=>{
+  copyText(planAsText(buildPlanEntries()), document.getElementById('planCopyBtn'), 'Copy plan', 'copy');
+});
+
+/* ============================================================
+   SEND TO CLAUDE — one click packages the whole board as a
+   structured prompt on the clipboard. Paste into Claude to get
+   the day organized or ask anything. No data leaves this file.
+   ============================================================ */
+function boardAsPrompt(){
+  const L = [];
+  L.push('You are my execution partner. Here is my Execution Tower board for ' + todayLabel() + '.');
+  L.push('Organize my day (or answer my question) using this priority hierarchy: Leadership visibility > Deadlines > Vendors > Juan > Tickets > Strategic > Admin.');
+  L.push('Protect 8:00-11:00 AM for deep work, add 15-min buffers, hard stop at 4:00 PM. Be direct, no fluff.');
+  L.push('');
+  L.push('CURRENT FOCUS: ' + (state.focus || 'none'));
+  L.push('');
+  L.push('COMMITMENTS:');
+  if(state.commitments.length === 0) L.push('- none');
+  state.commitments.forEach(c=> L.push('- [' + (c.done ? 'x' : ' ') + '] ' + c.text + ' (' + (tagMeta[c.tag]||tagMeta.personal).label + ')'));
+  L.push('');
+  L.push('QUEUE:');
+  if(state.queue.length === 0) L.push('- none');
+  state.queue.forEach(i=>{
+    let line = '- ' + i.text;
+    const bits = [];
+    if(i.ticket) bits.push(i.ticket);
+    if(i.due) bits.push('due ' + i.due);
+    if(bits.length) line += ' (' + bits.join(', ') + ')';
+    L.push(line);
+    if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('PENDING / BLOCKED:');
+  if(state.pending.length === 0) L.push('- none');
+  state.pending.forEach(i=>{
+    let line = '- ' + i.text;
+    const bits = [];
+    if(i.ticket) bits.push(i.ticket);
+    if(i.waitingOn) bits.push('waiting on ' + i.waitingOn);
+    if(i.due) bits.push('due ' + i.due);
+    if(bits.length) line += ' (' + bits.join(', ') + ')';
+    L.push(line);
+    if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('DONE TODAY:');
+  if(state.done.length === 0) L.push('- none');
+  state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  if(state.notes && state.notes.trim()){
+    L.push('');
+    L.push('WORK NOTES:');
+    L.push(state.notes.trim());
+  }
+  return L.join('\n');
+}
+
+/* Clipboard with file:// fallback — flashes the button label to confirm */
+function copyText(text, btn, restoreLabel, icon){
+  const done = ()=>{
+    if(!btn) return;
+    btn.innerHTML = '<i data-lucide="check-check"></i>Copied';
+    lucide.createIcons();
+    setTimeout(()=>{
+      btn.innerHTML = '<i data-lucide="' + (icon || 'copy') + '"></i>' + restoreLabel;
+      lucide.createIcons();
+    }, 1600);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=> legacyCopy(text, done));
+  }else{
+    legacyCopy(text, done);
+  }
+}
+function legacyCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed; opacity:0;';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  ta.remove();
+  done();
+}
+
+document.getElementById('sendClaudeBtn').addEventListener('click', ()=>{
+  copyText(boardAsPrompt(), document.getElementById('sendClaudeBtn'), 'Send to Claude', 'send');
+});
+
+/* ============================================================
+   KEYBOARD — "/" focuses capture from anywhere (no OS conflict),
+   Esc closes modals and expanded lanes.
+   ============================================================ */
+document.addEventListener('keydown', e=>{
+  if(e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey){
+    const tag = document.activeElement && document.activeElement.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    e.preventDefault();
+    document.getElementById('captureInput').focus();
+  }
+  if(e.key === 'Escape'){
+    closeExpandedLane();
+    document.getElementById('planModalBackdrop').classList.remove('show');
+    closeCommitModal();
+  }
+});
+
 /* Clock */
 function tickClock(){
   const now = new Date();
@@ -1766,6 +2114,19 @@ function tickClock(){
   h = h % 12; if(h === 0) h = 12;
   const m = now.getMinutes().toString().padStart(2,'0');
   document.getElementById('clockTime').textContent = `${h}:${m} ${ampm}`;
+
+  /* Daily Execution Engine mode — matches the framework, not the mood */
+  const hr = now.getHours() + now.getMinutes() / 60;
+  const modeEl = document.getElementById('clockMode');
+  const txtEl = document.getElementById('clockModeText');
+  modeEl.classList.remove('mode-stop');
+  if(hr < 8){ txtEl.textContent = 'Ramp-up — deep work starts at 8'; }
+  else if(hr < 11){ txtEl.textContent = 'Deep work — protect this block'; }
+  else if(hr < 12){ txtEl.textContent = 'Execution block'; }
+  else if(hr < 13){ txtEl.textContent = 'Lunch admin block'; }
+  else if(hr < 15.5){ txtEl.textContent = 'Execution block'; }
+  else if(hr < 16){ txtEl.textContent = 'Wrap-up — hard stop at 4'; }
+  else{ txtEl.textContent = 'Hard stop — you are done'; modeEl.classList.add('mode-stop'); }
 }
 tickClock();
 setInterval(tickClock, 1000 * 15);
