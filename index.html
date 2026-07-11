@@ -10,14 +10,14 @@
    ============================================================ */
 :root{
   /* Core palette — violet orb glass */
-  --cloud: #F3F3F7;
-  --champ-mid: #C7A46B;
-  --champ-deep: #9C7B45;
+  --cloud: #F8F2E8;
+  --apricot-mid: #E8905A;
+  --apricot-deep: #C96B35;
   --white: #FFFFFF;
-  --gray-light: #F2F2F6;
-  --ink: #33384A;
-  --ink-soft: #5C6274;
-  --ink-faint: #989DAD;
+  --gray-light: #F7F1E6;
+  --ink: #3B372E;
+  --ink-soft: #6B6355;
+  --ink-faint: #A39A8B;
 
   /* Accents — state only, never decorative */
   --pearl: #E2E4EC;
@@ -35,9 +35,9 @@
   --glass-sat: 170%;
 
   /* Elevation */
-  --shadow-1: 0 2px 6px rgba(72,76,98,0.10), 0 0 10px rgba(214,182,126,0.10), 0 1px 1px rgba(255,255,255,0.70) inset;
-  --shadow-2: 0 18px 44px rgba(72,76,98,0.16), 0 0 48px rgba(214,182,126,0.16), 0 1px 1px rgba(255,255,255,0.95) inset;
-  --shadow-3: 0 26px 64px rgba(72,76,98,0.22), 0 1px 1px rgba(255,255,255,0.75) inset;
+  --shadow-1: 0 2px 6px rgba(96,78,58,0.10), 0 0 10px rgba(238,164,104,0.10), 0 1px 1px rgba(255,255,255,0.70) inset;
+  --shadow-2: 0 18px 44px rgba(96,78,58,0.16), 0 0 48px rgba(238,164,104,0.16), 0 1px 1px rgba(255,255,255,0.95) inset;
+  --shadow-3: 0 26px 64px rgba(96,78,58,0.22), 0 1px 1px rgba(255,255,255,0.75) inset;
 
   /* Radius scale */
   --r-sm: 8px;
@@ -76,11 +76,12 @@ body{
   z-index:-2;
   background:
     radial-gradient(ellipse 820px 360px at 50% -6%, rgba(255,255,255,0.9), transparent 70%),
-    radial-gradient(ellipse 900px 800px at 10% 24%, rgba(255,255,255,0.55), transparent 65%),
-    radial-gradient(ellipse 800px 700px at 88% 80%, rgba(216,218,228,0.50), transparent 68%),
-    radial-gradient(ellipse 700px 600px at 24% 92%, rgba(255,255,255,0.60), transparent 65%),
-    radial-gradient(ellipse 600px 500px at 82% 12%, rgba(222,224,234,0.45), transparent 68%),
-    linear-gradient(170deg, #F1F2F5 0%, #E9EAF0 50%, #EFEFF4 100%);
+    radial-gradient(ellipse 900px 760px at 12% 14%, rgba(238,150,95,0.22), transparent 65%),
+    radial-gradient(ellipse 560px 440px at 60% 38%, rgba(246,196,140,0.24), transparent 70%),
+    radial-gradient(ellipse 880px 780px at 90% 78%, rgba(240,164,110,0.20), transparent 65%),
+    radial-gradient(ellipse 700px 600px at 28% 96%, rgba(255,255,255,0.55), transparent 65%),
+    radial-gradient(ellipse 620px 520px at 78% 8%, rgba(248,214,170,0.26), transparent 68%),
+    linear-gradient(168deg, #FBF6EE 0%, #F7EEDF 45%, #FAF3E8 100%);
 }
 .wallpaper::after{
   content:"";
@@ -97,11 +98,11 @@ body{
   opacity:0.50;
   animation: drift 34s var(--ease) infinite alternate;
 }
-.blob-1{ width:760px; height:760px; top:-220px; left:-180px; background:radial-gradient(circle at 38% 32%, #FFFFFF, #DFE1E9 58%, transparent 76%); opacity:0.8; }
-.blob-2{ width:680px; height:680px; bottom:-240px; right:-160px; background:radial-gradient(circle at 40% 34%, #FFFFFF, #DCDEE7 58%, transparent 76%); opacity:0.8; animation-delay:-12s; }
-.blob-3{ width:480px; height:480px; top:30%; right:6%; background:radial-gradient(circle at 40% 35%, #FFFFFF, #E3E5EC 60%, transparent 78%); opacity:0.6; animation-delay:-22s; }
-.blob-4{ width:190px; height:190px; top:14%; left:40%; background:radial-gradient(circle, rgba(255,255,255,1), transparent 72%); opacity:0.7; filter:blur(30px); animation-delay:-6s; }
-.blob-5{ width:130px; height:130px; top:60%; left:5%; background:radial-gradient(circle, rgba(232,212,168,0.85), transparent 72%); opacity:0.4; filter:blur(26px); animation-delay:-28s; }
+.blob-1{ width:760px; height:760px; top:-220px; left:-180px; background:radial-gradient(circle at 38% 32%, #FFFFFF, #F4E2C8 58%, transparent 76%); opacity:0.8; }
+.blob-2{ width:680px; height:680px; bottom:-240px; right:-160px; background:radial-gradient(circle at 40% 34%, #FFFFFF, #F2DCC0 58%, transparent 76%); opacity:0.8; animation-delay:-12s; }
+.blob-3{ width:480px; height:480px; top:30%; right:6%; background:radial-gradient(circle at 40% 35%, #FFFFFF, #F7E8D2 60%, transparent 78%); opacity:0.65; animation-delay:-22s; }
+.blob-4{ width:190px; height:190px; top:14%; left:40%; background:radial-gradient(circle, rgba(244,176,120,0.95), transparent 72%); opacity:0.6; filter:blur(32px); animation-delay:-6s; }
+.blob-5{ width:130px; height:130px; top:60%; left:5%; background:radial-gradient(circle, rgba(238,140,90,0.85), transparent 72%); opacity:0.45; filter:blur(24px); animation-delay:-28s; }
 
 @keyframes drift{
   0%{ transform:translate(0,0) scale(1); }
@@ -117,21 +118,21 @@ body{
 .ribbon-1{
   width:44vw; height:120vh; left:-14vw; top:-10vh;
   transform:rotate(6deg);
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.95) 35%, rgba(210,213,223,0.55) 60%, transparent);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.95) 35%, rgba(246,214,178,0.55) 60%, transparent);
   opacity:0.75;
   filter:blur(18px);
 }
 .ribbon-2{
   width:34vw; height:120vh; left:2vw; top:-10vh;
   transform:rotate(9deg);
-  background:linear-gradient(90deg, transparent, rgba(226,228,236,0.70) 45%, rgba(255,255,255,0.85) 70%, transparent);
+  background:linear-gradient(90deg, transparent, rgba(248,222,190,0.60) 45%, rgba(255,255,255,0.85) 70%, transparent);
   opacity:0.65;
   filter:blur(22px);
 }
 .ribbon-3{
   width:120vw; height:26vh; left:-10vw; top:64vh;
   transform:rotate(-7deg);
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 50%, transparent);
+  background:linear-gradient(90deg, transparent, rgba(242,168,110,0.50) 45%, rgba(255,255,255,0.7) 70%, transparent);
   opacity:0.55;
   filter:blur(24px);
 }
@@ -140,12 +141,16 @@ body{
 .sparkle{
   position:fixed;
   width:6px; height:6px; border-radius:50%;
-  background:#EDD9AC;
-  box-shadow:0 0 16px 5px rgba(214,182,126,0.75);
+  background:#F6DDB4;
+  box-shadow:0 0 16px 5px rgba(238,164,104,0.75);
   z-index:-1;
   opacity:0;
   animation:twinkle 6s ease-in-out infinite;
   pointer-events:none;
+}
+.sparkle:nth-child(3n){
+  background:#F3B98C;
+  box-shadow:0 0 16px 5px rgba(240,158,100,0.75);
 }
 @keyframes twinkle{
   0%,100%{ opacity:0; transform:scale(0.6); }
@@ -184,7 +189,7 @@ body{
   /* glowing hairline edge — bright white-lilac ring, glass pane catching light */
   content:"";
   position:absolute; inset:0; border-radius:var(--r-xl); padding:1px;
-  background:linear-gradient(135deg, rgba(255,255,255,1), rgba(214,182,126,0.60) 40%, rgba(255,255,255,0.18) 70%, rgba(255,255,255,0.95));
+  background:linear-gradient(135deg, rgba(255,255,255,1), rgba(238,164,104,0.60) 40%, rgba(255,255,255,0.18) 70%, rgba(255,255,255,0.95));
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
@@ -257,8 +262,8 @@ body{
   width:34px;height:34px;border-radius:11px;
   position:relative;
   overflow:hidden;
-  background:linear-gradient(150deg, #D9BE8F, #B9945C);
-  box-shadow:0 4px 14px rgba(156,123,69,0.35), 0 0 22px rgba(214,182,126,0.55), inset 0 1px 1px rgba(255,255,255,0.7);
+  background:linear-gradient(150deg, #F3AC6E, #DD7A3E);
+  box-shadow:0 4px 14px rgba(201,107,53,0.35), 0 0 22px rgba(238,164,104,0.55), inset 0 1px 1px rgba(255,255,255,0.7);
   flex-shrink:0;
 }
 
@@ -272,7 +277,7 @@ body{
 }
 .glance-stat[data-jump]{ cursor:pointer; }
 .glance-stat[data-jump]:hover{ background:rgba(255,255,255,0.55); }
-.glance-num.over-hot{ color:#C74A66; text-shadow:0 0 12px rgba(240,138,155,0.55); }
+.glance-num.over-hot{ color:#C2482E; text-shadow:0 0 12px rgba(228,98,70,0.55); }
 .glance-stat{
   background:rgba(255,255,255,0.4);
   border:1px solid var(--glass-border-soft);
@@ -280,7 +285,7 @@ body{
   padding:9px 10px;
   display:flex; flex-direction:column; gap:1px;
 }
-.glance-num{ font-size:19px; font-weight:800; color:var(--ink); line-height:1.1; text-shadow:0 0 12px rgba(214,182,126,0.35); }
+.glance-num{ font-size:19px; font-weight:800; color:var(--ink); line-height:1.1; text-shadow:0 0 12px rgba(238,164,104,0.35); }
 .glance-label{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); }
 
 .nav{ display:flex; flex-direction:column; gap:2px; flex:1; }
@@ -300,10 +305,10 @@ body{
 .nav-item.active{
   background:var(--glass-fill-strong);
   color:var(--ink);
-  box-shadow:var(--shadow-1), 0 0 20px rgba(214,182,126,0.40);
+  box-shadow:var(--shadow-1), 0 0 20px rgba(238,164,104,0.40);
   font-weight:600;
 }
-.nav-item.active svg{ opacity:1; color:var(--champ-deep); }
+.nav-item.active svg{ opacity:1; color:var(--apricot-deep); }
 .nav-badge{
   margin-left:auto;
   font-size:11px; font-weight:700;
@@ -318,7 +323,7 @@ body{
 }
 .clock-day{ font-size:11.5px; font-weight:600; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em; }
 .clock-date{ font-size:13px; font-weight:600; color:var(--ink-soft); margin-bottom:6px; }
-.clock-time{ font-size:27px; font-weight:800; letter-spacing:-0.02em; color:var(--ink); text-shadow:0 0 24px rgba(214,182,126,0.45); }
+.clock-time{ font-size:27px; font-weight:800; letter-spacing:-0.02em; color:var(--ink); text-shadow:0 0 24px rgba(238,164,104,0.45); }
 .clock-quote{ font-size:11.5px; color:var(--ink-faint); margin-top:8px; line-height:1.4; }
 .clock-mode{
   display:flex; align-items:center; gap:7px;
@@ -327,8 +332,8 @@ body{
 }
 .mode-dot{
   width:7px; height:7px; border-radius:50%;
-  background:var(--champ-mid);
-  box-shadow:0 0 12px rgba(214,182,126,1);
+  background:var(--apricot-mid);
+  box-shadow:0 0 12px rgba(238,164,104,1);
   animation:modePulse 2.6s ease-in-out infinite;
 }
 .clock-mode.mode-stop .mode-dot{ background:var(--success); box-shadow:0 0 8px rgba(143,216,192,0.85); animation:none; }
@@ -344,7 +349,7 @@ body{
   padding-right:4px;
 }
 .main::-webkit-scrollbar{ width:6px; }
-.main::-webkit-scrollbar-thumb{ background:rgba(199,164,107,0.30); border-radius:10px; }
+.main::-webkit-scrollbar-thumb{ background:rgba(232,144,90,0.30); border-radius:10px; }
 
 /* Topbar */
 .topbar{
@@ -366,7 +371,7 @@ body{
   box-shadow:inset 0 1px 2px rgba(255,255,255,0.6);
   transition:box-shadow var(--dur) var(--ease);
 }
-.capture:focus-within{ box-shadow: 0 0 0 3px rgba(199,164,107,0.40), 0 0 26px rgba(214,182,126,0.55), inset 0 1px 2px rgba(255,255,255,0.6); }
+.capture:focus-within{ box-shadow: 0 0 0 3px rgba(232,144,90,0.40), 0 0 26px rgba(238,164,104,0.55), inset 0 1px 2px rgba(255,255,255,0.6); }
 .capture svg{ width:16px; height:16px; stroke-width:1.5; color:var(--ink-faint); flex-shrink:0; }
 .capture input{
   flex:1; border:none; background:none; outline:none;
@@ -396,36 +401,36 @@ body{
   transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 .btn svg{ width:14px; height:14px; stroke-width:1.5; }
-.btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow-2), 0 0 22px rgba(214,182,126,0.55); background:var(--white); }
+.btn:hover{ transform:translateY(-1px); box-shadow:var(--shadow-2), 0 0 22px rgba(238,164,104,0.55); background:var(--white); }
 .btn:active{ transform:translateY(0); }
 .btn-primary{
   position:relative;
   overflow:hidden;
-  background:rgba(255,255,255,0.68);
+  background:linear-gradient(135deg, rgba(242,164,104,0.80), rgba(228,120,74,0.80));
   backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
-  color:#233049;
+  color:#FFFFFF;
   text-transform:uppercase;
   letter-spacing:.07em;
   font-size:11.5px;
   border:1px solid rgba(255,255,255,0.9);
-  box-shadow:0 6px 20px rgba(146,118,72,0.30), 0 0 36px rgba(214,182,126,0.80), inset 0 1px 2px rgba(255,255,255,1);
+  box-shadow:0 6px 20px rgba(190,100,52,0.30), 0 0 36px rgba(238,164,104,0.80), inset 0 1px 2px rgba(255,255,255,1);
 }
-.btn-primary:hover{ box-shadow:0 8px 26px rgba(146,118,72,0.45), 0 0 52px rgba(214,182,126,1), inset 0 1px 2px rgba(255,255,255,1); }
+.btn-primary:hover{ box-shadow:0 8px 26px rgba(190,100,52,0.45), 0 0 52px rgba(238,164,104,1), inset 0 1px 2px rgba(255,255,255,1); }
 
 .avatar{
   width:38px;height:38px;border-radius:50%;
-  background:linear-gradient(145deg, #E9D9B6, var(--champ-mid));
+  background:linear-gradient(145deg, #F6CFA6, var(--apricot-mid));
   display:flex;align-items:center;justify-content:center;
   color:#fff; font-weight:700; font-size:14px;
-  box-shadow:var(--shadow-1), 0 0 26px rgba(214,182,126,0.80);
+  box-shadow:var(--shadow-1), 0 0 26px rgba(238,164,104,0.80);
   flex-shrink:0;
 }
 
 /* Section headers */
 .section-title{
   font-size:16.5px; font-weight:700; letter-spacing:-0.01em; color:var(--ink);
-  text-shadow:0 0 14px rgba(214,182,126,0.30);
+  text-shadow:0 0 14px rgba(238,164,104,0.30);
 }
 .section-sub{ font-size:12px; color:var(--ink-faint); font-weight:500; margin-top:1px; }
 .panel-head{
@@ -469,9 +474,9 @@ body{
   white-space:nowrap;
 }
 .dot{ width:6px;height:6px;border-radius:50%; flex-shrink:0; }
-.dot-high{ background:var(--champ-deep); }
-.dot-time{ background:var(--champ-mid); }
-.dot-personal{ background:#B9BDC9; }
+.dot-high{ background:var(--apricot-deep); }
+.dot-time{ background:var(--apricot-mid); }
+.dot-personal{ background:#E9BE8E; }
 
 .focus-card{ display:flex; flex-direction:column; height:100%; }
 .focus-empty{
@@ -482,19 +487,30 @@ body{
   width:54px;height:54px;border-radius:16px;
   background:rgba(255,255,255,0.4);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:var(--shadow-1), 0 0 26px rgba(214,182,126,0.60);
+  box-shadow:var(--shadow-1), 0 0 26px rgba(238,164,104,0.60);
   animation:focusPulse 4s ease-in-out infinite;
 }
 @keyframes focusPulse{
-  0%,100%{ box-shadow:var(--shadow-1), 0 0 26px rgba(214,182,126,0.60); }
-  50%{ box-shadow:var(--shadow-1), 0 0 56px rgba(214,182,126,1); }
+  0%,100%{ box-shadow:var(--shadow-1), 0 0 26px rgba(238,164,104,0.60); }
+  50%{ box-shadow:var(--shadow-1), 0 0 56px rgba(238,164,104,1); }
 }
-.focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--champ-deep); }
+.focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--apricot-deep); }
 .focus-active{ font-size:13px; font-weight:600; color:var(--ink-faint); }
 .focus-set-text{ font-size:15px; font-weight:700; color:var(--ink); max-width:220px; }
-.focus-card.drop-hover{ box-shadow:0 0 0 2px var(--champ-deep), var(--shadow-2); }
-.focus-card.focus-glow{
-  box-shadow:0 0 0 1px rgba(242,230,206,0.95), 0 0 72px rgba(214,182,126,0.65), var(--shadow-2);
+.nextup-row{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 11px;
+  background:rgba(255,255,255,0.35);
+  border:1px solid var(--glass-border-soft);
+  border-radius:10px;
+  cursor:pointer;
+  transition:background var(--dur), box-shadow var(--dur);
+}
+.nextup-row:hover{ background:rgba(255,255,255,0.6); box-shadow:var(--shadow-1); }
+.nextup-rank{ font-size:12px; font-weight:800; color:var(--apricot-deep); min-width:14px; }
+.nextup-text{
+  flex:1; font-size:12px; font-weight:600; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
 .field-label{
@@ -530,7 +546,7 @@ body{
 .lane-backdrop{
   display:none;
   position:fixed; inset:0; z-index:59;
-  background:rgba(55,58,78,0.26);
+  background:rgba(74,62,48,0.26);
   backdrop-filter:blur(3px);
 }
 .lane-backdrop.show{ display:block; }
@@ -539,7 +555,7 @@ body{
   top:4vh; left:4vw; right:4vw; bottom:4vh;
   z-index:60;
   max-height:none;
-  box-shadow:0 30px 80px rgba(55,58,78,0.30);
+  box-shadow:0 30px 80px rgba(74,62,48,0.30);
 }
 .lane.expanded .lane-body{ overflow-y:auto; }
 .lane-ctrl-btn[data-maximize] svg{ transition:transform var(--dur); }
@@ -587,23 +603,23 @@ body{
   font-size:12.5px; font-weight:500; color:var(--ink);
   cursor:grab;
   position:relative;
-  box-shadow:0 3px 10px rgba(72,76,98,0.10), 0 0 12px rgba(214,182,126,0.12);
+  box-shadow:0 3px 10px rgba(96,78,58,0.10), 0 0 12px rgba(238,164,104,0.12);
   transition:transform var(--dur), box-shadow var(--dur), background var(--dur);
 }
 .task-card::after{
   content:"";
   position:absolute; inset:0; border-radius:var(--r-md); padding:1px;
-  background:linear-gradient(135deg, rgba(255,255,255,0.85), rgba(242,230,206,0.20) 45%, transparent 70%, rgba(255,255,255,0.55));
+  background:linear-gradient(135deg, rgba(255,255,255,0.85), rgba(250,228,205,0.20) 45%, transparent 70%, rgba(255,255,255,0.55));
   -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
   pointer-events:none;
 }
-.task-card:hover{ transform:translateY(-1px); box-shadow:var(--shadow-1), 0 0 30px rgba(214,182,126,0.65); }
+.task-card:hover{ transform:translateY(-1px); box-shadow:var(--shadow-1), 0 0 30px rgba(238,164,104,0.65); }
 .task-card:active{ cursor:grabbing; }
 .task-card.dragging{ opacity:0.4; }
 .task-card.done-card .task-title{ text-decoration:line-through; color:var(--ink-faint); }
-.task-card.needs-context{ border:1px solid rgba(214,182,126,0.65); background:rgba(214,182,126,0.14); }
+.task-card.needs-context{ border:1px solid rgba(238,164,104,0.65); background:rgba(238,164,104,0.14); }
 
 .task-head{ display:flex; align-items:flex-start; gap:8px; }
 .task-title{ flex:1; font-weight:500; line-height:1.4; }
@@ -614,31 +630,22 @@ body{
   padding:2px 8px; border-radius:20px;
   display:flex; align-items:center; gap:4px;
 }
-.task-chip.warn{ color:#8A6B32; background:rgba(214,182,126,0.35); }
+.task-chip.warn{ color:#B15E24; background:rgba(238,164,104,0.35); }
 .task-chip svg{ width:10px;height:10px; stroke-width:2.25; }
-.task-chip.linkable{ cursor:pointer; color:var(--champ-deep); background:rgba(199,164,107,0.22); }
-.task-chip.linkable:hover{ background:rgba(199,164,107,0.38); }
-.task-chip.chip-due-today{ color:#8A6B32; background:rgba(214,182,126,0.35); }
+.task-chip.linkable{ cursor:pointer; color:var(--apricot-deep); background:rgba(232,144,90,0.22); }
+.task-chip.linkable:hover{ background:rgba(232,144,90,0.38); }
+.task-chip.chip-due-today{ color:#B15E24; background:rgba(244,186,132,0.40); }
 .task-chip.chip-overdue{
-  color:#fff; background:linear-gradient(145deg, #F08A9B, #D95F7E);
-  box-shadow:0 0 14px rgba(240,138,155,0.55);
+  color:#fff; background:linear-gradient(145deg, #E86A50, #C8452F);
+  box-shadow:0 0 14px rgba(228,98,70,0.55);
 }
-.task-chip.chip-age{ color:var(--ink-soft); background:rgba(214,182,126,0.45); }
+.task-chip.chip-age{ color:#96703C; background:rgba(240,208,160,0.42); }
 .task-chip.chip-age-hot{
-  color:#fff; background:linear-gradient(145deg, var(--champ-mid), var(--champ-deep));
-  box-shadow:0 0 12px rgba(199,164,107,0.50);
+  color:#fff; background:linear-gradient(145deg, var(--apricot-mid), var(--apricot-deep));
+  box-shadow:0 0 12px rgba(232,144,90,0.50);
 }
 
 /* One-click Set Focus — no prompt dialog */
-.focus-btn{
-  width:20px;height:20px;border-radius:7px;
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0; cursor:pointer; opacity:0.35;
-  transition:opacity var(--dur), background var(--dur);
-}
-.focus-btn svg{ width:13px;height:13px; stroke-width:1.75; color:var(--ink-soft); }
-.focus-btn:hover{ opacity:1; background:rgba(199,164,107,0.32); }
-.focus-btn:hover svg{ color:var(--champ-deep); }
 
 /* Always-visible fields — everything shows, nothing hidden behind a click */
 .field-row{ display:flex; gap:6px; margin-top:8px; }
@@ -651,11 +658,11 @@ body{
   transition:background var(--dur), box-shadow var(--dur);
 }
 .field-row .mini-input{ flex:1; }
-.mini-input:focus{ background:var(--white); box-shadow:0 0 0 3px rgba(199,164,107,0.32); }
+.mini-input:focus{ background:var(--white); box-shadow:0 0 0 3px rgba(232,144,90,0.32); }
 .mini-input::placeholder{ color:var(--ink-faint); }
 .mini-input.required-empty{
-  border-color:rgba(214,182,126,0.7);
-  background:rgba(214,182,126,0.12);
+  border-color:rgba(238,164,104,0.7);
+  background:rgba(238,164,104,0.12);
 }
 .field-block{ margin-top:8px; }
 .field-block textarea.mini-input{
@@ -671,8 +678,31 @@ body{
   transition:opacity var(--dur), background var(--dur);
 }
 .task-x svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); }
-.task-x:hover{ opacity:1; background:rgba(240,138,155,0.25); }
-.task-x:hover svg{ color:#C74A66; }
+.task-x:hover{ opacity:1; background:rgba(232,106,80,0.22); }
+.task-x:hover svg{ color:#C2482E; }
+.subs{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
+.sub-row{ display:flex; align-items:center; gap:7px; padding:1px 0; }
+.sub-check{
+  width:14px; height:14px; border-radius:5px; flex-shrink:0;
+  border:1.5px solid var(--ink-faint); cursor:pointer;
+  transition:background var(--dur), border-color var(--dur);
+}
+.sub-check.on{ background:var(--success); border-color:var(--success); }
+.sub-input{
+  flex:1; border:none; background:none; outline:none;
+  font-family:inherit; font-size:11.5px; color:var(--ink);
+  padding:2px 2px; border-bottom:1px dashed transparent;
+}
+.sub-input:focus{ border-bottom-color:var(--glass-border-soft); }
+.sub-input.done{ text-decoration:line-through; color:var(--ink-faint); }
+.sub-x{
+  width:16px; height:16px; border-radius:6px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; opacity:0.25; transition:opacity var(--dur);
+}
+.sub-x svg{ width:10px; height:10px; stroke-width:2; color:var(--ink-soft); }
+.sub-x:hover{ opacity:1; }
+
 .task-collapse-btn{
   width:20px;height:20px;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
@@ -698,7 +728,7 @@ body{
   color:var(--ink-faint); cursor:pointer;
   transition:color var(--dur);
 }
-.context-toggle:hover{ color:var(--champ-deep); }
+.context-toggle:hover{ color:var(--apricot-deep); }
 
 .field-ticket-wrap{ position:relative; flex:1 1 auto; }
 .field-ticket-wrap .mini-input{ width:100%; padding-right:26px; }
@@ -706,12 +736,12 @@ body{
   position:absolute; right:4px; top:50%; transform:translateY(-50%);
   width:20px; height:20px; border-radius:6px;
   display:none; align-items:center; justify-content:center;
-  background:rgba(199,164,107,0.25); cursor:pointer;
+  background:rgba(232,144,90,0.25); cursor:pointer;
   transition:background var(--dur);
 }
 .ticket-link-btn.show{ display:flex; }
-.ticket-link-btn:hover{ background:rgba(199,164,107,0.45); }
-.ticket-link-btn svg{ width:11px;height:11px; stroke-width:2; color:var(--champ-deep); }
+.ticket-link-btn:hover{ background:rgba(232,144,90,0.45); }
+.ticket-link-btn svg{ width:11px;height:11px; stroke-width:2; color:var(--apricot-deep); }
 
 
 .lane-empty{
@@ -740,7 +770,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   display:flex; align-items:center; gap:14px;
   padding:16px var(--s-2) var(--s-2);
 }
-.tickets-empty svg, .recent-empty svg{ width:34px;height:34px; stroke-width:1.25; color:var(--champ-deep); opacity:0.6; }
+.tickets-empty svg, .recent-empty svg{ width:34px;height:34px; stroke-width:1.25; color:var(--apricot-deep); opacity:0.6; }
 
 .recent-row{
   display:flex; align-items:center; justify-content:space-between;
@@ -753,7 +783,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 }
 .ticket-row:first-child{ border-top:none; }
 .ticket-row .ticket-num{
-  font-size:12.5px; font-weight:700; color:var(--champ-deep);
+  font-size:12.5px; font-weight:700; color:var(--apricot-deep);
   display:flex; align-items:center; gap:4px;
   flex-shrink:0; min-width:110px;
 }
@@ -766,14 +796,14 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   background:rgba(255,255,255,0.5);
   padding:2px 9px; border-radius:20px; white-space:nowrap;
 }
-.ticket-row .ticket-lane-badge.pending{ color:#8A6B32; background:rgba(214,182,126,0.28); }
+.ticket-row .ticket-lane-badge.pending{ color:#B15E24; background:rgba(238,164,104,0.28); }
 .recent-row .btn{ padding:8px 14px; }
 
 /* Add-commitment modal */
 .modal-backdrop{
   display:none;
   position:fixed; inset:0; z-index:80;
-  background:rgba(55,58,78,0.30);
+  background:rgba(74,62,48,0.30);
   backdrop-filter:blur(4px);
   align-items:center; justify-content:center;
 }
@@ -798,7 +828,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   transition:background var(--dur), box-shadow var(--dur);
 }
 .modal .drawer-field input:focus, .modal .drawer-field select:focus{
-  background:var(--white); box-shadow:0 0 0 3px rgba(199,164,107,0.32);
+  background:var(--white); box-shadow:0 0 0 3px rgba(232,144,90,0.32);
 }
 .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
 
@@ -842,7 +872,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 /* Utility */
 .flex{ display:flex; align-items:center; }
 .gap-1{ gap:8px; } .gap-2{ gap:12px; }
-::selection{ background:rgba(199,164,107,0.4); }
+::selection{ background:rgba(232,144,90,0.4); }
 
 @media (max-width:1180px){
   .lane-grid{ grid-template-columns:repeat(2,1fr); }
@@ -938,7 +968,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
     <nav class="nav" id="navList">
       <div class="nav-item active" data-view="today"><i data-lucide="sun"></i><span>Today</span></div>
-      <div class="nav-item" data-view="focus"><i data-lucide="target"></i><span>Focus</span></div>
+      <div class="nav-item" data-view="focus"><i data-lucide="route"></i><span>Next Up</span></div>
       <div class="nav-item" data-view="queue"><i data-lucide="list"></i><span>Queue</span><span class="nav-badge" id="navQueueBadge">0</span></div>
       <div class="nav-item" data-view="pending"><i data-lucide="list-todo"></i><span>Pending</span><span class="nav-badge" id="navPendingBadge">0</span></div>
       <div class="nav-item" data-view="done"><i data-lucide="check-check"></i><span>Done</span></div>
@@ -986,7 +1016,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
     <!-- Commitments + Focus -->
     <div class="row-top">
-      <section class="glass">
+      <section class="glass" id="commitPanel">
         <div class="panel-head">
           <div>
             <div class="section-title">Today's Commitments</div>
@@ -997,21 +1027,17 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <div class="panel-body" id="commitList"></div>
       </section>
 
-      <section class="glass focus-card" id="focusCard" style="position:relative;">
-        <div class="modal-x" id="focusClearBtn" title="Clear focus" style="display:none;"><i data-lucide="x"></i></div>
+      <section class="glass focus-card" id="nextUpCard">
         <div class="panel-head" style="padding-bottom:0;">
           <div class="flex gap-2">
-            <i data-lucide="target" style="width:18px;height:18px;stroke-width:1.5;color:var(--champ-deep);"></i>
+            <i data-lucide="route" style="width:18px;height:18px;stroke-width:1.5;color:var(--apricot-deep);"></i>
             <div>
-              <div class="section-title" style="font-size:15px;">Current Focus</div>
+              <div class="section-title" style="font-size:15px;">Next Up</div>
+              <div class="section-sub" style="margin:0;">Top of your hierarchy, live</div>
             </div>
           </div>
         </div>
-        <div class="focus-empty" id="focusZone">
-          <div class="focus-icon"><i data-lucide="crosshair"></i></div>
-          <div class="focus-active" id="focusLabel">No active focus</div>
-          <button class="btn btn-primary" id="setFocusBtn" style="margin-top:2px;"><i data-lucide="target"></i>Set Focus</button>
-        </div>
+        <div id="nextUpList" style="display:flex; flex-direction:column; gap:7px; padding:12px 18px 16px;"></div>
       </section>
     </div>
 
@@ -1268,31 +1294,40 @@ function renderCommitments(){
   });
 }
 
-function renderFocus(){
-  const label = document.getElementById('focusLabel');
-  const btn = document.getElementById('setFocusBtn');
-  const fCard = document.getElementById('focusCard');
-  document.getElementById('focusClearBtn').style.display = state.focus ? 'flex' : 'none';
-  if(state.focus){
-    label.textContent = state.focus;
-    label.classList.add('focus-set-text');
-    btn.innerHTML = '<i data-lucide="refresh-ccw"></i>Change Focus';
-    fCard.classList.add('focus-glow');
-  }else{
-    label.textContent = 'No active focus';
-    label.classList.remove('focus-set-text');
-    btn.innerHTML = '<i data-lucide="target"></i>Set Focus';
-    fCard.classList.remove('focus-glow');
+/* Next Up — the top three from the Plan My Day engine, always current.
+   No input required: it recomputes on every render. Click a row to jump. */
+function renderNextUp(){
+  const wrap = document.getElementById('nextUpList');
+  wrap.innerHTML = '';
+  const entries = buildPlanEntries().slice(0, 3);
+  if(entries.length === 0){
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12px; color:var(--ink-faint); padding:6px 0;';
+    empty.textContent = 'Board clear — capture something.';
+    wrap.appendChild(empty);
   }
-  lucide.createIcons();
+  entries.forEach((e, i)=>{
+    const row = document.createElement('div');
+    row.className = 'nextup-row';
+    const jump = e.src === 'Pending' ? 'lanePending' : (e.src === 'Queue' ? 'laneQueue' : 'commitPanel');
+    row.innerHTML = '<span class="nextup-rank">' + (i+1) + '</span>'
+      + '<span class="nextup-text">' + escapeHtml(e.text) + '</span>'
+      + '<span class="task-chip" style="flex-shrink:0;">' + PLAN_TIERS[e.tier].label.split(' ')[0] + '</span>';
+    row.addEventListener('click', ()=>{
+      const t = document.getElementById(jump);
+      if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    wrap.appendChild(row);
+  });
 }
 
 
 /* Session-only: which cards have the Context field revealed */
 const contextRevealIds = new Set();
 
-/* Card-level collapse — session only, not persisted. Independent of size tier. */
-const cardCollapsedIds = new Set();
+/* Cards are collapsed by default — expanding is the session-only exception.
+   The chevron is the drop-down that reveals ticket/due/waiting/context/subtasks. */
+const expandedCardIds = new Set();
 
 /* Free-text due parsing — "Jul 11", "7/11", "today", "tomorrow" */
 const MONTHS = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
@@ -1362,6 +1397,23 @@ function waitingDaysChip(item){
   return Math.floor((Date.now() - item.waitingSince) / 86400000);
 }
 
+/* Display order: overdue first, then due today, then dated, then the rest by
+   priority tier and age. Storage order is untouched — this is presentation only. */
+function sortForDisplay(items){
+  const score = i => {
+    const st = dueStatus(i.due);
+    if(st === 'overdue') return 0;
+    if(st === 'today') return 1;
+    if(parseDueDate(i.due)) return 2;
+    return 3;
+  };
+  return [...items].sort((a,b)=>
+    score(a) - score(b) ||
+    planTier(a) - planTier(b) ||
+    (a.createdAt || 0) - (b.createdAt || 0)
+  );
+}
+
 function buildTaskCard(item, laneKey){
 
   const card = document.createElement('div');
@@ -1391,7 +1443,17 @@ function buildTaskCard(item, laneKey){
     </div>` : `
     <div class="context-toggle" data-context-toggle="${item.id}">+ Context</div>`;
 
-  const isCollapsed = cardCollapsedIds.has(item.id);
+  const subs = item.subs || [];
+  const subsBlock = subs.length ? `
+    <div class="subs">${subs.map(sb => `
+      <div class="sub-row">
+        <div class="sub-check ${sb.done ? 'on' : ''}" data-sub-check="${sb.id}"></div>
+        <input class="sub-input ${sb.done ? 'done' : ''}" data-sub-input="${sb.id}" value="${escapeHtml(sb.t || '')}" placeholder="Subtask">
+        <div class="sub-x" data-sub-x="${sb.id}" title="Remove"><i data-lucide="x"></i></div>
+      </div>`).join('')}
+    </div>` : '';
+
+  const isCollapsed = !expandedCardIds.has(item.id);
   if(isCollapsed) card.classList.add('card-collapsed');
 
   const previewChips = [];
@@ -1399,12 +1461,15 @@ function buildTaskCard(item, laneKey){
   if(item.due) previewChips.push(`<span class="task-chip">Due ${escapeHtml(item.due)}</span>`);
   const pvDue = dueChipHtml(item); if(pvDue) previewChips.push(pvDue);
   const pvAge = ageChipHtml(item, laneKey); if(pvAge) previewChips.push(pvAge);
+  if((item.subs || []).length){
+    const doneN = item.subs.filter(x=>x.done).length;
+    previewChips.push(`<span class="task-chip">${doneN}/${item.subs.length} subs</span>`);
+  }
 
   const signalChips = dueChipHtml(item) + ageChipHtml(item, laneKey);
 
   card.innerHTML = `
     <div class="task-head">
-      <div class="focus-btn" data-focus="${item.id}" title="Set as current focus"><i data-lucide="target"></i></div>
       <div class="task-title">${escapeHtml(item.text)}</div>
       <div class="task-x" data-del="${item.id}" title="Remove — not needed / cancelled"><i data-lucide="x"></i></div>
       <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
@@ -1418,13 +1483,15 @@ function buildTaskCard(item, laneKey){
       </div>
       ${pendingRow}
       ${contextBlock}
+      ${subsBlock}
+      <div class="context-toggle" data-add-sub="${item.id}">+ Subtask</div>
     </div>
   `;
 
   card.querySelector('.task-collapse-btn').addEventListener('click', e=>{
     e.stopPropagation();
-    if(cardCollapsedIds.has(item.id)) cardCollapsedIds.delete(item.id);
-    else cardCollapsedIds.add(item.id);
+    if(expandedCardIds.has(item.id)) expandedCardIds.delete(item.id);
+    else expandedCardIds.add(item.id);
     renderAll();
   });
 
@@ -1436,15 +1503,6 @@ function buildTaskCard(item, laneKey){
     });
   }
 
-  /* Auto-focus: touching any field inside a card makes it the Current Focus */
-  card.addEventListener('focusin', ()=>{
-    if(laneKey === 'done') return;
-    if(state.focus !== item.text){
-      state.focus = item.text;
-      save(); renderFocus();
-    }
-  });
-
   card.querySelector('.task-x').addEventListener('click', e=>{
     e.stopPropagation();
     const arr = state[laneKey];
@@ -1452,10 +1510,54 @@ function buildTaskCard(item, laneKey){
     if(i > -1){ arr.splice(i,1); save(); renderAll(); }
   });
 
-  card.querySelector('.focus-btn').addEventListener('click', e=>{
+  /* Subtasks — add, edit, check, remove; Enter chains a new one */
+  const addSub = card.querySelector('[data-add-sub]');
+  addSub.addEventListener('mousedown', e=> e.stopPropagation());
+  addSub.addEventListener('click', e=>{
     e.stopPropagation();
-    state.focus = item.text;
+    item.subs = item.subs || [];
+    const nid = cid();
+    item.subs.push({ id:nid, t:'', done:false });
+    expandedCardIds.add(item.id);
     save(); renderAll();
+    const inp = document.querySelector(`input[data-sub-input="${nid}"]`);
+    if(inp) inp.focus();
+  });
+  card.querySelectorAll('[data-sub-check]').forEach(el=>{
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      const sb = (item.subs||[]).find(x=>x.id === el.dataset.subCheck);
+      if(sb){ sb.done = !sb.done; save(); renderAll(); }
+    });
+  });
+  card.querySelectorAll('[data-sub-input]').forEach(el=>{
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('click', e=> e.stopPropagation());
+    el.addEventListener('change', ()=>{
+      const sb = (item.subs||[]).find(x=>x.id === el.dataset.subInput);
+      if(sb){ sb.t = el.value; save(); }
+    });
+    el.addEventListener('keydown', e=>{
+      if(e.key !== 'Enter') return;
+      e.preventDefault();
+      const sb = (item.subs||[]).find(x=>x.id === el.dataset.subInput);
+      if(sb){ sb.t = el.value; }
+      const nid = cid();
+      const at = (item.subs||[]).findIndex(x=>x.id === el.dataset.subInput);
+      item.subs.splice(at + 1, 0, { id:nid, t:'', done:false });
+      save(); renderAll();
+      const inp = document.querySelector(`input[data-sub-input="${nid}"]`);
+      if(inp) inp.focus();
+    });
+  });
+  card.querySelectorAll('[data-sub-x]').forEach(el=>{
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      item.subs = (item.subs||[]).filter(x=>x.id !== el.dataset.subX);
+      save(); renderAll();
+    });
   });
 
   const ctxToggle = card.querySelector('[data-context-toggle]');
@@ -1480,6 +1582,35 @@ function buildTaskCard(item, laneKey){
       }
       if(el.tagName === 'TEXTAREA') autosize(el);
     });
+    if(el.dataset.field === 'context'){
+      el.addEventListener('focus', ()=>{
+        if(!el.value){ el.value = '• '; autosize(el); }
+      });
+      el.addEventListener('keydown', e=>{
+        if(e.key !== 'Enter') return;
+        e.preventDefault();
+        const start = el.selectionStart, end = el.selectionEnd;
+        const before = el.value.slice(0, start);
+        const lineStart = before.lastIndexOf('\n') + 1;
+        const currentLine = before.slice(lineStart);
+        if(/^\s*•\s*$/.test(currentLine)){
+          el.value = el.value.slice(0, lineStart) + el.value.slice(end);
+          el.selectionStart = el.selectionEnd = lineStart;
+        }else{
+          const ins = '\n• ';
+          el.value = el.value.slice(0, start) + ins + el.value.slice(end);
+          el.selectionStart = el.selectionEnd = start + ins.length;
+        }
+        item.context = el.value;
+        save(); autosize(el);
+      });
+      el.addEventListener('blur', ()=>{
+        const cleaned = el.value.split('\n').filter(l => !/^\s*•\s*$/.test(l)).join('\n');
+        if(cleaned !== el.value){ el.value = cleaned; }
+        item.context = el.value.trim() === '•' ? '' : el.value;
+        save();
+      });
+    }
     el.addEventListener('change', e=>{
       item[el.dataset.field] = el.value;
       save();
@@ -1532,7 +1663,7 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
   const items = state[laneKey];
   wrap.innerHTML = '';
 
-  const display = items;
+  const display = (laneKey === 'done') ? items : sortForDisplay(items);
   count.textContent = display.length;
   empty.style.display = display.length ? 'none' : 'flex';
 
@@ -1613,7 +1744,7 @@ function renderActiveTickets(){
 
 function renderAll(){
   renderCommitments();
-  renderFocus();
+  renderNextUp();
   renderLane('queue','queueItems','queueEmpty','countQueue', false);
   renderLane('pending','pendingItems','pendingEmpty','countPending', false);
   renderLane('done','doneItems','doneEmpty','countDone', true);
@@ -1739,30 +1870,6 @@ function saveCommitFromModal(){
 document.getElementById('commitModalSave').addEventListener('click', saveCommitFromModal);
 document.getElementById('commitTextInput').addEventListener('keydown', e=>{
   if(e.key === 'Enter') saveCommitFromModal();
-});
-
-document.getElementById('setFocusBtn').addEventListener('click', ()=>{
-  const text = prompt('Set your current focus:', state.focus || '');
-  if(text === null) return;
-  state.focus = text.trim() || null;
-  save(); renderFocus();
-});
-
-/* Drag any card straight onto Current Focus to set it — no prompt needed */
-const focusCard = document.getElementById('focusCard');
-focusCard.addEventListener('dragover', e=>{
-  e.preventDefault();
-  focusCard.classList.add('drop-hover');
-});
-focusCard.addEventListener('dragleave', ()=> focusCard.classList.remove('drop-hover'));
-focusCard.addEventListener('drop', e=>{
-  e.preventDefault();
-  focusCard.classList.remove('drop-hover');
-  let data;
-  try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
-  if(!data || !data.text) return;
-  state.focus = data.text;
-  save(); renderFocus();
 });
 
 /* Deterministic capture cleanup — no AI call, works fully offline and inside GitHub Pages.
@@ -2155,7 +2262,7 @@ function openPlanModal(){
     const meta = planEntryMeta(e);
     const row = document.createElement('div');
     row.style.cssText = 'display:flex; align-items:baseline; gap:10px; padding:9px 12px; background:rgba(255,255,255,0.35); border:1px solid var(--glass-border-soft); border-radius:10px;';
-    row.innerHTML = '<span style="font-size:12px; font-weight:800; color:var(--champ-deep); min-width:18px;">' + rank + '</span>'
+    row.innerHTML = '<span style="font-size:12px; font-weight:800; color:var(--apricot-deep); min-width:18px;">' + rank + '</span>'
       + '<span style="flex:1; font-size:12.5px; font-weight:500; color:var(--ink);">' + escapeHtml(e.text)
       + (meta ? ' <span style="color:var(--ink-faint); font-weight:600; font-size:11px;">— ' + escapeHtml(meta) + '</span>' : '')
       + '</span>'
@@ -2188,8 +2295,6 @@ function boardAsPrompt(){
   L.push('You are my execution partner. Here is my Execution Tower board for ' + todayLabel() + '.');
   L.push('Organize my day (or answer my question) using this priority hierarchy: Leadership visibility > Deadlines > Vendors > Juan > Tickets > Strategic > Admin.');
   L.push('Protect 8:00-11:00 AM for deep work, add 15-min buffers, hard stop at 4:00 PM. Be direct, no fluff.');
-  L.push('');
-  L.push('CURRENT FOCUS: ' + (state.focus || 'none'));
   L.push('');
   L.push('COMMITMENTS:');
   if(state.commitments.length === 0) L.push('- none');
@@ -2261,12 +2366,6 @@ function legacyCopy(text, done){
 
 document.getElementById('sendClaudeBtn').addEventListener('click', ()=>{
   copyText(boardAsPrompt(), document.getElementById('sendClaudeBtn'), 'Send to Claude', 'send');
-});
-
-/* Clear focus X */
-document.getElementById('focusClearBtn').addEventListener('click', ()=>{
-  state.focus = '';
-  save(); renderFocus();
 });
 
 /* Signal tiles jump to their lane */
