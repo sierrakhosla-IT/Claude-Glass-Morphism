@@ -153,8 +153,7 @@ body{
 }
 
 @media (prefers-reduced-motion: reduce){
-  .blob, .sparkle, .brand-mark, .mode-dot, .focus-icon,
-  .btn-primary::after, .brand-mark::after{ animation:none; }
+  .blob, .sparkle, .mode-dot, .focus-icon{ animation:none; }
   .sparkle{ opacity:0.4; }
 }
 
@@ -261,21 +260,9 @@ body{
   background:linear-gradient(150deg, #D9BE8F, #B9945C);
   box-shadow:0 4px 14px rgba(156,123,69,0.35), 0 0 22px rgba(214,182,126,0.55), inset 0 1px 1px rgba(255,255,255,0.7);
   flex-shrink:0;
-  animation:brandGlow 5s ease-in-out infinite;
 }
-.brand-mark::after{
-  content:"";
-  position:absolute; top:-20%; bottom:-20%; left:0; width:55%;
-  background:linear-gradient(105deg, transparent, rgba(255,255,255,0.95) 50%, transparent);
-  transform:translateX(-160%) skewX(-18deg);
-  animation:shineSweep 5.5s ease-in-out infinite;
-  animation-delay:-1.2s;
-  pointer-events:none;
-}
-@keyframes brandGlow{
-  0%,100%{ box-shadow:0 4px 14px rgba(156,123,69,0.35), 0 0 28px rgba(214,182,126,0.70), inset 0 1px 1px rgba(255,255,255,0.7); }
-  50%{ box-shadow:0 4px 14px rgba(156,123,69,0.35), 0 0 48px rgba(214,182,126,1), inset 0 1px 1px rgba(255,255,255,0.7); }
-}
+
+
 .brand-name{ font-weight:700; font-size:15.5px; letter-spacing:0.01em; }
 
 .glance-strip{
@@ -283,6 +270,9 @@ body{
   gap:8px;
   margin:0 var(--s-1) var(--s-2);
 }
+.glance-stat[data-jump]{ cursor:pointer; }
+.glance-stat[data-jump]:hover{ background:rgba(255,255,255,0.55); }
+.glance-num.over-hot{ color:#C74A66; text-shadow:0 0 12px rgba(240,138,155,0.55); }
 .glance-stat{
   background:rgba(255,255,255,0.4);
   border:1px solid var(--glass-border-soft);
@@ -422,18 +412,7 @@ body{
   box-shadow:0 6px 20px rgba(146,118,72,0.30), 0 0 36px rgba(214,182,126,0.80), inset 0 1px 2px rgba(255,255,255,1);
 }
 .btn-primary:hover{ box-shadow:0 8px 26px rgba(146,118,72,0.45), 0 0 52px rgba(214,182,126,1), inset 0 1px 2px rgba(255,255,255,1); }
-.btn-primary::after{
-  content:"";
-  position:absolute; top:-20%; bottom:-20%; left:0; width:46%;
-  background:linear-gradient(105deg, transparent, rgba(255,255,255,0.9) 50%, transparent);
-  transform:translateX(-160%) skewX(-18deg);
-  animation:shineSweep 4.2s ease-in-out infinite;
-  pointer-events:none;
-}
-@keyframes shineSweep{
-  0%, 55%{ transform:translateX(-160%) skewX(-18deg); }
-  85%, 100%{ transform:translateX(320%) skewX(-18deg); }
-}
+
 .avatar{
   width:38px;height:38px;border-radius:50%;
   background:linear-gradient(145deg, #E9D9B6, var(--champ-mid));
@@ -685,6 +664,15 @@ body{
 }
 
 /* Card-level collapse — independent of size tier, just for saving space */
+.task-x{
+  width:20px;height:20px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0; cursor:pointer; opacity:0.30;
+  transition:opacity var(--dur), background var(--dur);
+}
+.task-x svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); }
+.task-x:hover{ opacity:1; background:rgba(240,138,155,0.25); }
+.task-x:hover svg{ color:#C74A66; }
 .task-collapse-btn{
   width:20px;height:20px;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
@@ -815,6 +803,17 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
 
 
+/* Modal close X */
+.modal-x{
+  position:absolute; top:12px; right:12px;
+  width:26px; height:26px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink-faint);
+  transition:background var(--dur), color var(--dur);
+}
+.modal-x svg{ width:14px; height:14px; stroke-width:2; }
+.modal-x:hover{ background:rgba(255,255,255,0.6); color:var(--ink); }
+
 /* Utility menu — backup/restore/day controls tucked behind "⋯" */
 .util-menu-wrap{ position:relative; }
 .util-menu{
@@ -874,6 +873,19 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 <div class="app" id="appRoot">
 <div class="lane-backdrop" id="laneBackdrop"></div>
 
+<div class="modal-backdrop" id="pendingModalBackdrop">
+  <div class="modal glass" style="width:400px; position:relative;">
+    <div class="modal-x" id="pendingCloseBtn" title="Skip"><i data-lucide="x"></i></div>
+    <div class="modal-title">Moved to Pending</div>
+    <div class="section-sub" style="margin:-6px 0 4px;">Who or what are you waiting on?</div>
+    <input class="mini-input" id="pendingWhoInput" placeholder="Waiting on — who / what" style="width:100%;">
+    <input class="mini-input" id="pendingDueInput" placeholder="Due (optional) — Jul 15, today…" style="width:100%;">
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="pendingSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="planModalBackdrop">
   <div class="modal glass" style="width:560px; max-height:82vh; overflow-y:auto;">
     <div class="modal-title" id="planModalTitle">Today's Plan</div>
@@ -918,10 +930,10 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
     </div>
 
     <div class="glance-strip">
-      <div class="glance-stat"><span class="glance-num" id="glanceCompleted">0</span><span class="glance-label">Completed</span></div>
-      <div class="glance-stat"><span class="glance-num" id="glanceActive">0</span><span class="glance-label">Tickets</span></div>
-      <div class="glance-stat"><span class="glance-num" id="glanceWaiting">0</span><span class="glance-label">Waiting</span></div>
-      <div class="glance-stat"><span class="glance-num" id="glanceQueue">0</span><span class="glance-label">Queue</span></div>
+      <div class="glance-stat" data-jump="laneQueue" title="Jump to Queue"><span class="glance-num" id="glanceDueToday">0</span><span class="glance-label">Due Today</span></div>
+      <div class="glance-stat" data-jump="laneQueue" title="Jump to Queue"><span class="glance-num" id="glanceOverdue">0</span><span class="glance-label">Overdue</span></div>
+      <div class="glance-stat" data-jump="lanePending" title="Jump to Pending"><span class="glance-num" id="glanceWaiting">0</span><span class="glance-label">Waiting</span></div>
+      <div class="glance-stat" data-jump="laneQueue" title="Jump to Queue"><span class="glance-num" id="glanceQueue">0</span><span class="glance-label">Queue</span></div>
     </div>
 
     <nav class="nav" id="navList">
@@ -985,7 +997,8 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <div class="panel-body" id="commitList"></div>
       </section>
 
-      <section class="glass focus-card" id="focusCard">
+      <section class="glass focus-card" id="focusCard" style="position:relative;">
+        <div class="modal-x" id="focusClearBtn" title="Clear focus" style="display:none;"><i data-lucide="x"></i></div>
         <div class="panel-head" style="padding-bottom:0;">
           <div class="flex gap-2">
             <i data-lucide="target" style="width:18px;height:18px;stroke-width:1.5;color:var(--champ-deep);"></i>
@@ -1005,7 +1018,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
     <!-- Lanes -->
     <div class="lane-grid">
 
-      <div class="glass lane" data-lane="queue" ondrop="onDrop(event,'queue')" ondragover="onDragOver(event)">
+      <div class="glass lane" id="laneQueue" data-lane="queue" ondrop="onDrop(event,'queue')" ondragover="onDragOver(event)">
         <div class="lane-head"><i data-lucide="inbox"></i><span class="lane-name">Queue</span><span class="lane-count" id="countQueue">0</span>
           <div class="lane-controls">
             <div class="lane-ctrl-btn" data-maximize="queue" title="Expand"><i data-lucide="maximize-2"></i></div>
@@ -1026,7 +1039,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         </div>
       </div>
 
-      <div class="glass lane" data-lane="pending" ondrop="onDrop(event,'pending')" ondragover="onDragOver(event)">
+      <div class="glass lane" id="lanePending" data-lane="pending" ondrop="onDrop(event,'pending')" ondragover="onDragOver(event)">
         <div class="lane-head"><i data-lucide="lock"></i><span class="lane-name">Pending</span><span class="lane-count" id="countPending">0</span>
           <div class="lane-controls">
             <div class="lane-ctrl-btn" data-maximize="pending" title="Expand"><i data-lucide="maximize-2"></i></div>
@@ -1090,6 +1103,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
     <section class="glass panel-full" style="margin-bottom:4px;">
       <div class="recent-row">
         <div class="flex gap-1"><i data-lucide="calendar-days" style="width:17px;height:17px;stroke-width:1.5;color:var(--ink-faint);"></i><span class="section-title" style="font-size:14.5px;">Recent Days</span><span class="section-sub" style="margin:0;">What was I working on?</span></div>
+        <div class="task-collapse-btn" id="recentCollapseBtn" title="Collapse"><i data-lucide="chevron-down"></i></div>
       </div>
       <div id="recentDaysList" class="panel-body"></div>
     </section>
@@ -1137,7 +1151,8 @@ const ICONS = {
   'route': '<circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle>',
   'send': '<path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path>',
   'copy': '<rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
-  'more-horizontal': '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>'
+  'more-horizontal': '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>',
+  'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>'
 };
 
 const lucide = {
@@ -1257,6 +1272,7 @@ function renderFocus(){
   const label = document.getElementById('focusLabel');
   const btn = document.getElementById('setFocusBtn');
   const fCard = document.getElementById('focusCard');
+  document.getElementById('focusClearBtn').style.display = state.focus ? 'flex' : 'none';
   if(state.focus){
     label.textContent = state.focus;
     label.classList.add('focus-set-text');
@@ -1271,10 +1287,6 @@ function renderFocus(){
   lucide.createIcons();
 }
 
-
-function needsContext(item, laneKey){
-  return laneKey === 'pending' && !item.waitingOn;
-}
 
 /* Session-only: which cards have the Context field revealed */
 const contextRevealIds = new Set();
@@ -1341,9 +1353,9 @@ function dueChipHtml(item){
 function ageChipHtml(item, laneKey){
   if(laneKey !== 'pending') return '';
   const d = waitingDaysChip(item);
-  if(d === null) return '';
+  if(d === null || d < 1) return '';
   const hot = d >= 3;
-  return `<span class="task-chip ${hot ? 'chip-age-hot' : 'chip-age'}">${d < 1 ? 'Waiting <1d' : 'Waiting ' + d + 'd'}</span>`;
+  return `<span class="task-chip ${hot ? 'chip-age-hot' : 'chip-age'}">Waiting ${d}d</span>`;
 }
 function waitingDaysChip(item){
   if(!item.waitingSince) return null;
@@ -1351,10 +1363,9 @@ function waitingDaysChip(item){
 }
 
 function buildTaskCard(item, laneKey){
-  const flaggedNeedsContext = needsContext(item, laneKey);
 
   const card = document.createElement('div');
-  card.className = 'task-card' + (flaggedNeedsContext ? ' needs-context' : '');
+  card.className = 'task-card';
   card.draggable = true;
   card.dataset.id = item.id;
   card.dataset.lane = laneKey;
@@ -1368,7 +1379,7 @@ function buildTaskCard(item, laneKey){
 
   const pendingRow = laneKey === 'pending' ? `
     <div class="field-row">
-      <input class="mini-input ${flaggedNeedsContext ? 'required-empty' : ''}" data-field="waitingOn" data-id="${item.id}" value="${escapeHtml(item.waitingOn||'')}" placeholder="Waiting on — who / what">
+      <input class="mini-input" data-field="waitingOn" data-id="${item.id}" value="${escapeHtml(item.waitingOn||'')}" placeholder="Waiting on — who / what">
     </div>` : '';
 
   /* One optional Context field. Hidden behind a toggle until it has content. */
@@ -1389,13 +1400,13 @@ function buildTaskCard(item, laneKey){
   const pvDue = dueChipHtml(item); if(pvDue) previewChips.push(pvDue);
   const pvAge = ageChipHtml(item, laneKey); if(pvAge) previewChips.push(pvAge);
 
-  const signalChips = dueChipHtml(item) + ageChipHtml(item, laneKey)
-    + (flaggedNeedsContext ? `<span class="task-chip warn"><i data-lucide="alert-triangle"></i>Needs context</span>` : '');
+  const signalChips = dueChipHtml(item) + ageChipHtml(item, laneKey);
 
   card.innerHTML = `
     <div class="task-head">
       <div class="focus-btn" data-focus="${item.id}" title="Set as current focus"><i data-lucide="target"></i></div>
       <div class="task-title">${escapeHtml(item.text)}</div>
+      <div class="task-x" data-del="${item.id}" title="Remove — not needed / cancelled"><i data-lucide="x"></i></div>
       <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
     </div>
     ${signalChips ? `<div class="task-meta-row">${signalChips}</div>` : ''}
@@ -1424,6 +1435,22 @@ function buildTaskCard(item, laneKey){
       window.open(previewLink.dataset.openLink, '_blank', 'noopener');
     });
   }
+
+  /* Auto-focus: touching any field inside a card makes it the Current Focus */
+  card.addEventListener('focusin', ()=>{
+    if(laneKey === 'done') return;
+    if(state.focus !== item.text){
+      state.focus = item.text;
+      save(); renderFocus();
+    }
+  });
+
+  card.querySelector('.task-x').addEventListener('click', e=>{
+    e.stopPropagation();
+    const arr = state[laneKey];
+    const i = arr.findIndex(t=>t.id === item.id);
+    if(i > -1){ arr.splice(i,1); save(); renderAll(); }
+  });
 
   card.querySelector('.focus-btn').addEventListener('click', e=>{
     e.stopPropagation();
@@ -1596,9 +1623,13 @@ function renderAll(){
   document.getElementById('navPendingBadge').textContent = state.pending.length;
   document.getElementById('notesInput').value = state.notes || '';
 
-  const ticketCount = [...state.queue, ...state.pending].filter(i=>i.ticket).length;
-  document.getElementById('glanceCompleted').textContent = state.done.length;
-  document.getElementById('glanceActive').textContent = ticketCount;
+  const openItems = [...state.queue, ...state.pending];
+  const dueTodayCount = openItems.filter(i=>dueStatus(i.due) === 'today').length;
+  const overdueCount = openItems.filter(i=>dueStatus(i.due) === 'overdue').length;
+  document.getElementById('glanceDueToday').textContent = dueTodayCount;
+  const overEl = document.getElementById('glanceOverdue');
+  overEl.textContent = overdueCount;
+  overEl.classList.toggle('over-hot', overdueCount > 0);
   document.getElementById('glanceWaiting').textContent = state.pending.length;
   document.getElementById('glanceQueue').textContent = state.queue.length;
 
@@ -1638,8 +1669,46 @@ function onDrop(e, targetLane){
   else{ delete moved.waitingSince; }
   state[targetLane].push(moved);
   save(); renderAll();
+  if(targetLane === 'pending') openPendingPrompt(moved.id);
 }
 window.onDrop = onDrop;
+
+/* Pending prompt — one clean question instead of a nagging chip */
+let pendingPromptId = null;
+function openPendingPrompt(id){
+  const item = state.pending.find(i=>i.id === id);
+  if(!item) return;
+  pendingPromptId = id;
+  document.getElementById('pendingWhoInput').value = item.waitingOn || '';
+  document.getElementById('pendingDueInput').value = item.due || '';
+  document.getElementById('pendingModalBackdrop').classList.add('show');
+  lucide.createIcons();
+  setTimeout(()=> document.getElementById('pendingWhoInput').focus(), 60);
+}
+function closePendingPrompt(){
+  pendingPromptId = null;
+  document.getElementById('pendingModalBackdrop').classList.remove('show');
+}
+document.getElementById('pendingCloseBtn').addEventListener('click', closePendingPrompt);
+document.getElementById('pendingModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'pendingModalBackdrop') closePendingPrompt();
+});
+document.getElementById('pendingSaveBtn').addEventListener('click', ()=>{
+  const item = state.pending.find(i=>i.id === pendingPromptId);
+  if(item){
+    item.waitingOn = document.getElementById('pendingWhoInput').value.trim();
+    const due = document.getElementById('pendingDueInput').value.trim();
+    if(due) item.due = due;
+    save(); renderAll();
+  }
+  closePendingPrompt();
+});
+document.getElementById('pendingWhoInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') document.getElementById('pendingSaveBtn').click();
+});
+document.getElementById('pendingDueInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') document.getElementById('pendingSaveBtn').click();
+});
 window.onDragOver = onDragOver;
 
 /* ============================================================
@@ -2194,6 +2263,37 @@ document.getElementById('sendClaudeBtn').addEventListener('click', ()=>{
   copyText(boardAsPrompt(), document.getElementById('sendClaudeBtn'), 'Send to Claude', 'send');
 });
 
+/* Clear focus X */
+document.getElementById('focusClearBtn').addEventListener('click', ()=>{
+  state.focus = '';
+  save(); renderFocus();
+});
+
+/* Signal tiles jump to their lane */
+document.querySelectorAll('.glance-stat[data-jump]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const t = document.getElementById(el.dataset.jump);
+    if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+});
+
+/* Recent Days condense — persisted */
+(function(){
+  const btn = document.getElementById('recentCollapseBtn');
+  const list = document.getElementById('recentDaysList');
+  function apply(){
+    const c = !!(state.settings && state.settings.recentCollapsed);
+    list.style.display = c ? 'none' : '';
+    btn.classList.toggle('collapsed', c);
+  }
+  btn.addEventListener('click', ()=>{
+    state.settings = state.settings || {};
+    state.settings.recentCollapsed = !state.settings.recentCollapsed;
+    save(); apply();
+  });
+  apply();
+})();
+
 /* Utility menu open/close */
 (function(){
   const btn = document.getElementById('utilMenuBtn');
@@ -2223,6 +2323,7 @@ document.addEventListener('keydown', e=>{
     closeExpandedLane();
     document.getElementById('planModalBackdrop').classList.remove('show');
     document.getElementById('utilMenu').classList.remove('show');
+    closePendingPrompt();
     closeCommitModal();
   }
 });
