@@ -1017,6 +1017,8 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="util-menu-wrap">
         <button class="btn" id="utilMenuBtn" title="Backup, restore, and day controls"><i data-lucide="more-horizontal"></i></button>
         <div class="util-menu glass" id="utilMenu">
+          <button class="util-menu-item" id="collapseAllBtn" title="Fold every open task card back to one line"><i data-lucide="chevrons-up"></i>Collapse all tasks</button>
+          <div class="util-menu-divider"></div>
           <button class="util-menu-item" id="backupBtn" title="Download a backup file"><i data-lucide="download"></i>Backup</button>
           <button class="util-menu-item" id="restoreBtn" title="Restore from a backup file"><i data-lucide="upload"></i>Restore</button>
           <div class="util-menu-divider"></div>
@@ -1216,7 +1218,8 @@ const ICONS = {
   'more-horizontal': '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>',
   'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
   'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>',
-  'play': '<polygon points="6 3 20 12 6 21 6 3"></polygon>'
+  'play': '<polygon points="6 3 20 12 6 21 6 3"></polygon>',
+  'chevrons-up': '<path d="m17 11-5-5-5 5"></path><path d="m17 18-5-5-5 5"></path>'
 };
 
 const lucide = {
@@ -2813,6 +2816,13 @@ document.querySelectorAll('.glance-stat[data-jump]').forEach(el=>{
   });
   apply();
 })();
+
+/* Collapse all tasks — every expanded card folds back to its one-line state */
+document.getElementById('collapseAllBtn').addEventListener('click', ()=>{
+  expandedCardIds.clear();
+  contextRevealIds.clear();
+  renderAll();
+});
 
 /* Utility menu open/close */
 (function(){
