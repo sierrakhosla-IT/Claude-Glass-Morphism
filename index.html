@@ -454,6 +454,18 @@ body{
 .focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--apricot-deep); }
 .focus-active{ font-size:13px; font-weight:600; color:var(--ink-faint); }
 .focus-set-text{ font-size:15px; font-weight:700; color:var(--ink); max-width:220px; }
+.done-sub-row{
+  display:flex; align-items:baseline; gap:7px;
+  padding:6px 10px; margin-top:4px;
+  font-size:11px; color:var(--ink-soft);
+  background:rgba(255,255,255,0.30);
+  border:1px solid var(--glass-border-soft);
+  border-radius:8px;
+}
+.done-sub-row .dsr-check{ color:var(--success); font-weight:700; flex-shrink:0; }
+.done-sub-row .dsr-text{ flex:1; }
+.done-sub-row .dsr-parent{ color:var(--ink-faint); font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:44%; }
+
 .task-blocked{ opacity:0.72; }
 .nextup-wait{ opacity:0.60; }
 .nextup-wait .nextup-rank{ color:var(--ink-faint); }
@@ -1116,6 +1128,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <div class="lane-summary" id="summaryDone" title="Expand Done Today"></div>
         <div class="lane-body">
           <div id="doneItems"></div>
+          <div id="doneSubs"></div>
           <div class="lane-empty" id="doneEmpty">
             <i data-lucide="check-circle-2"></i>
             <div class="lane-empty-title">No completed work</div>
@@ -1248,6 +1261,7 @@ const state = Object.assign({
   queue: [],
   progress: [],
   pending: [],
+  subDone: [],
   done: [],
   doneHistory: [],   // [{ date: 'Jul 7, 2026', items: [ {text, ticket, ...} ] }]
   notes: '',
@@ -1261,6 +1275,7 @@ function cid(){ return Math.random().toString(36).slice(2,9); }
    are folded into the single Context field so nothing typed is ever lost. */
 function migrateItems(){
   if(!Array.isArray(state.progress)) state.progress = [];
+  if(!Array.isArray(state.subDone)) state.subDone = [];
   ['queue','progress','pending','done'].forEach(k=>{
     (state[k]||[]).forEach(i=>{
       const legacy = [];
@@ -1323,6 +1338,27 @@ function renderCommitments(){
 
 /* Collapsed lane summaries — a closed lane still answers "what's in there?" */
 function sumLine(html, cls){ return `<div class="sum-line ${cls||''}">${html}</div>`; }
+/* Completed subtasks — logged the moment they're checked, shown in Done Today
+   so finished work counts even when its parent task is still open. */
+function renderDoneSubs(){
+  const wrap = document.getElementById('doneSubs');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  state.subDone.forEach(d=>{
+    const row = document.createElement('div');
+    row.className = 'done-sub-row';
+    row.innerHTML = '<span class="dsr-check">✓</span>'
+      + '<span class="dsr-text">' + escapeHtml(d.t) + '</span>'
+      + '<span class="dsr-parent">' + escapeHtml(d.parent) + '</span>';
+    wrap.appendChild(row);
+  });
+  /* lane count = everything finished today: whole tasks + subtasks */
+  const count = document.getElementById('countDone');
+  if(count) count.textContent = state.done.length + state.subDone.length;
+  const empty = document.getElementById('doneEmpty');
+  if(empty && state.subDone.length) empty.style.display = 'none';
+}
+
 function renderLaneSummaries(){
   const q = document.getElementById('summaryQueue');
   const pg = document.getElementById('summaryProgress');
@@ -1362,12 +1398,17 @@ function renderLaneSummaries(){
   }
 
   const done = state.done;
-  if(done.length === 0){
+  const subN = state.subDone.length;
+  if(done.length === 0 && subN === 0){
     dn.innerHTML = sumLine('Nothing completed yet', 'sum-quiet');
+  }else if(done.length === 0){
+    dn.innerHTML = sumLine(`<span class="sum-strong">${subN}</span> subtask${subN>1?'s':''} completed`) +
+      sumLine('Latest: ' + escapeHtml(state.subDone[subN-1].t), 'sum-quiet');
   }else{
     const ticketed = done.filter(i=>i.ticket).length;
     dn.innerHTML = sumLine(`<span class="sum-strong">${done.length}</span> completed` +
-      (ticketed ? ` · <span class="sum-strong">${ticketed}</span> ticketed` : '')) +
+      (ticketed ? ` · <span class="sum-strong">${ticketed}</span> ticketed` : '') +
+      (subN ? ` · <span class="sum-strong">${subN}</span> subtask${subN>1?'s':''}` : '')) +
       sumLine('Latest: ' + escapeHtml(done[done.length-1].text), 'sum-quiet');
   }
 }
@@ -1737,7 +1778,15 @@ function buildTaskCard(item, laneKey){
     el.addEventListener('click', e=>{
       e.stopPropagation();
       const sb = (item.subs||[]).find(x=>x.id === el.dataset.subCheck);
-      if(sb){ sb.done = !sb.done; save(); renderAll(); }
+      if(sb){
+        sb.done = !sb.done;
+        if(sb.done){
+          state.subDone.push({ id:sb.id, t:sb.t || '(untitled)', parent:item.text, at:Date.now() });
+        }else{
+          state.subDone = state.subDone.filter(d=>d.id !== sb.id);
+        }
+        save(); renderAll();
+      }
     });
   });
   card.querySelectorAll('[data-sub-input]').forEach(el=>{
@@ -1969,6 +2018,7 @@ function renderAll(){
   renderLane('progress','progressItems','progressEmpty','countProgress', false);
   renderLane('pending','pendingItems','pendingEmpty','countPending', false);
   renderLane('done','doneItems','doneEmpty','countDone', true);
+  renderDoneSubs();
   renderRecentDays();
   renderActiveTickets();
   document.getElementById('navQueueBadge').textContent = state.queue.length;
@@ -2202,15 +2252,18 @@ function todayLabel(){
 }
 
 function archiveDoneToHistory(){
-  if(state.done.length === 0) return false;
+  if(state.done.length === 0 && state.subDone.length === 0) return false;
   const label = todayLabel();
+  const subsAsItems = state.subDone.map(d=>({ id:d.id, text:d.t + ' — ' + d.parent }));
+  const dayItems = state.done.concat(subsAsItems);
   const existing = state.doneHistory.find(d=>d.date === label);
   if(existing){
-    existing.items = existing.items.concat(state.done);
+    existing.items = existing.items.concat(dayItems);
   }else{
-    state.doneHistory.push({ date: label, items: state.done.slice() });
+    state.doneHistory.push({ date: label, items: dayItems });
   }
   state.done = [];
+  state.subDone = [];
   return true;
 }
 
@@ -2290,9 +2343,10 @@ function dayRecapText(){
   const L = [];
   L.push('DAY RECAP — ' + todayLabel());
   L.push('');
-  L.push('Completed (' + state.done.length + '):');
-  if(state.done.length === 0) L.push('- none yet');
+  L.push('Completed (' + (state.done.length + state.subDone.length) + '):');
+  if(state.done.length === 0 && state.subDone.length === 0) L.push('- none yet');
   state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  state.subDone.forEach(d=> L.push('- ' + d.t + ' (subtask of: ' + d.parent + ')'));
   const tickets = [...state.queue, ...state.progress, ...state.pending].filter(i=>i.ticket);
   if(tickets.length){
     L.push('');
@@ -2335,6 +2389,7 @@ document.getElementById('cleanSessionBtn').addEventListener('click', ()=>{
   state.queue = [];
   state.progress = [];
   state.pending = [];
+  state.subDone = [];
   state.notes = '';
   save(); renderAll();
 });
@@ -2582,8 +2637,9 @@ function boardAsPrompt(){
   });
   L.push('');
   L.push('DONE TODAY:');
-  if(state.done.length === 0) L.push('- none');
+  if(state.done.length === 0 && state.subDone.length === 0) L.push('- none');
   state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  state.subDone.forEach(d=> L.push('- ' + d.t + ' (subtask of: ' + d.parent + ')'));
   if(state.notes && state.notes.trim()){
     L.push('');
     L.push('WORK NOTES:');
