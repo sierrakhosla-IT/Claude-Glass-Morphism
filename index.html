@@ -454,6 +454,11 @@ body{
 .focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--apricot-deep); }
 .focus-active{ font-size:13px; font-weight:600; color:var(--ink-faint); }
 .focus-set-text{ font-size:15px; font-weight:700; color:var(--ink); max-width:220px; }
+.task-blocked{ opacity:0.72; }
+.task-chip.chip-blocked{ color:var(--ink-faint); background:rgba(255,255,255,0.40); border-style:dashed; }
+.task-chip.chip-unblocks{ color:#3D5E9E; background:rgba(190,206,236,0.45); }
+.after-select{ width:100%; cursor:pointer; }
+
 .ask-msg{ font-size:12px; line-height:1.55; padding:9px 12px; border-radius:12px; white-space:pre-wrap; word-break:break-word; }
 .ask-msg.me{ background:rgba(192,106,56,0.12); border:1px solid rgba(192,106,56,0.20); color:var(--ink); align-self:flex-end; max-width:88%; }
 .ask-msg.ai{ background:rgba(255,255,255,0.60); border:1px solid rgba(255,255,255,0.50); color:var(--ink); align-self:flex-start; max-width:94%; }
@@ -1026,7 +1031,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
             <i data-lucide="route" class="head-icon"></i>
             <div>
               <div class="section-title" style="font-size:14px;">Next Up</div>
-              <div class="section-sub" style="margin:0;">Top of your hierarchy, live</div>
+              <div class="section-sub" style="margin:0;">Auto — highest unblocked, prerequisites met</div>
             </div>
           </div>
         </div>
@@ -1344,11 +1349,12 @@ document.querySelectorAll('.lane-summary').forEach(el=>{
 function renderNextUp(){
   const wrap = document.getElementById('nextUpList');
   wrap.innerHTML = '';
-  const entries = buildPlanEntries().slice(0, 3);
+  const all = buildPlanEntries();
+  const entries = all.filter(e=>!e.blocked).slice(0, 3);
   if(entries.length === 0){
     const empty = document.createElement('div');
     empty.style.cssText = 'font-size:12px; color:var(--ink-faint); padding:6px 0;';
-    empty.textContent = 'Board clear — capture something.';
+    empty.textContent = all.length ? 'Everything left is waiting on a sequence.' : 'Board clear — capture something.';
     wrap.appendChild(empty);
   }
   entries.forEach((e, i)=>{
@@ -1442,8 +1448,39 @@ function waitingDaysChip(item){
   return Math.floor((Date.now() - item.waitingSince) / 86400000);
 }
 
-/* Display order: overdue first, then due today, then dated, then the rest by
-   priority tier and age. Storage order is untouched — this is presentation only. */
+/* ============================================================
+   DEPENDENCY ENGINE
+   Each task may name ONE prerequisite (item.after = id of the task
+   that must finish first). Chains emerge from single links.
+   Blocked  = its prerequisite is still open (in Queue or Pending).
+   Unblocker = other open tasks are waiting on it — those jump the line.
+   ============================================================ */
+function openById(id){
+  return state.queue.find(t=>t.id === id) || state.pending.find(t=>t.id === id) || null;
+}
+function isBlocked(item){
+  return !!(item.after && openById(item.after));
+}
+function unblocksCount(item){
+  return [...state.queue, ...state.pending].filter(t=>t.after === item.id).length;
+}
+/* Tasks that may be chosen as a prerequisite for `item` — everything open
+   except itself and anything whose chain already leads back to it (no cycles). */
+function afterOptions(item){
+  const all = [...state.queue, ...state.pending];
+  return all.filter(cand=>{
+    if(cand.id === item.id) return false;
+    let cur = cand, hops = 0;
+    while(cur && cur.after && hops < 50){
+      if(cur.after === item.id) return false;
+      cur = openById(cur.after); hops++;
+    }
+    return true;
+  });
+}
+
+/* Display order: startable work first — within it, unblockers lead, then
+   overdue/today/dated, then tier and age. Blocked-by-sequence sinks. */
 function sortForDisplay(items){
   const score = i => {
     const st = dueStatus(i.due);
@@ -1453,6 +1490,8 @@ function sortForDisplay(items){
     return 3;
   };
   return [...items].sort((a,b)=>
+    (isBlocked(a) ? 1 : 0) - (isBlocked(b) ? 1 : 0) ||
+    (unblocksCount(b) > 0 ? 1 : 0) - (unblocksCount(a) > 0 ? 1 : 0) ||
     score(a) - score(b) ||
     planTier(a) - planTier(b) ||
     (a.createdAt || 0) - (b.createdAt || 0)
@@ -1498,6 +1537,19 @@ function buildTaskCard(item, laneKey){
       </div>`).join('')}
     </div>` : '';
 
+  const blocked = isBlocked(item);
+  if(blocked) card.classList.add('task-blocked');
+
+  const opts = afterOptions(item);
+  const afterSelect = `
+    <div class="field-block">
+      <span class="field-label">Starts after</span>
+      <select class="mini-input after-select" data-after="${item.id}">
+        <option value="">— nothing, ready when I am —</option>
+        ${opts.map(o=>`<option value="${o.id}" ${item.after === o.id ? 'selected' : ''}>${escapeHtml(o.text.slice(0,60))}</option>`).join('')}
+      </select>
+    </div>`;
+
   const isCollapsed = !expandedCardIds.has(item.id);
   if(isCollapsed) card.classList.add('card-collapsed');
 
@@ -1510,6 +1562,12 @@ function buildTaskCard(item, laneKey){
   else if(item.due) chips.push(`<span class="task-chip chip-echo">Due ${escapeHtml(item.due)}</span>`);
   const sigAge = ageChipHtml(item, laneKey);
   if(sigAge) chips.push(sigAge);
+  if(blocked){
+    const pre = openById(item.after);
+    chips.push(`<span class="task-chip chip-blocked">After: ${escapeHtml((pre.text||'').slice(0,26))}</span>`);
+  }else if(unblocksCount(item) > 0){
+    chips.push(`<span class="task-chip chip-unblocks">Unblocks ${unblocksCount(item)}</span>`);
+  }
   if((item.subs || []).length){
     const doneN = item.subs.filter(x=>x.done).length;
     chips.push(`<span class="task-chip">${doneN}/${item.subs.length} subs</span>`);
@@ -1527,6 +1585,7 @@ function buildTaskCard(item, laneKey){
         ${ticketBtn}
         <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
       </div>
+      ${afterSelect}
       ${pendingRow}
       ${contextBlock}
       ${subsBlock}
@@ -1604,6 +1663,15 @@ function buildTaskCard(item, laneKey){
       item.subs = (item.subs||[]).filter(x=>x.id !== el.dataset.subX);
       save(); renderAll();
     });
+  });
+
+  const afterSel = card.querySelector('[data-after]');
+  afterSel.addEventListener('mousedown', e=> e.stopPropagation());
+  afterSel.addEventListener('click', e=> e.stopPropagation());
+  afterSel.addEventListener('change', ()=>{
+    item.after = afterSel.value || undefined;
+    if(!afterSel.value) delete item.after;
+    save(); renderAll();
   });
 
   const ctxToggle = card.querySelector('[data-context-toggle]');
@@ -2243,12 +2311,21 @@ function planTier(item){
 function buildPlanEntries(){
   const entries = [];
   state.commitments.filter(c=>!c.done).forEach(c=>{
-    entries.push({ text:c.text, src:'Commitment', item:{ text:c.text, due: c.tag==='time' ? 'today' : '' } });
+    entries.push({ text:c.text, src:'Commitment', item:{ id:null, text:c.text, due: c.tag==='time' ? 'today' : '' } });
   });
   state.queue.forEach(i=> entries.push({ text:i.text, src:'Queue', item:i }));
   state.pending.forEach(i=> entries.push({ text:i.text, src:'Pending', item:i }));
-  entries.forEach(e=>{ e.tier = planTier(e.item); });
-  entries.sort((a,b)=> a.tier - b.tier || (b.item.due?1:0) - (a.item.due?1:0));
+  entries.forEach(e=>{
+    e.tier = planTier(e.item);
+    e.blocked = e.item.id ? isBlocked(e.item) : false;
+    e.unblocks = e.item.id ? unblocksCount(e.item) : 0;
+  });
+  entries.sort((a,b)=>
+    (a.blocked ? 1 : 0) - (b.blocked ? 1 : 0) ||
+    (b.unblocks > 0 ? 1 : 0) - (a.unblocks > 0 ? 1 : 0) ||
+    a.tier - b.tier ||
+    (b.item.due ? 1 : 0) - (a.item.due ? 1 : 0)
+  );
   return entries;
 }
 
@@ -2257,6 +2334,11 @@ function planEntryMeta(e){
   if(e.item.ticket) bits.push(e.item.ticket);
   if(e.item.due) bits.push('due ' + e.item.due);
   if(e.src === 'Pending' && e.item.waitingOn) bits.push('waiting on ' + e.item.waitingOn);
+  if(e.blocked){
+    const pre = openById(e.item.after);
+    if(pre) bits.push('after: ' + pre.text);
+  }
+  if(e.unblocks > 0) bits.push('unblocks ' + e.unblocks);
   return bits.join(' · ');
 }
 
@@ -2355,6 +2437,7 @@ function boardAsPrompt(){
     const bits = [];
     if(i.ticket) bits.push(i.ticket);
     if(i.due) bits.push('due ' + i.due);
+    if(isBlocked(i)){ const pre = openById(i.after); if(pre) bits.push('after: ' + pre.text); }
     if(bits.length) line += ' (' + bits.join(', ') + ')';
     L.push(line);
     if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
