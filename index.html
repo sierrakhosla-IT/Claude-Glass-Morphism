@@ -454,6 +454,12 @@ body{
 .focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--apricot-deep); }
 .focus-active{ font-size:13px; font-weight:600; color:var(--ink-faint); }
 .focus-set-text{ font-size:15px; font-weight:700; color:var(--ink); max-width:220px; }
+.ask-msg{ font-size:12px; line-height:1.55; padding:9px 12px; border-radius:12px; white-space:pre-wrap; word-break:break-word; }
+.ask-msg.me{ background:rgba(192,106,56,0.12); border:1px solid rgba(192,106,56,0.20); color:var(--ink); align-self:flex-end; max-width:88%; }
+.ask-msg.ai{ background:rgba(255,255,255,0.60); border:1px solid rgba(255,255,255,0.50); color:var(--ink); align-self:flex-start; max-width:94%; }
+.ask-msg.err{ background:rgba(203,74,51,0.10); border:1px solid rgba(203,74,51,0.25); color:#A03A26; }
+.ask-msg.thinking{ color:var(--ink-faint); font-style:italic; }
+
 .nextup-row{
   display:flex; align-items:center; gap:9px;
   padding:8px 11px;
@@ -858,6 +864,37 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 <div class="app" id="appRoot">
 <div class="lane-backdrop" id="laneBackdrop"></div>
 
+<div class="modal-backdrop" id="askModalBackdrop">
+  <div class="modal glass" style="width:560px; max-height:84vh; overflow-y:auto; position:relative;">
+    <div class="modal-x" id="askCloseBtn" title="Close"><i data-lucide="x"></i></div>
+    <div class="modal-title">Assistant</div>
+
+    <div id="askSetup" style="display:none; flex-direction:column; gap:10px;">
+      <div class="section-sub" style="margin:0; line-height:1.5;">
+        Runs on your own Anthropic API key (console.anthropic.com → API keys, billing required — a question costs fractions of a cent).
+        The key is stored only in this browser, never included in backups, and your board is sent to the API only when you ask a question.
+      </div>
+      <input class="mini-input" id="askKeyInput" type="password" placeholder="sk-ant-..." style="width:100%;">
+      <div class="modal-actions" style="margin-top:2px;">
+        <button class="btn btn-primary" id="askKeySaveBtn">Save key</button>
+      </div>
+    </div>
+
+    <div id="askChat" style="display:none; flex-direction:column; gap:10px;">
+      <div id="askMessages" style="display:flex; flex-direction:column; gap:8px; max-height:44vh; overflow-y:auto;"></div>
+      <textarea class="mini-input" id="askInput" placeholder="Ask anything — the assistant sees your whole board" style="width:100%; min-height:56px;"></textarea>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); cursor:pointer;">
+          <input type="checkbox" id="askIncludeBoard" checked> Include board context
+        </label>
+        <div style="flex:1;"></div>
+        <button class="btn" id="askKeyClearBtn" title="Remove the stored API key">Clear key</button>
+        <button class="btn btn-primary" id="askSendBtn">Ask</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="pendingModalBackdrop">
   <div class="modal glass" style="width:400px; position:relative;">
     <div class="modal-x" id="pendingCloseBtn" title="Skip"><i data-lucide="x"></i></div>
@@ -952,6 +989,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <input id="captureInput" type="text" placeholder="Capture… (RITM/INC → ticket · anything else → Queue)">
         <span class="kbd">/</span>
       </div>
+      <button class="btn" id="askBtn" title="Ask the built-in assistant — it sees your whole board"><i data-lucide="message-circle"></i>Ask AI</button>
       <button class="btn" id="recapBtn" title="Copy an end-of-day recap for Teams or email"><i data-lucide="clipboard-check"></i>Day Recap</button>
       <button class="btn" id="sendClaudeBtn" title="Copy the full board as a prompt for Claude"><i data-lucide="send"></i>Send to Claude</button>
       <button class="btn btn-primary" id="planDayBtn" title="Rank the board by your priority hierarchy"><i data-lucide="route"></i>Plan My Day</button>
@@ -1136,7 +1174,8 @@ const ICONS = {
   'send': '<path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path>',
   'copy': '<rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
   'more-horizontal': '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>',
-  'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>'
+  'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+  'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>'
 };
 
 const lucide = {
@@ -2345,6 +2384,115 @@ function boardAsPrompt(){
   return L.join('\n');
 }
 
+/* ============================================================
+   ASK AI — built-in assistant on the user's own Anthropic key.
+   Key lives in its own localStorage slot, OUTSIDE board state,
+   so Backup files never contain it. Board data leaves the file
+   only at the moment a question is asked.
+   ============================================================ */
+const ASK_KEY_SLOT = 'executionTower_apiKey';
+let askHistory = [];   /* session-only: [{role, content}] */
+
+function askGetKey(){ return localStorage.getItem(ASK_KEY_SLOT) || ''; }
+
+function askRefreshView(){
+  const hasKey = !!askGetKey();
+  document.getElementById('askSetup').style.display = hasKey ? 'none' : 'flex';
+  document.getElementById('askChat').style.display = hasKey ? 'flex' : 'none';
+}
+
+function openAskModal(){
+  askRefreshView();
+  document.getElementById('askModalBackdrop').classList.add('show');
+  lucide.createIcons();
+  setTimeout(()=>{
+    const t = askGetKey() ? document.getElementById('askInput') : document.getElementById('askKeyInput');
+    t.focus();
+  }, 60);
+}
+function closeAskModal(){ document.getElementById('askModalBackdrop').classList.remove('show'); }
+
+function askAddMsg(text, cls){
+  const wrap = document.getElementById('askMessages');
+  const div = document.createElement('div');
+  div.className = 'ask-msg ' + cls;
+  div.textContent = text;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+async function askSend(){
+  const input = document.getElementById('askInput');
+  const q = input.value.trim();
+  if(!q) return;
+  const key = askGetKey();
+  if(!key){ askRefreshView(); return; }
+  input.value = '';
+  askAddMsg(q, 'me');
+  const includeBoard = document.getElementById('askIncludeBoard').checked;
+  const thinking = askAddMsg('Thinking…', 'ai thinking');
+  const btn = document.getElementById('askSendBtn');
+  btn.disabled = true;
+
+  const sys = "You are Sierra's execution partner inside her Execution Tower workspace. She is a Senior IT Deskside Support Analyst and Mobility Administrator. Be direct, concise, and concrete — no fluff, no corporate tone. When organizing work, use her hierarchy: Leadership visibility > Deadlines > Vendors > Juan > Tickets > Strategic > Admin. Deep work 8-11 AM, 15-min buffers, hard stop 4 PM.";
+  const userContent = (includeBoard ? boardAsPrompt() + '\n\n' : '') + 'QUESTION: ' + q;
+  const messages = [...askHistory, { role:'user', content:userContent }];
+
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'content-type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1200, system:sys, messages })
+    });
+    const data = await resp.json();
+    thinking.remove();
+    if(!resp.ok){
+      const msg = (data && data.error && data.error.message) ? data.error.message : ('HTTP ' + resp.status);
+      askAddMsg('Error: ' + msg + (resp.status === 401 ? ' — check your API key (Clear key to re-enter).' : ''), 'err');
+    }else{
+      const text = (data.content || []).filter(b=>b.type === 'text').map(b=>b.text).join('\n').trim() || '(empty response)';
+      askAddMsg(text, 'ai');
+      askHistory.push({ role:'user', content:userContent });
+      askHistory.push({ role:'assistant', content:text });
+      if(askHistory.length > 8) askHistory = askHistory.slice(-8);   /* keep the last 4 exchanges */
+    }
+  }catch(err){
+    thinking.remove();
+    askAddMsg('Network error: ' + err.message + ' — if you are on the corporate network, api.anthropic.com may be blocked by the proxy.', 'err');
+  }
+  btn.disabled = false;
+}
+
+document.getElementById('askBtn').addEventListener('click', openAskModal);
+document.getElementById('askCloseBtn').addEventListener('click', closeAskModal);
+document.getElementById('askModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'askModalBackdrop') closeAskModal();
+});
+document.getElementById('askKeySaveBtn').addEventListener('click', ()=>{
+  const v = document.getElementById('askKeyInput').value.trim();
+  if(!v) return;
+  localStorage.setItem(ASK_KEY_SLOT, v);
+  document.getElementById('askKeyInput').value = '';
+  askRefreshView();
+  document.getElementById('askInput').focus();
+});
+document.getElementById('askKeyClearBtn').addEventListener('click', ()=>{
+  localStorage.removeItem(ASK_KEY_SLOT);
+  askHistory = [];
+  document.getElementById('askMessages').innerHTML = '';
+  askRefreshView();
+});
+document.getElementById('askSendBtn').addEventListener('click', askSend);
+document.getElementById('askInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); askSend(); }
+});
+
 /* Clipboard with file:// fallback — flashes the button label to confirm */
 function copyText(text, btn, restoreLabel, icon){
   const done = ()=>{
@@ -2432,6 +2580,7 @@ document.addEventListener('keydown', e=>{
     document.getElementById('planModalBackdrop').classList.remove('show');
     document.getElementById('utilMenu').classList.remove('show');
     closePendingPrompt();
+    closeAskModal();
     closeCommitModal();
   }
 });
