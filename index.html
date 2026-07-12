@@ -455,6 +455,9 @@ body{
 .focus-active{ font-size:13px; font-weight:600; color:var(--ink-faint); }
 .focus-set-text{ font-size:15px; font-weight:700; color:var(--ink); max-width:220px; }
 .task-blocked{ opacity:0.72; }
+.nextup-wait{ opacity:0.60; }
+.nextup-wait .nextup-rank{ color:var(--ink-faint); }
+.nextup-waitfor{ display:block; font-size:10.5px; font-weight:600; color:var(--ink-faint); margin-top:1px; }
 .task-chip.chip-blocked{ color:var(--ink-faint); background:rgba(255,255,255,0.40); border-style:dashed; }
 .task-chip.chip-unblocks{ color:#3D5E9E; background:rgba(190,206,236,0.45); }
 .after-select{ width:100%; cursor:pointer; }
@@ -538,7 +541,7 @@ body{
 .lane.expanded .lane-ctrl-btn[data-maximize] svg{ transform:scale(0.85); }
 
 /* Lane grid */
-.lane-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--s-2); }
+.lane-grid{ display:grid; grid-template-columns:repeat(5, 1fr); gap:var(--s-2); }
 .lane{ display:flex; flex-direction:column; min-height:290px; }
 .lane-head{
   display:flex; align-items:center; gap:8px;
@@ -850,6 +853,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
 @media (max-width:1180px){
   .lane-grid{ grid-template-columns:repeat(2,1fr); }
+  .lane{ min-height:240px; }
   .row-top{ grid-template-columns:1fr; }
 }
 </style>
@@ -1064,6 +1068,24 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         </div>
       </div>
 
+      <div class="glass lane" id="laneProgress" data-lane="progress" ondrop="onDrop(event,'progress')" ondragover="onDragOver(event)">
+        <div class="lane-head"><i data-lucide="play"></i><span class="lane-name">In Progress</span><span class="lane-count" id="countProgress">0</span>
+          <div class="lane-controls">
+            <div class="lane-ctrl-btn" data-maximize="progress" title="Expand"><i data-lucide="maximize-2"></i></div>
+            <div class="lane-ctrl-btn" data-collapse="progress" title="Collapse"><i data-lucide="chevron-down"></i></div>
+          </div>
+        </div>
+        <div class="lane-summary" id="summaryProgress" title="Expand In Progress"></div>
+        <div class="lane-body">
+          <div class="lane-empty" id="progressEmpty">
+            <div class="lane-empty-icon"><i data-lucide="play"></i></div>
+            <div class="lane-empty-title">Nothing active</div>
+            <div class="lane-empty-sub">Drag a task here when you start it</div>
+          </div>
+          <div id="progressItems"></div>
+        </div>
+      </div>
+
       <div class="glass lane" id="lanePending" data-lane="pending" ondrop="onDrop(event,'pending')" ondragover="onDragOver(event)">
         <div class="lane-head"><i data-lucide="lock"></i><span class="lane-name">Pending</span><span class="lane-count" id="countPending">0</span>
           <div class="lane-controls">
@@ -1180,7 +1202,8 @@ const ICONS = {
   'copy': '<rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
   'more-horizontal': '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>',
   'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
-  'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>'
+  'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>',
+  'play': '<polygon points="6 3 20 12 6 21 6 3"></polygon>'
 };
 
 const lucide = {
@@ -1223,6 +1246,7 @@ const state = Object.assign({
   ],
   focus: null,
   queue: [],
+  progress: [],
   pending: [],
   done: [],
   doneHistory: [],   // [{ date: 'Jul 7, 2026', items: [ {text, ticket, ...} ] }]
@@ -1236,7 +1260,8 @@ function cid(){ return Math.random().toString(36).slice(2,9); }
    structured fields (Objective / Impact / Status / Next Action / Success Criteria)
    are folded into the single Context field so nothing typed is ever lost. */
 function migrateItems(){
-  ['queue','pending','done'].forEach(k=>{
+  if(!Array.isArray(state.progress)) state.progress = [];
+  ['queue','progress','pending','done'].forEach(k=>{
     (state[k]||[]).forEach(i=>{
       const legacy = [];
       if(i.objective) legacy.push('Objective: ' + i.objective);
@@ -1296,15 +1321,14 @@ function renderCommitments(){
   });
 }
 
-/* Next Up — the top three from the Plan My Day engine, always current.
-   No input required: it recomputes on every render. Click a row to jump. */
 /* Collapsed lane summaries — a closed lane still answers "what's in there?" */
 function sumLine(html, cls){ return `<div class="sum-line ${cls||''}">${html}</div>`; }
 function renderLaneSummaries(){
   const q = document.getElementById('summaryQueue');
+  const pg = document.getElementById('summaryProgress');
   const pd = document.getElementById('summaryPending');
   const dn = document.getElementById('summaryDone');
-  if(!q || !pd || !dn) return;
+  if(!q || !pg || !pd || !dn) return;
 
   const open = state.queue;
   const dueToday = open.filter(i=>dueStatus(i.due) === 'today').length;
@@ -1317,6 +1341,14 @@ function renderLaneSummaries(){
     q.innerHTML = sumLine(bits) +
       (overdue ? sumLine(`<span class="sum-strong">${overdue}</span> overdue`, 'sum-alert') : '') +
       sumLine('Next: ' + escapeHtml(sortForDisplay(open)[0].text), 'sum-quiet');
+  }
+
+  const prog = state.progress;
+  if(prog.length === 0){
+    pg.innerHTML = sumLine('Nothing active', 'sum-quiet');
+  }else{
+    pg.innerHTML = sumLine(`<span class="sum-strong">${prog.length}</span> active`) +
+      sumLine('Now: ' + escapeHtml(prog[prog.length-1].text), 'sum-quiet');
   }
 
   const pend = state.pending;
@@ -1346,30 +1378,100 @@ document.querySelectorAll('.lane-summary').forEach(el=>{
   });
 });
 
+
+/* ============================================================
+   NEXT UP ENGINE — dependency-driven, zero manual ranking.
+   Rule 1: Pending is excluded — you can't start blocked-on-people work.
+   Rule 2: dependency-blocked tasks never rank; they appear below as
+           "Waiting for: <prerequisite>".
+   Rule 3: available work ranks by due date, then unblock leverage,
+           then commitment relevance (High > Time Sensitive > Personal),
+           then queue order. Plan My Day keeps the work hierarchy —
+           this engine answers "what do I start right now".
+   ============================================================ */
+function nextUpDueScore(item){
+  const st = dueStatus(item.due);
+  if(st === 'overdue') return 0;
+  if(st === 'today') return 1;
+  if(parseDueDate(item.due)) return 2;
+  return 3;
+}
+
+function buildNextUpEntries(){
+  const rows = [];
+  state.commitments.filter(c=>!c.done).forEach(c=>{
+    rows.push({ text:c.text, src:'Commitment',
+      tagRank: c.tag === 'high' ? 0 : (c.tag === 'time' ? 1 : 2),
+      item:{ id:null, text:c.text, due: c.tag === 'time' ? 'today' : '' } });
+  });
+  state.queue.forEach(i=> rows.push({ text:i.text, src:'Queue', tagRank:3, item:i }));
+  /* Rule 1: state.pending never enters. In Progress is excluded too —
+     it is what you're doing NOW, not what comes next. */
+  rows.forEach(r=>{
+    r.blocked = r.item.id ? isBlocked(r.item) : false;
+    r.unblocks = r.item.id ? unblocksCount(r.item) : 0;
+    r.due = nextUpDueScore(r.item);
+  });
+  const avail = rows.filter(r=>!r.blocked).sort((a,b)=>
+    a.due - b.due ||
+    (b.unblocks > 0 ? 1 : 0) - (a.unblocks > 0 ? 1 : 0) ||
+    (a.src === 'Commitment' ? 0 : 1) - (b.src === 'Commitment' ? 0 : 1) ||
+    a.tagRank - b.tagRank ||
+    (a.item.createdAt || 0) - (b.item.createdAt || 0)
+  );
+  const waiting = rows.filter(r=>r.blocked);
+  return { avail, waiting };
+}
+
 function renderNextUp(){
   const wrap = document.getElementById('nextUpList');
   wrap.innerHTML = '';
-  const all = buildPlanEntries();
-  const entries = all.filter(e=>!e.blocked).slice(0, 3);
-  if(entries.length === 0){
+  const { avail, waiting } = buildNextUpEntries();
+
+  if(avail.length === 0 && waiting.length === 0){
     const empty = document.createElement('div');
     empty.style.cssText = 'font-size:12px; color:var(--ink-faint); padding:6px 0;';
-    empty.textContent = all.length ? 'Everything left is waiting on a sequence.' : 'Board clear — capture something.';
+    empty.textContent = 'Board clear — capture something.';
     wrap.appendChild(empty);
   }
-  entries.forEach((e, i)=>{
+
+  avail.slice(0, 3).forEach((e, i)=>{
     const row = document.createElement('div');
     row.className = 'nextup-row';
-    const jump = e.src === 'Pending' ? 'lanePending' : (e.src === 'Queue' ? 'laneQueue' : 'commitPanel');
+    const jump = e.src === 'Queue' ? 'laneQueue' : 'commitPanel';
+    const st = dueStatus(e.item.due);
+    const chip = st === 'overdue' ? '<span class="task-chip chip-overdue">Overdue</span>'
+               : st === 'today' ? '<span class="task-chip chip-due-today">Due today</span>'
+               : '<span class="task-chip" style="flex-shrink:0;">' + e.src + '</span>';
     row.innerHTML = '<span class="nextup-rank">' + (i+1) + '</span>'
-      + '<span class="nextup-text">' + escapeHtml(e.text) + '</span>'
-      + '<span class="task-chip" style="flex-shrink:0;">' + PLAN_TIERS[e.tier].label.split(' ')[0] + '</span>';
+      + '<span class="nextup-text">' + escapeHtml(e.text) + '</span>' + chip;
     row.addEventListener('click', ()=>{
       const t = document.getElementById(jump);
       if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
     });
     wrap.appendChild(row);
   });
+
+  /* Rule 2: sequence-blocked work stays visible as what it's waiting for */
+  waiting.slice(0, 2).forEach(e=>{
+    const pre = openById(e.item.after);
+    const row = document.createElement('div');
+    row.className = 'nextup-row nextup-wait';
+    row.innerHTML = '<span class="nextup-rank">·</span>'
+      + '<span class="nextup-text">' + escapeHtml(e.text)
+      + ' <span class="nextup-waitfor">Waiting for: ' + escapeHtml(pre ? pre.text : '') + '</span></span>';
+    row.addEventListener('click', ()=>{
+      const t = document.getElementById('laneQueue');
+      if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    wrap.appendChild(row);
+  });
+  if(waiting.length > 2){
+    const more = document.createElement('div');
+    more.style.cssText = 'font-size:11px; color:var(--ink-faint); padding:0 2px;';
+    more.textContent = '+ ' + (waiting.length - 2) + ' more behind dependencies';
+    wrap.appendChild(more);
+  }
 }
 
 
@@ -1456,18 +1558,20 @@ function waitingDaysChip(item){
    Unblocker = other open tasks are waiting on it — those jump the line.
    ============================================================ */
 function openById(id){
-  return state.queue.find(t=>t.id === id) || state.pending.find(t=>t.id === id) || null;
+  return state.queue.find(t=>t.id === id)
+      || state.progress.find(t=>t.id === id)
+      || state.pending.find(t=>t.id === id) || null;
 }
 function isBlocked(item){
   return !!(item.after && openById(item.after));
 }
 function unblocksCount(item){
-  return [...state.queue, ...state.pending].filter(t=>t.after === item.id).length;
+  return [...state.queue, ...state.progress, ...state.pending].filter(t=>t.after === item.id).length;
 }
 /* Tasks that may be chosen as a prerequisite for `item` — everything open
    except itself and anything whose chain already leads back to it (no cycles). */
 function afterOptions(item){
-  const all = [...state.queue, ...state.pending];
+  const all = [...state.queue, ...state.progress, ...state.pending];
   return all.filter(cand=>{
     if(cand.id === item.id) return false;
     let cur = cand, hops = 0;
@@ -1543,9 +1647,9 @@ function buildTaskCard(item, laneKey){
   const opts = afterOptions(item);
   const afterSelect = `
     <div class="field-block">
-      <span class="field-label">Starts after</span>
+      <span class="field-label">Depends On</span>
       <select class="mini-input after-select" data-after="${item.id}">
-        <option value="">— nothing, ready when I am —</option>
+        <option value="">— no dependency —</option>
         ${opts.map(o=>`<option value="${o.id}" ${item.after === o.id ? 'selected' : ''}>${escapeHtml(o.text.slice(0,60))}</option>`).join('')}
       </select>
     </div>`;
@@ -1564,7 +1668,7 @@ function buildTaskCard(item, laneKey){
   if(sigAge) chips.push(sigAge);
   if(blocked){
     const pre = openById(item.after);
-    chips.push(`<span class="task-chip chip-blocked">After: ${escapeHtml((pre.text||'').slice(0,26))}</span>`);
+    chips.push(`<span class="task-chip chip-blocked">Waiting for: ${escapeHtml((pre.text||'').slice(0,26))}</span>`);
   }else if(unblocksCount(item) > 0){
     chips.push(`<span class="task-chip chip-unblocks">Unblocks ${unblocksCount(item)}</span>`);
   }
@@ -1834,6 +1938,7 @@ function renderActiveTickets(){
      No manual entry, no duplicate typing: it just reflects what's already on your cards. */
   const rows = [
     ...state.queue.filter(i=>i.ticket).map(i=>({ item:i, lane:'queue' })),
+    ...state.progress.filter(i=>i.ticket).map(i=>({ item:i, lane:'progress' })),
     ...state.pending.filter(i=>i.ticket).map(i=>({ item:i, lane:'pending' })),
   ];
 
@@ -1861,6 +1966,7 @@ function renderAll(){
   renderNextUp();
   renderLaneSummaries();
   renderLane('queue','queueItems','queueEmpty','countQueue', false);
+  renderLane('progress','progressItems','progressEmpty','countProgress', false);
   renderLane('pending','pendingItems','pendingEmpty','countPending', false);
   renderLane('done','doneItems','doneEmpty','countDone', true);
   renderRecentDays();
@@ -1869,7 +1975,7 @@ function renderAll(){
   document.getElementById('navPendingBadge').textContent = state.pending.length;
   document.getElementById('notesInput').value = state.notes || '';
 
-  const openItems = [...state.queue, ...state.pending];
+  const openItems = [...state.queue, ...state.progress, ...state.pending];
   const dueTodayCount = openItems.filter(i=>dueStatus(i.due) === 'today').length;
   const overdueCount = openItems.filter(i=>dueStatus(i.due) === 'overdue').length;
   document.getElementById('glanceDueToday').textContent = dueTodayCount;
@@ -2187,11 +2293,16 @@ function dayRecapText(){
   L.push('Completed (' + state.done.length + '):');
   if(state.done.length === 0) L.push('- none yet');
   state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
-  const tickets = [...state.queue, ...state.pending].filter(i=>i.ticket);
+  const tickets = [...state.queue, ...state.progress, ...state.pending].filter(i=>i.ticket);
   if(tickets.length){
     L.push('');
     L.push('Active tickets (' + tickets.length + '):');
     tickets.forEach(i=> L.push('- ' + i.ticket + ' — ' + i.text));
+  }
+  if(state.progress.length){
+    L.push('');
+    L.push('In progress (' + state.progress.length + '):');
+    state.progress.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
   }
   if(state.pending.length){
     L.push('');
@@ -2222,6 +2333,7 @@ document.getElementById('cleanSessionBtn').addEventListener('click', ()=>{
   state.commitments = [];
   state.focus = null;
   state.queue = [];
+  state.progress = [];
   state.pending = [];
   state.notes = '';
   save(); renderAll();
@@ -2313,6 +2425,7 @@ function buildPlanEntries(){
   state.commitments.filter(c=>!c.done).forEach(c=>{
     entries.push({ text:c.text, src:'Commitment', item:{ id:null, text:c.text, due: c.tag==='time' ? 'today' : '' } });
   });
+  state.progress.forEach(i=> entries.push({ text:i.text, src:'In Progress', item:i }));
   state.queue.forEach(i=> entries.push({ text:i.text, src:'Queue', item:i }));
   state.pending.forEach(i=> entries.push({ text:i.text, src:'Pending', item:i }));
   entries.forEach(e=>{
@@ -2336,7 +2449,7 @@ function planEntryMeta(e){
   if(e.src === 'Pending' && e.item.waitingOn) bits.push('waiting on ' + e.item.waitingOn);
   if(e.blocked){
     const pre = openById(e.item.after);
-    if(pre) bits.push('after: ' + pre.text);
+    if(pre) bits.push('waiting for: ' + pre.text);
   }
   if(e.unblocks > 0) bits.push('unblocks ' + e.unblocks);
   return bits.join(' · ');
@@ -2437,7 +2550,19 @@ function boardAsPrompt(){
     const bits = [];
     if(i.ticket) bits.push(i.ticket);
     if(i.due) bits.push('due ' + i.due);
-    if(isBlocked(i)){ const pre = openById(i.after); if(pre) bits.push('after: ' + pre.text); }
+    if(isBlocked(i)){ const pre = openById(i.after); if(pre) bits.push('depends on: ' + pre.text); }
+    if(bits.length) line += ' (' + bits.join(', ') + ')';
+    L.push(line);
+    if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('IN PROGRESS:');
+  if(state.progress.length === 0) L.push('- none');
+  state.progress.forEach(i=>{
+    let line = '- ' + i.text;
+    const bits = [];
+    if(i.ticket) bits.push(i.ticket);
+    if(i.due) bits.push('due ' + i.due);
     if(bits.length) line += ' (' + bits.join(', ') + ')';
     L.push(line);
     if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
