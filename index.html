@@ -558,8 +558,36 @@ body{
 .lane-head{
   display:flex; align-items:center; gap:8px;
   padding:var(--s-2) var(--s-2) 10px;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  background:linear-gradient(180deg, var(--lane-soft, transparent), transparent);
 }
-.lane-head svg{ width:15px;height:15px; stroke-width:1.5; color:var(--ink-faint); }
+.lane-head svg{ width:15px;height:15px; stroke-width:1.5; color:var(--lane-accent, var(--ink-faint)); }
+
+/* Lane identity — one signature hue per status, drawn from the ambient palette.
+   Neutral acrylic stays; the color lives only in the edge, icon, counter, and
+   a whisper of wash behind the header. */
+.lane{ border-top:3px solid var(--lane-edge, transparent); }
+.lane .lane-count{
+  color:var(--lane-accent, var(--ink-soft));
+  background:var(--lane-soft, rgba(255,255,255,0.55));
+  border-color:var(--lane-border, rgba(255,255,255,0.45));
+}
+.lane[data-lane="queue"]{
+  --lane-accent:#5875BE; --lane-edge:rgba(88,117,190,0.55);
+  --lane-soft:rgba(88,117,190,0.09); --lane-border:rgba(88,117,190,0.25);
+}
+.lane[data-lane="progress"]{
+  --lane-accent:#C06A38; --lane-edge:rgba(192,106,56,0.55);
+  --lane-soft:rgba(192,106,56,0.09); --lane-border:rgba(192,106,56,0.25);
+}
+.lane[data-lane="pending"]{
+  --lane-accent:#8B7BB8; --lane-edge:rgba(139,123,184,0.55);
+  --lane-soft:rgba(139,123,184,0.10); --lane-border:rgba(139,123,184,0.25);
+}
+.lane[data-lane="done"]{
+  --lane-accent:#55987A; --lane-edge:rgba(85,152,122,0.55);
+  --lane-soft:rgba(85,152,122,0.10); --lane-border:rgba(85,152,122,0.25);
+}
 .lane-name{ font-size:13px; font-weight:700; color:var(--ink); }
 .lane-count{
   font-size:10.5px; font-weight:650; color:var(--ink-soft);
