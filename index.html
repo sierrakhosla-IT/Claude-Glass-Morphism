@@ -476,10 +476,10 @@ body{
 .head-icon{ width:16px !important; height:16px !important; stroke-width:1.5 !important; color:var(--ink-faint); flex-shrink:0; }
 
 .section-title{
-  font-size:15px; font-weight:540; letter-spacing:-0.01em; color:var(--ink);
+  font-size:16px; font-weight:650; letter-spacing:-0.015em; color:var(--ink);
 }
 .section-sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; font-weight:500; letter-spacing:0.01em; }
-.panel-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 12px; }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; padding:18px 20px 12px; border-bottom:1px solid rgba(124,122,224,0.12); margin-bottom:4px; }
 .panel-body{ padding:0 20px 18px; }
 
 /* Row: commitments + focus */
@@ -649,57 +649,60 @@ body{
    Weight comes from fill, border presence, and elevation — not effects.
    ============================================================ */
 .glass.tier-hero{
-  background:linear-gradient(165deg, rgba(255,255,255,0.18), rgba(255,255,255,0.0)), rgba(255,255,255,0.86);
-  border-color:rgba(255,255,255,0.85);
+  background:linear-gradient(165deg, rgba(255,255,255,0.18), rgba(255,255,255,0.0)), rgba(255,255,255,0.90);
+  border-width:1.5px;
+  border-color:rgba(255,255,255,0.95);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.75),
-    0 2px 8px rgba(124,122,224,0.12),
-    0 30px 70px rgba(124,122,224,0.22);
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    0 2px 10px rgba(124,122,224,0.14),
+    0 36px 84px rgba(124,122,224,0.26);
 }
 .glass.tier-active{
   background:linear-gradient(165deg, rgba(255,255,255,0.15), rgba(255,255,255,0.0)), rgba(255,255,255,0.66);
-  border-color:rgba(255,255,255,0.68);
+  border-color:rgba(255,255,255,0.42);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    0 2px 6px rgba(124,122,224,0.09),
-    0 20px 50px rgba(124,122,224,0.15);
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    0 2px 6px rgba(124,122,224,0.07),
+    0 18px 44px rgba(124,122,224,0.11);
 }
 .glass.tier-ref{
   background:linear-gradient(165deg, rgba(255,255,255,0.11), rgba(255,255,255,0.0)), rgba(255,255,255,0.48);
-  border-color:rgba(255,255,255,0.52);
+  border-color:rgba(255,255,255,0.26);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.48),
-    0 12px 32px rgba(124,122,224,0.10);
+    inset 0 1px 0 rgba(255,255,255,0.34),
+    0 10px 26px rgba(124,122,224,0.07);
 }
 .glass.tier-passive{
   background:rgba(255,255,255,0.28);
-  border:1px solid rgba(255,255,255,0.30);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.32);
+  border:1px solid rgba(255,255,255,0.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.22);
 }
 
 /* Today is the focal object: more room to breathe inside, larger presence */
-#laneToday .lane-head{ padding-top:22px; padding-bottom:2px; }
-#laneToday .lane-head .lane-name{ font-size:16.5px; }
-#laneToday .lane-body{ padding-bottom:24px; }
-#laneToday.lane{ min-height:400px; }
+#laneToday .lane-head{ padding-top:26px; padding-bottom:2px; padding-left:22px; }
+#laneToday .lane-head .lane-name{ font-size:20px; font-weight:680; }
+#laneToday .lane-body{ padding-bottom:28px; padding-left:22px; padding-right:22px; }
+#laneToday.lane{ min-height:440px; }
 #commitPanel .panel-body{ padding-bottom:22px; }
 
 /* Composition: primary work surfaces are wider; supporting objects sit
    slightly lower, so the top line reads as arranged, not gridded. */
 .lane-grid{ display:flex; flex-direction:column; gap:32px; }
 .lane-row{ display:grid; gap:32px; align-items:start; }
-.lane-row-primary{ grid-template-columns:minmax(0,1fr) minmax(0,1.8fr); }
-.lane-row-secondary{ grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,0.85fr); margin-left:36px; }
+.lane-row-primary{ grid-template-columns:minmax(0,0.85fr) minmax(0,2fr); }
+.lane-row-secondary{ grid-template-columns:repeat(4, minmax(0,1fr)); margin-left:36px; }
 .lane{ min-width:0; }
 .lane{ display:flex; flex-direction:column; min-height:360px; }
 .lane-row-secondary .lane{ min-height:300px; }
 .lane-head{
   display:flex; align-items:center; gap:8px;
   padding:var(--s-2) var(--s-2) 10px;
+  margin-bottom:2px;
   border-radius:var(--r-xl) var(--r-xl) 0 0;
+  border-bottom:1px solid var(--lane-border, rgba(124,122,224,0.14));
   background:linear-gradient(180deg, var(--lane-soft, transparent), transparent);
 }
-.lane-head svg{ width:15px;height:15px; stroke-width:1.5; color:var(--lane-accent, var(--ink-faint)); }
+.lane-head svg{ width:16px;height:16px; stroke-width:1.75; color:var(--lane-accent, var(--ink-faint)); }
 
 /* Lane identity — one signature hue per status, drawn from the ambient palette.
    Neutral acrylic stays; the color lives only in the edge, icon, counter, and
@@ -732,7 +735,7 @@ body{
   --lane-accent:#8A8886; --lane-edge:rgba(138,136,134,0.34);
   --lane-soft:rgba(138,136,134,0.06); --lane-border:rgba(138,136,134,0.18);
 }
-.lane-name{ font-size:13px; font-weight:560; color:var(--ink); }
+.lane-name{ font-size:14.5px; font-weight:650; letter-spacing:-0.01em; color:var(--ink); }
 .lane-count{
   font-size:10.5px; font-weight:540; color:var(--ink-soft);
   background:rgba(255,255,255,0.42);
@@ -778,7 +781,7 @@ body{
 .task-card.needs-context{ border:1px solid rgba(232,185,79,0.65); background:rgba(232,185,79,0.14); }
 
 .task-head{ display:flex; align-items:flex-start; gap:8px; }
-.task-title{ flex:1; font-weight:500; line-height:1.4; }
+.task-title{ flex:1; font-size:13px; font-weight:560; line-height:1.4; color:var(--ink); }
 .task-chips{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
 .task-chips:empty{ display:none; }
 /* When expanded, the ticket & due inputs are visible — their echo chips hide */
@@ -927,8 +930,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
 /* Full width panels */
 .panel-full{ display:flex; flex-direction:column; }
-.bottom-grid{ display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:32px; align-items:start; }
-.bottom-stack{ display:flex; flex-direction:column; gap:20px; }
+.notes-panel{ min-height:0; }
 .notes-panel .notes-area{ min-height:260px; }
 .tickets-empty, .recent-empty{
   display:flex; align-items:center; gap:14px;
@@ -939,6 +941,8 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 .recent-row{
   display:flex; align-items:center; justify-content:space-between;
   padding:var(--s-2);
+  border-bottom:1px solid rgba(124,122,224,0.12);
+  margin-bottom:4px;
 }
 .ticket-row{
   display:flex; align-items:center; gap:12px;
@@ -1041,11 +1045,10 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 ::selection{ background:rgba(169,168,240,0.4); }
 
 @media (max-width:1180px){
-  .lane-row-primary, .lane-row-secondary{ grid-template-columns:repeat(2,1fr); }
-  .lane-row-secondary{ margin-left:0; }
+  .lane-row-primary{ grid-template-columns:repeat(2,1fr); }
+  .lane-row-secondary{ grid-template-columns:repeat(2,1fr); margin-left:0; }
   .lane{ min-height:280px; }
   .row-top{ grid-template-columns:1fr; }
-  .bottom-grid{ grid-template-columns:1fr !important; }
 }
 @media (max-width:760px){
   .lane-row-primary, .lane-row-secondary{ grid-template-columns:1fr; }
@@ -1315,6 +1318,20 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
           </div>
         </div>
 
+        <section class="glass lane tier-ref">
+          <div class="lane-head"><i data-lucide="clock"></i><span class="lane-name">Waiting On</span><span class="lane-count" id="countTickets">0</span></div>
+          <div class="lane-body">
+            <div class="tickets-empty" id="ticketsEmpty">
+              <i data-lucide="clipboard-check"></i>
+              <div>
+                <div class="lane-empty-title">No active tickets</div>
+                <div class="lane-empty-sub" style="max-width:none;">You're all caught up!</div>
+              </div>
+            </div>
+            <div id="ticketsList" class="panel-body"></div>
+          </div>
+        </section>
+
         <div class="glass lane tier-ref" id="laneDone" data-lane="done" ondrop="onDrop(event,'done')" ondragover="onDragOver(event)">
           <div class="lane-head" style="justify-content:space-between;">
             <div class="flex gap-1"><i data-lucide="check-circle-2"></i><span class="lane-name">Done Today</span><span class="lane-count" id="countDone">0</span></div>
@@ -1357,41 +1374,21 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
     </div>
 
-    <!-- Supporting information: notes, tickets, follow-ups -->
-    <div class="bottom-grid">
-      <section class="glass tier-passive panel-full notes-panel">
-        <div class="lane-head"><i data-lucide="notebook-pen"></i><span class="lane-name">Work Notes</span></div>
-        <div class="notes-area">
-          <textarea class="notes-input" id="notesInput" placeholder="Jot anything here… phone numbers, vendor notes, inventory, links, reminders. Enter starts a new bullet."></textarea>
-        </div>
-      </section>
-
-      <div class="bottom-stack">
-        <!-- Active Tickets -->
-        <section class="glass tier-ref panel-full">
-          <div class="panel-head">
-            <div class="flex gap-1"><i data-lucide="clock" class="head-icon"></i><span class="section-title" style="font-size:14px;">Waiting On</span><span class="lane-count" id="countTickets">0</span></div>
-          </div>
-          <div class="tickets-empty" id="ticketsEmpty">
-            <i data-lucide="clipboard-check"></i>
-            <div>
-              <div class="lane-empty-title">No active tickets</div>
-              <div class="lane-empty-sub" style="max-width:none;">You're all caught up!</div>
-            </div>
-          </div>
-          <div id="ticketsList" class="panel-body"></div>
-        </section>
-
-        <!-- Recent Days -->
-        <section class="glass tier-ref panel-full" style="margin-bottom:4px;">
-          <div class="recent-row">
-            <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">Follow-ups</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
-            <div class="task-collapse-btn" id="recentCollapseBtn" title="Collapse"><i data-lucide="chevron-down"></i></div>
-          </div>
-          <div id="recentDaysList" class="panel-body"></div>
-        </section>
+    <!-- Supporting information: notes, follow-ups — each its own full-width object -->
+    <section class="glass tier-passive panel-full notes-panel">
+      <div class="lane-head"><i data-lucide="notebook-pen"></i><span class="lane-name">Work Notes</span></div>
+      <div class="notes-area">
+        <textarea class="notes-input" id="notesInput" placeholder="Jot anything here… phone numbers, vendor notes, inventory, links, reminders. Enter starts a new bullet."></textarea>
       </div>
-    </div>
+    </section>
+
+    <section class="glass tier-ref panel-full followups-panel" style="margin-bottom:4px;">
+      <div class="recent-row">
+        <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">Follow-ups</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
+        <div class="task-collapse-btn" id="recentCollapseBtn" title="Collapse"><i data-lucide="chevron-down"></i></div>
+      </div>
+      <div id="recentDaysList" class="panel-body"></div>
+    </section>
 
 
   </main>
