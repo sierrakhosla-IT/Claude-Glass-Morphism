@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Execution Tower</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
 /* ============================================================
    EXECUTIVE GLASS — DESIGN TOKENS
    ============================================================ */
@@ -17,8 +18,12 @@
   --white: #FFFFFF;
   --gray-light: #F5F5F5;
   --ink: #1C1B22;
-  --ink-soft: #4E4A5C;
-  --ink-faint: #7C7789;
+  --ink-soft: #5C5870;
+  --ink-faint: #827E92;
+
+  /* Type */
+  --font-body: 'Manrope', 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Space Grotesk', 'Manrope', system-ui, -apple-system, sans-serif;
 
   /* Status accents — reserved for meaning, never decoration */
   --pearl: #E1E1E1;
@@ -73,7 +78,7 @@
 html,body{height:100%;}
 body{
   margin:0;
-  font-family:'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:var(--font-body);
   color:var(--ink);
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
@@ -259,6 +264,11 @@ body{
 .sidebar .sidebar-collapse-btn{ background:rgba(30,27,44,0.9); border-color:rgba(255,255,255,0.16); }
 .sidebar .sidebar-collapse-btn svg{ color:#B6B2C6; }
 .sidebar .clock-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
+.sidebar .leadership-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
+.sidebar .leadership-title{ color:#6F6B80; }
+.sidebar .leadership-name{ color:#A7A3B8; }
+.sidebar .leadership-input{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.10); color:#F1EFF7; }
+.sidebar .leadership-input::placeholder{ color:#5F5B70; }
 .sidebar .mode-dot{ box-shadow:0 0 0 3px rgba(169,168,240,0.28); }
 .sidebar-collapse-btn{
   position:absolute; top:18px; right:-12px;
@@ -302,7 +312,7 @@ body{
 }
 
 
-.brand-name{ font-weight:540; font-size:15px; letter-spacing:-0.01em; }
+.brand-name{ font-family:var(--font-display); font-weight:700; font-size:16px; letter-spacing:-0.01em; }
 
 .glance-strip{
   display:grid; grid-template-columns:1fr 1fr;
@@ -346,7 +356,7 @@ body{
 .ops-row{ cursor:pointer; }
 .ops-row .nav-badge{ margin-left:auto; font-variant-numeric:tabular-nums; }
 .ops-div{ height:1px; background:var(--glass-border-soft); margin:8px 10px; }
-.nav-section-label{ font-size:10px; font-weight:660; letter-spacing:0.10em; text-transform:uppercase; color:var(--ink-faint); padding:12px 12px 5px; }
+.nav-section-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); padding:12px 12px 5px; }
 .nav-section-label:first-child{ padding-top:2px; }
 .app.sidebar-collapsed .nav-section-label{ display:none; }
 .nav-badge.badge-hot{ color:#D66B7A; font-weight:580; }
@@ -364,7 +374,7 @@ body{
 }
 .clock-day{ font-size:11.5px; font-weight:520; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em; }
 .clock-date{ font-size:13px; font-weight:520; color:var(--ink-soft); margin-bottom:6px; }
-.clock-time{ font-size:26px; font-weight:580; letter-spacing:-0.02em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.clock-time{ font-family:var(--font-display); font-size:27px; font-weight:600; letter-spacing:-0.01em; color:var(--ink); font-variant-numeric:tabular-nums; }
 .clock-quote{ font-size:11.5px; color:var(--ink-faint); margin-top:8px; line-height:1.4; }
 .clock-mode{
   display:flex; align-items:center; gap:7px;
@@ -379,6 +389,26 @@ body{
 }
 .clock-mode.mode-stop .mode-dot{ background:var(--success); box-shadow:0 0 0 3px rgba(76,154,106,0.15); animation:none; }
 @keyframes modePulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.45; } }
+
+.leadership-card{
+  padding:var(--s-2);
+  display:flex; flex-direction:column; gap:8px;
+  border-radius:var(--r-lg);
+}
+.leadership-title{ font-family:var(--font-display); font-size:10.5px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); }
+.leadership-row{ display:flex; align-items:center; gap:8px; }
+.leadership-name{ font-size:11.5px; font-weight:600; color:var(--ink-soft); flex-shrink:0; width:52px; }
+.leadership-input{
+  flex:1; min-width:0;
+  font-family:inherit; font-size:11.5px; font-weight:500; color:var(--ink);
+  background:rgba(255,255,255,0.36);
+  border:1px solid rgba(255,255,255,0.40);
+  border-radius:8px; padding:5px 9px; outline:none;
+  transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.leadership-input::placeholder{ color:var(--ink-faint); }
+.leadership-input:focus{ background:rgba(255,255,255,0.6); border-color:rgba(124,122,224,0.4); }
+.app.sidebar-collapsed .leadership-card{ display:none; }
 
 /* ---------- Main column ---------- */
 .main{
@@ -477,7 +507,7 @@ body{
 .head-icon{ width:16px !important; height:16px !important; stroke-width:1.5 !important; color:var(--ink-faint); flex-shrink:0; }
 
 .section-title{
-  font-size:16px; font-weight:650; letter-spacing:-0.015em; color:var(--ink);
+  font-family:var(--font-display); font-size:16px; font-weight:650; letter-spacing:-0.01em; color:var(--ink);
 }
 .section-sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; font-weight:500; letter-spacing:0.01em; }
 .panel-head{ display:flex; align-items:center; justify-content:space-between; padding:24px 26px 14px; border-bottom:1px solid rgba(124,122,224,0.12); margin-bottom:4px; }
@@ -486,10 +516,17 @@ body{
 /* Row: mission strip (slim, first) + focus hero (dominant, second) */
 .row-top{ display:flex; flex-direction:column; gap:16px; }
 
+/* Executive Snapshot — quiet 4-field grid, sits above Mission */
+.snapshot-panel{ border-radius:20px; margin-bottom:16px; }
+.snapshot-grid{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; padding:16px 24px; }
+.snapshot-field{ display:flex; flex-direction:column; gap:5px; min-width:0; }
+.snapshot-label{ font-family:var(--font-display); font-size:9.5px; font-weight:660; letter-spacing:0.09em; text-transform:uppercase; color:var(--ink-faint); }
+@media (max-width:900px){ .snapshot-grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+
 /* Mission — a single quiet line, not a competing surface */
 .mission-strip{ border-radius:20px; }
 .mission-strip .mission-row{ display:flex; align-items:center; gap:22px; padding:14px 24px; }
-.mission-strip .mission-label{ font-size:10.5px; font-weight:660; letter-spacing:0.09em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
+.mission-strip .mission-label{ font-family:var(--font-display); font-size:10.5px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
 .mission-strip .mission-field{ flex:1; display:flex; align-items:center; gap:10px; position:relative; }
 .mission-strip .mission-field input{ flex:1; }
 .mission-strip .mission-divider{ width:1px; height:22px; background:var(--glass-border-soft); flex-shrink:0; }
@@ -742,7 +779,7 @@ body{
 
 /* Today is the focal object: more room to breathe inside, larger presence */
 #laneToday .lane-head{ padding-top:30px; padding-bottom:2px; padding-left:28px; }
-#laneToday .lane-head .lane-name{ font-size:19px; font-weight:750; letter-spacing:0.08em; }
+#laneToday .lane-head .lane-name{ font-size:20px; font-weight:700; letter-spacing:0.04em; }
 #laneToday .lane-body{ padding-bottom:32px; padding-left:28px; padding-right:28px; }
 
 
@@ -753,8 +790,8 @@ body{
 /* Row 1 — Today alone: the anchor of the whole workspace */
 .lane-row-hero{ grid-template-columns:1fr; }
 .lane-row-hero .lane{ min-height:480px; }
-/* Row 2 — Waiting on Others: compact, side-by-side */
-.lane-row-waiting{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+/* Row 2 — Waiting on Others: compact, side-by-side (Pending, On Hold, Waiting On) */
+.lane-row-waiting{ grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); }
 .lane-row-waiting .lane, .lane-row-waiting #waitingOnPanel{ min-height:260px; }
 /* Row 3 — Upcoming: moderate detail, This Week leads */
 .lane-row-upcoming{ grid-template-columns:minmax(0,1.35fr) minmax(0,0.9fr); }
@@ -808,15 +845,19 @@ body{
   --lane-accent:#C08A3E; --lane-edge:rgba(157,93,0,0.40);
   --lane-soft:rgba(157,93,0,0.08); --lane-border:rgba(157,93,0,0.20);
 }
+.lane[data-lane="onhold"]{
+  --lane-accent:#8892A0; --lane-edge:rgba(136,146,160,0.42);
+  --lane-soft:rgba(136,146,160,0.09); --lane-border:rgba(136,146,160,0.22);
+}
 .lane[data-lane="done"]{
   --lane-accent:#4C9A6A; --lane-edge:rgba(76,154,106,0.40);
   --lane-soft:rgba(76,154,106,0.08); --lane-border:rgba(76,154,106,0.20);
 }
 .lane[data-lane="someday"]{
-  --lane-accent:#8A8886; --lane-edge:rgba(138,136,134,0.34);
-  --lane-soft:rgba(138,136,134,0.06); --lane-border:rgba(138,136,134,0.18);
+  --lane-accent:#9C9A98; --lane-edge:rgba(156,154,152,0.36);
+  --lane-soft:rgba(156,154,152,0.07); --lane-border:rgba(156,154,152,0.20);
 }
-.lane-name{ font-size:13px; font-weight:660; letter-spacing:0.10em; text-transform:uppercase; color:rgba(35,38,60,0.85); }
+.lane-name{ font-family:var(--font-display); font-size:13px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:rgba(35,38,60,0.85); }
 .lane-count{
   font-size:10.5px; font-weight:540; color:var(--ink-soft);
   background:rgba(255,255,255,0.42);
@@ -1065,7 +1106,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
   padding:var(--s-3);
   display:flex; flex-direction:column; gap:14px;
 }
-.modal-title{ font-size:15px; font-weight:540; letter-spacing:-0.01em; color:var(--ink); }
+.modal-title{ font-family:var(--font-display); font-size:16px; font-weight:600; letter-spacing:-0.01em; color:var(--ink); }
 .modal .drawer-field{ display:flex; flex-direction:column; gap:6px; }
 .modal .drawer-field label{
   font-size:11px; font-weight:560; text-transform:uppercase; letter-spacing:.04em;
@@ -1257,6 +1298,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="nav-item ops-row" data-jump="laneToday"><i data-lucide="sun"></i><span>Today</span><span class="nav-badge" id="opsToday">0</span></div>
       <div class="nav-item ops-row" data-jump="laneWeek"><i data-lucide="inbox"></i><span>This Week</span><span class="nav-badge" id="opsWeek">0</span></div>
       <div class="nav-item ops-row" data-jump="lanePending"><i data-lucide="list-todo"></i><span>Pending</span><span class="nav-badge" id="opsPending">0</span></div>
+      <div class="nav-item ops-row" data-jump="laneOnHold"><i data-lucide="pin"></i><span>On Hold</span><span class="nav-badge" id="opsOnHold">0</span></div>
       <div class="nav-item ops-row" data-jump="laneDone"><i data-lucide="check-check"></i><span>Done</span><span class="nav-badge" id="opsDone">0</span></div>
       <div class="nav-item ops-row" data-jump="laneSomeday"><i data-lucide="archive"></i><span>Someday</span><span class="nav-badge" id="opsSomeday">0</span></div>
     </nav>
@@ -1267,6 +1309,22 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="clock-time" id="clockTime">9:41 AM</div>
       <div class="clock-mode" id="clockMode"><span class="mode-dot"></span><span id="clockModeText">Deep work</span></div>
       <div class="clock-quote">Focus on progress, not perfection.</div>
+    </div>
+
+    <div class="leadership-card glass-soft">
+      <div class="leadership-title">Leadership</div>
+      <div class="leadership-row">
+        <span class="leadership-name">Enrique</span>
+        <input class="leadership-input" id="leadEnrique" placeholder="What he needs from you">
+      </div>
+      <div class="leadership-row">
+        <span class="leadership-name">Karin</span>
+        <input class="leadership-input" id="leadKarin" placeholder="What she needs from you">
+      </div>
+      <div class="leadership-row">
+        <span class="leadership-name">Juan</span>
+        <input class="leadership-input" id="leadJuan" placeholder="—">
+      </div>
     </div>
   </aside>
 
@@ -1300,6 +1358,28 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       </div>
       <div class="avatar">S</div>
     </div>
+
+    <!-- Executive Snapshot — 15 seconds to read, orients the whole day -->
+    <section class="glass tier-active snapshot-panel" id="snapshotPanel">
+      <div class="snapshot-grid">
+        <div class="snapshot-field">
+          <span class="snapshot-label">Today's Objective</span>
+          <input class="mini-input" id="snapObjective" placeholder="What does today need to accomplish">
+        </div>
+        <div class="snapshot-field">
+          <span class="snapshot-label">Biggest Risk</span>
+          <input class="mini-input" id="snapRisk" placeholder="What could derail it">
+        </div>
+        <div class="snapshot-field">
+          <span class="snapshot-label">Most Important Conversation</span>
+          <input class="mini-input" id="snapConversation" placeholder="Who you most need to align with">
+        </div>
+        <div class="snapshot-field">
+          <span class="snapshot-label">Today's Deliverable</span>
+          <input class="mini-input" id="snapDeliverable" placeholder="What you hand off or produce">
+        </div>
+      </div>
+    </section>
 
     <!-- Mission (slim) + Focus (dominant) -->
     <div class="row-top">
@@ -1372,6 +1452,24 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
               <i data-lucide="lock"></i>
               <div class="lane-empty-title">No blocked items</div>
               <div class="lane-empty-sub">You're all clear!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass lane tier-ref" id="laneOnHold" data-lane="onhold" ondrop="onDrop(event,'onhold')" ondragover="onDragOver(event)">
+          <div class="lane-head"><i data-lucide="pin"></i><span class="lane-name">On Hold</span><span class="lane-count" id="countOnHold">0</span>
+            <div class="lane-controls">
+              <div class="lane-ctrl-btn" data-maximize="onhold" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="onhold" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+          <div class="lane-summary" id="summaryOnHold" title="Expand On Hold"></div>
+          <div class="lane-body">
+            <div id="onholdItems"></div>
+            <div class="lane-empty" id="onholdEmpty">
+              <i data-lucide="pin"></i>
+              <div class="lane-empty-title">Nothing on hold</div>
+              <div class="lane-empty-sub">Leadership-directed pauses — not awaiting a response</div>
             </div>
           </div>
         </div>
@@ -1505,6 +1603,7 @@ const ICONS = {
   'settings': '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>',
   'inbox': '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"></path>',
   'lock': '<rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
+  'clock': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
   'check-circle-2': '<circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path>',
   'archive': '<rect x="2" y="4" width="20" height="5" rx="1"></rect><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"></path><line x1="10" y1="13" x2="14" y2="13"></line>',
   'clipboard-list': '<rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><line x1="9" y1="12" x2="15" y2="12"></line><line x1="9" y1="16" x2="15" y2="16"></line><line x1="9" y1="8" x2="10" y2="8"></line>',
@@ -1572,8 +1671,11 @@ const state = Object.assign({
   week: [],
   someday: [],
   pending: [],
+  onhold: [],
   subDone: [],
   push: { primary:'', secondary:'' },
+  snapshot: { objective:'', risk:'', conversation:'', deliverable:'' },
+  leadership: { enrique:'', karin:'', juan:'' },
   done: [],
   doneHistory: [],   // [{ date: 'Jul 7, 2026', items: [ {text, ticket, ...} ] }]
   notes: '',
@@ -1588,9 +1690,11 @@ function cid(){ return Math.random().toString(36).slice(2,9); }
 function migrateItems(){
   /* V2 pipeline migration: Queue -> This Week, In Progress -> Today,
      commitments -> This Week tasks, dependency links dropped. */
-  ['today','week','someday','pending','done'].forEach(k=>{ if(!Array.isArray(state[k])) state[k] = []; });
+  ['today','week','someday','pending','onhold','done'].forEach(k=>{ if(!Array.isArray(state[k])) state[k] = []; });
   if(!Array.isArray(state.subDone)) state.subDone = [];
   if(!state.push || typeof state.push !== 'object') state.push = { primary:'', secondary:'' };
+  if(!state.snapshot || typeof state.snapshot !== 'object') state.snapshot = { objective:'', risk:'', conversation:'', deliverable:'' };
+  if(!state.leadership || typeof state.leadership !== 'object') state.leadership = { enrique:'', karin:'', juan:'' };
   if(Array.isArray(state.queue)){ state.week = state.week.concat(state.queue); delete state.queue; }
   if(Array.isArray(state.progress)){ state.today = state.today.concat(state.progress); delete state.progress; }
   if(Array.isArray(state.commitments) && state.commitments.length){
@@ -1599,7 +1703,7 @@ function migrateItems(){
     });
     state.commitments = [];
   }
-  ['today','week','someday','pending','done'].forEach(k=>{
+  ['today','week','someday','pending','onhold','done'].forEach(k=>{
     (state[k]||[]).forEach(i=>{
       const legacy = [];
       if(i.objective) legacy.push('Objective: ' + i.objective);
@@ -1652,6 +1756,32 @@ document.querySelectorAll('[data-push-clear]').forEach(el=>{
   });
 });
 
+/* Leadership widget — quiet reference, not derived from tasks */
+function renderLeadership(){
+  const map = { leadEnrique:'enrique', leadKarin:'karin', leadJuan:'juan' };
+  Object.keys(map).forEach(elId=>{
+    const el = document.getElementById(elId);
+    if(el && document.activeElement !== el) el.value = state.leadership[map[elId]] || '';
+  });
+}
+Object.entries({ leadEnrique:'enrique', leadKarin:'karin', leadJuan:'juan' }).forEach(([elId,key])=>{
+  const el = document.getElementById(elId);
+  if(el) el.addEventListener('input', e=>{ state.leadership[key] = e.target.value; save(); });
+});
+
+/* Executive Snapshot — four fields, ~15 seconds to read, orients the day */
+function renderSnapshot(){
+  const map = { snapObjective:'objective', snapRisk:'risk', snapConversation:'conversation', snapDeliverable:'deliverable' };
+  Object.keys(map).forEach(elId=>{
+    const el = document.getElementById(elId);
+    if(el && document.activeElement !== el) el.value = state.snapshot[map[elId]] || '';
+  });
+}
+Object.entries({ snapObjective:'objective', snapRisk:'risk', snapConversation:'conversation', snapDeliverable:'deliverable' }).forEach(([elId,key])=>{
+  const el = document.getElementById(elId);
+  if(el) el.addEventListener('input', e=>{ state.snapshot[key] = e.target.value; save(); });
+});
+
 /* Collapsed lane summaries — a closed lane still answers "what's in there?" */
 function sumLine(html, cls){ return `<div class="sum-line ${cls||''}">${html}</div>`; }
 /* Completed subtasks — logged the moment they're checked, shown in Done Today
@@ -1680,8 +1810,9 @@ function renderLaneSummaries(){
   const wk = document.getElementById('summaryWeek');
   const sd = document.getElementById('summarySomeday');
   const pd = document.getElementById('summaryPending');
+  const oh = document.getElementById('summaryOnHold');
   const dn = document.getElementById('summaryDone');
-  if(!st_ || !wk || !sd || !pd || !dn) return;
+  if(!st_ || !wk || !sd || !pd || !oh || !dn) return;
 
   const laneSum = (el, items, emptyMsg) => {
     if(items.length === 0){ el.innerHTML = sumLine(emptyMsg, 'sum-quiet'); return; }
@@ -1708,6 +1839,10 @@ function renderLaneSummaries(){
     pd.innerHTML = sumLine(`<span class="sum-strong">${pend.length}</span> waiting`, d >= 3 ? 'sum-alert' : '') +
       sumLine('Oldest: ' + (d < 1 ? '<1d' : d + 'd') + (oldest.waitingOn ? ' — ' + escapeHtml(oldest.waitingOn) : ''), 'sum-quiet');
   }
+
+  oh.innerHTML = state.onhold.length === 0
+    ? sumLine('Nothing on hold', 'sum-quiet')
+    : sumLine(`<span class="sum-strong">${state.onhold.length}</span> paused by leadership`, 'sum-quiet');
 
   const done = state.done;
   const subN = state.subDone.length;
@@ -2260,6 +2395,7 @@ function renderOps(){
   set('opsWeek', state.week.length);
   set('opsSomeday', state.someday.length);
   set('opsPending', state.pending.length);
+  set('opsOnHold', state.onhold.length);
   set('opsDone', state.done.length + state.subDone.length);
   set('opsDue', openWork.filter(i=>dueStatus(i.due) === 'today').length);
   set('opsOverdue', openWork.filter(i=>dueStatus(i.due) === 'overdue').length, true);
@@ -2277,12 +2413,15 @@ document.querySelectorAll('.ops-row[data-jump]').forEach(el=>{
 
 function renderAll(){
   renderPush();
+  renderLeadership();
+  renderSnapshot();
   renderNextUp();
   renderLaneSummaries();
   renderLane('today','todayItems','todayEmpty','countToday', false);
   renderLane('week','weekItems','weekEmpty','countWeek', false);
   renderLane('someday','somedayItems','somedayEmpty','countSomeday', false);
   renderLane('pending','pendingItems','pendingEmpty','countPending', false);
+  renderLane('onhold','onholdItems','onholdEmpty','countOnHold', false);
   renderLane('done','doneItems','doneEmpty','countDone', true);
   renderDoneSubs();
   renderRecentDays();
@@ -2595,6 +2734,11 @@ function dayRecapText(){
       L.push('- ' + i.text + (i.waitingOn ? ' — waiting on ' + i.waitingOn : '') + (d >= 1 ? ' (' + d + 'd)' : ''));
     });
   }
+  if(state.onhold.length){
+    L.push('');
+    L.push('On hold (' + state.onhold.length + '):');
+    state.onhold.forEach(i=> L.push('- ' + i.text + (i.context ? ' — ' + i.context.replace(/\n/g, ' | ') : '')));
+  }
   L.push('');
   L.push('Today remaining: ' + state.today.length + ' · This Week: ' + state.week.length);
   return L.join('\n');
@@ -2617,6 +2761,7 @@ document.getElementById('cleanSessionBtn').addEventListener('click', ()=>{
   state.week = [];
   state.someday = [];
   state.pending = [];
+  state.onhold = [];
   state.subDone = [];
   state.push = { primary:'', secondary:'' };
   state.notes = '';
@@ -2851,6 +2996,14 @@ function boardAsPrompt(){
     if(bits.length) line += ' (' + bits.join(', ') + ')';
     L.push(line);
     if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('ON HOLD (leadership-directed pause, not awaiting a response):');
+  if(state.onhold.length === 0) L.push('- none');
+  state.onhold.forEach(i=>{
+    let line = '- ' + i.text;
+    if(i.context) line += ' — ' + i.context.replace(/\n/g, ' | ');
+    L.push(line);
   });
   L.push('');
   L.push('DONE TODAY:');
