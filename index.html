@@ -414,7 +414,9 @@ body{
   flex-direction:column;
   gap:12px;
   min-width:0;
-  overflow-y:auto;
+  min-height:0;
+  height:100%;
+  overflow:hidden;
   padding-right:4px;
 }
 .main::-webkit-scrollbar{ width:6px; }
@@ -426,6 +428,7 @@ body{
 .topbar{
   display:flex; align-items:center; gap:var(--s-2);
   padding:9px var(--s-2);
+  flex-shrink:0;
   flex-wrap:wrap;
   position:relative;
   z-index:60; /* keeps the utility dropdown above the glass panels below */
@@ -512,26 +515,26 @@ body{
 .panel-body{ padding:0 18px 14px; }
 
 /* Row: mission strip (slim, first) + focus hero (dominant, second) */
-.row-top{ display:flex; flex-direction:column; gap:10px; }
+.row-top{ display:flex; flex-direction:column; gap:10px; flex-shrink:0; }
 
 /* Executive Snapshot — one compact row, not a padded grid */
-.snapshot-panel{ border-radius:14px; margin-bottom:6px; }
-.snapshot-row{ display:flex; align-items:center; gap:14px; padding:6px 18px; }
+.snapshot-panel{ border-radius:14px; margin-bottom:6px; flex-shrink:0; }
+.snapshot-row{ display:flex; align-items:center; gap:22px; padding:6px 18px; }
 .snapshot-field{ flex:1; min-width:0; display:flex; align-items:baseline; gap:8px; }
 .snapshot-label{ font-family:var(--font-display); font-size:9px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
 .snapshot-field input{ flex:1; min-width:0; border:none; background:none; box-shadow:none; padding:2px 0; font-size:11.5px; }
 .snapshot-field input:focus{ background:none; box-shadow:none; border-color:transparent; }
-.snapshot-div{ width:1px; height:16px; background:var(--glass-border-soft); flex-shrink:0; }
-@media (max-width:1180px){ .snapshot-row{ flex-wrap:wrap; row-gap:6px; } .snapshot-div{ display:none; } .snapshot-field{ flex:1 1 45%; } }
+.snapshot-div{ display:none; }
+@media (max-width:1180px){ .snapshot-row{ flex-wrap:wrap; row-gap:6px; } .snapshot-field{ flex:1 1 45%; } }
 
 /* Mission — a single quiet line, not a competing surface */
 .mission-strip{ border-radius:16px; }
-.mission-strip .mission-row{ display:flex; align-items:center; gap:18px; padding:6px 20px; }
+.mission-strip .mission-row{ display:flex; align-items:center; gap:26px; padding:6px 20px; }
 .mission-strip .mission-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
 .mission-strip .mission-field{ flex:1; display:flex; align-items:center; gap:10px; position:relative; }
 .mission-strip .mission-field input{ flex:1; border:none; background:none; box-shadow:none; padding:2px 0; font-size:11.5px; }
 .mission-strip .mission-field input:focus{ background:none; box-shadow:none; border-color:transparent; }
-.mission-strip .mission-divider{ width:1px; height:16px; background:var(--glass-border-soft); flex-shrink:0; }
+.mission-strip .mission-divider{ display:none; }
 
 /* Focus — still dominant via type and accent, not sheer container size */
 .focus-hero{ border-radius:20px; }
@@ -787,19 +790,22 @@ body{
 #laneToday .lane-body{ padding-bottom:18px; padding-left:24px; padding-right:24px; margin-top:12px; }
 
 
-/* Composition: calm, balanced grid — hierarchy comes from materials and
-   typography within each lane, not from rearranging the workspace. */
-.lane-grid{ display:flex; flex-direction:column; gap:16px; }
-.lane-row{ display:grid; gap:16px; align-items:start; }
-/* Row 1 — Today alone: the anchor of the whole workspace */
-.lane-row-hero{ grid-template-columns:1fr; }
-.lane-row-hero .lane{ min-height:220px; }
-/* Row 2 — Waiting on Others: compact, side-by-side (Pending, On Hold, Waiting On) */
-.lane-row-waiting{ grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); }
-.lane-row-waiting .lane, .lane-row-waiting #waitingOnPanel{ min-height:160px; }
-/* Row 3 — Upcoming: moderate detail, This Week leads */
-.lane-row-upcoming{ grid-template-columns:minmax(0,1.35fr) minmax(0,0.9fr); }
-.lane-row-upcoming .lane{ min-height:170px; }
+/* Fixed-viewport workspace: the whole board fits one screen. Rows are
+   weighted shares of the remaining height (not content-driven), and each
+   lane scrolls its own card list internally — the frame never moves. */
+/* Desk layout, not stacked rows. Today is the active document — it gets
+   the primary surface, full height, uncontested. Everything you move work
+   between (This Week, Pending, On Hold, Waiting On) lives in a rail beside
+   it: always visible, within a short drag of Today, sized by how often
+   each one is actually touched rather than divided evenly. This also cuts
+   scrolling — nothing stacks vertically fighting Today for height. */
+.lane-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:12px; flex:3.4; min-height:0; }
+.lane-row-hero{ min-height:0; }
+.lane-rail{ display:flex; flex-direction:column; gap:12px; min-height:0; }
+/* Rail tier 1 — This Week, Pending: touched constantly, most of the rail */
+.rail-active{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:12px; flex:2; min-height:0; }
+/* Rail tier 2 — On Hold, Waiting On: awareness-only, occasional updates — compact */
+.rail-support{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; flex:0.55; min-height:0; }
 .lane, .notes-panel{
   border-radius:26px;
   backdrop-filter:blur(36px) saturate(180%);
@@ -816,12 +822,64 @@ body{
 #laneSomeday .lane-body, #laneDone .lane-body{ padding:8px 16px 12px; gap:6px; margin-top:8px; }
 #laneSomeday .task-card, #laneDone .task-card{ padding:7px 11px; font-size:11px; }
 #laneSomeday .lane-head, #laneDone .lane-head{ padding:10px 16px 5px; }
+/* Supporting tier (Waiting On, On Hold) — visible, but quieter than
+   secondary execution; smaller type, tighter padding, no wasted room. */
+#laneOnHold .lane-body, #waitingOnPanel .panel-body{ padding-top:4px; gap:4px; }
+#laneOnHold .task-card{ padding:5px 4px; font-size:11px; }
+#laneOnHold .lane-head, #waitingOnPanel .panel-head{ padding:8px 16px 4px; }
+
+/* ============================================================
+   CHROME REDUCTION — reference & supporting regions are not cards.
+   On Hold, Waiting On, Work Notes, Done, Someday, Follow-ups: no
+   border, no glass fill, no shadow, no blur, no colored edge. They
+   sit directly on the desk; a small label and generous spacing carry
+   the hierarchy that a container used to carry. Today, Pending, and
+   This Week keep their object treatment — they're worked in, not
+   glanced at, so the framing there is still earning its place.
+   ============================================================ */
+.lane.tier-ref, .lane.tier-passive, .notes-panel.tier-passive,
+#waitingOnPanel, .bottom-stack section.tier-ref{
+  background:none;
+  border:none;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  border-radius:0;
+}
+.lane.tier-ref::before, .lane.tier-ref::after,
+.lane.tier-passive::before, .lane.tier-passive::after,
+.notes-panel.tier-passive::before, .notes-panel.tier-passive::after,
+#waitingOnPanel::before, #waitingOnPanel::after,
+.bottom-stack section.tier-ref::before, .bottom-stack section.tier-ref::after{
+  content:none;
+}
+.lane.tier-ref .lane-body, .lane.tier-passive .lane-body{ border-top:none; }
+#waitingOnPanel .panel-head{ border-bottom:none; }
+
+/* Their task-cards flatten to plain rows — a hairline between items
+   does the job a bordered box used to do, at a fraction of the weight. */
+.lane.tier-ref .task-card:not(.needs-context),
+.lane.tier-passive .task-card:not(.needs-context){
+  background:none; border:none; box-shadow:none; border-radius:0;
+  padding:7px 4px;
+  border-bottom:1px solid rgba(20,20,30,0.07);
+}
+.lane.tier-ref .task-card:last-child,
+.lane.tier-passive .task-card:last-child{ border-bottom:none; }
+.lane.tier-ref .task-card:not(.needs-context):hover,
+.lane.tier-passive .task-card:not(.needs-context):hover{
+  transform:none; box-shadow:none; background:rgba(255,255,255,0.28);
+}
 .lane{ min-width:0; }
-.lane{ display:flex; flex-direction:column; min-height:360px; }
+.lane{ display:flex; flex-direction:column; height:100%; min-height:0; }
 .lane-head{
   display:flex; align-items:center; gap:8px;
   padding:13px 18px 7px;
   border-radius:var(--r-xl) var(--r-xl) 0 0;
+}
+/* Today keeps the identity wash — it's the one object in the room that
+   earns a bit of color in its header, since it IS the workspace. */
+#laneToday .lane-head{
   background:linear-gradient(180deg, var(--lane-soft, transparent), transparent);
 }
 .lane-head svg{ width:16px;height:16px; stroke-width:1.75; color:var(--lane-accent, var(--ink-faint)); }
@@ -833,9 +891,7 @@ body{
 .glass.tier-ref{ border-top-width:1.5px; }
 .glass.tier-passive{ border-top-width:1px; }
 .lane .lane-count{
-  color:var(--lane-accent, var(--ink-soft));
-  background:var(--lane-soft, rgba(255,255,255,0.55));
-  border-color:var(--lane-border, rgba(255,255,255,0.45));
+  color:var(--lane-accent, var(--ink-faint));
 }
 .lane[data-lane="week"]{
   --lane-accent:#5B6B85; --lane-edge:rgba(91,107,133,0.40);
@@ -863,19 +919,19 @@ body{
 }
 .lane-name{ font-family:var(--font-display); font-size:13px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:rgba(35,38,60,0.85); }
 .lane-count{
-  font-size:10.5px; font-weight:540; color:var(--ink-soft);
-  background:rgba(255,255,255,0.42);
-  border:1px solid rgba(0,0,0,0.08);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
-  padding:1px 8px; border-radius:999px;
-  font-variant-numeric:tabular-nums;
+  font-size:10.5px; font-weight:540; color:var(--ink-faint);
+  padding:0; font-variant-numeric:tabular-nums;
 }
 .lane-body{
   flex:1; display:flex; flex-direction:column; gap:9px;
   margin-top:10px;
   padding:10px 16px 14px;
   border-top:1px solid var(--lane-border, rgba(255,255,255,0.18));
+  min-height:0;
+  overflow-y:auto;
 }
+.lane-body::-webkit-scrollbar{ width:5px; }
+.lane-body::-webkit-scrollbar-thumb{ background:var(--lane-edge, rgba(169,168,240,0.30)); border-radius:10px; opacity:0.5; }
 .add-task-row{
   display:flex; align-items:center; gap:8px;
   padding:7px 11px;
@@ -1048,19 +1104,26 @@ body{
 
 .notes-area{
   padding:0 18px 16px;
+  flex:1; min-height:0; display:flex;
 }
 textarea.notes-input{
   display:block; width:100%; resize:none; border:none; outline:none; background:none;
   font-family:inherit; font-size:12.5px; color:var(--ink);
   line-height:1.6;
+  flex:1; min-height:0; overflow-y:auto;
 }
 textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
 /* Full width panels */
-.panel-full{ display:flex; flex-direction:column; }
-.notes-panel .notes-area{ min-height:120px; }
-.bottom-grid{ display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:16px; align-items:start; }
-.bottom-stack{ display:flex; flex-direction:column; gap:12px; }
+.panel-full{ display:flex; flex-direction:column; height:100%; min-height:0; }
+.panel-full .panel-body{ flex:1; min-height:0; overflow-y:auto; }
+.notes-panel{ height:100%; min-height:0; }
+/* Row 4 — Reference: Work Notes, Done, Someday. Consulted occasionally,
+   never worked in continuously — smallest footprint on the board. */
+.bottom-grid{ display:grid; grid-template-columns:minmax(0,240px) minmax(0,1fr) minmax(0,210px); gap:12px; align-items:stretch; flex:0.85; min-height:0; }
+.bottom-stack{ display:flex; flex-direction:column; gap:10px; min-height:0; }
+.bottom-stack #laneDone{ flex:1.3; min-height:0; }
+.bottom-stack .panel-full{ flex:1; min-height:0; }
 .tickets-empty, .recent-empty{
   display:flex; align-items:center; gap:10px;
   padding:8px var(--s-2) 10px;
@@ -1075,7 +1138,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 }
 .ticket-row{
   display:flex; align-items:center; gap:12px;
-  padding:7px var(--s-2);
+  padding:5px var(--s-2);
   border-top:1px solid var(--glass-border-soft);
 }
 .ticket-row:first-child{ border-top:none; }
@@ -1174,12 +1237,20 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 ::selection{ background:rgba(169,168,240,0.4); }
 
 @media (max-width:1180px){
-  .lane-row-waiting, .lane-row-upcoming{ grid-template-columns:1fr; }
-  .lane{ min-height:280px; }
+  .lane-grid{ grid-template-columns:1fr !important; }
+  .rail-active, .rail-support{ grid-template-columns:1fr; }
   .bottom-grid{ grid-template-columns:1fr !important; }
+  /* Fixed-viewport board only works with the desk layout side-by-side;
+     once it stacks, go back to a normal scrolling page instead of
+     crushing every lane. */
+  .main{ overflow-y:auto; height:auto; }
+  .lane-grid, .bottom-grid, .lane-row-hero, .lane-rail, .rail-active, .rail-support{ flex:none; }
+  .lane{ min-height:280px; height:auto; }
+  .panel-full{ height:auto; }
+  .lane-body, .panel-full .panel-body, textarea.notes-input{ overflow-y:visible; }
 }
 @media (max-width:760px){
-  .lane-row-hero .lane{ min-height:360px; }
+  .lane{ min-height:320px; }
 }
 </style>
 </head>
@@ -1442,9 +1513,12 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         </div>
       </div>
 
-      <!-- Row 2 — WAITING ON OTHERS. Blocked work + who owes you something. -->
-      <div class="lane-row lane-row-waiting">
-        <div class="glass lane tier-ref" id="lanePending" data-lane="pending" ondrop="onDrop(event,'pending')" ondragover="onDragOver(event)">
+      <!-- Rail — everything you move work between, within a short drag of Today. -->
+      <div class="lane-rail">
+
+        <!-- Rail tier 1 — Pending + This Week: worked constantly, second only to Today. -->
+        <div class="rail-active">
+        <div class="glass lane tier-active" id="lanePending" data-lane="pending" ondrop="onDrop(event,'pending')" ondragover="onDragOver(event)">
           <div class="lane-head"><i data-lucide="lock"></i><span class="lane-name">Pending</span><span class="lane-count" id="countPending">0</span>
             <div class="lane-controls">
               <div class="lane-ctrl-btn" data-maximize="pending" title="Expand"><i data-lucide="maximize-2"></i></div>
@@ -1462,6 +1536,31 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
           </div>
         </div>
 
+        <div class="glass lane tier-active" id="laneWeek" data-lane="week" ondrop="onDrop(event,'week')" ondragover="onDragOver(event)">
+          <div class="lane-head"><i data-lucide="inbox"></i><span class="lane-name">This Week</span><span class="lane-count" id="countWeek">0</span>
+            <div class="lane-controls">
+              <div class="lane-ctrl-btn" data-maximize="week" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="week" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+          <div class="lane-summary" id="summaryWeek" title="Expand This Week"></div>
+          <div class="lane-body">
+            <div class="add-task-row" id="addTaskRow">
+              <i data-lucide="plus"></i>
+              <input id="addTaskInput" type="text" placeholder="Add task">
+            </div>
+            <div class="lane-empty" id="weekEmpty">
+              <div class="lane-empty-icon"><i data-lucide="inbox"></i></div>
+              <div class="lane-empty-title">Backlog clear</div>
+              <div class="lane-empty-sub">Captures land here</div>
+            </div>
+            <div id="weekItems"></div>
+          </div>
+        </div>
+        </div>
+
+        <!-- Rail tier 2 — On Hold + Waiting On: visible, not worked in — compact. -->
+        <div class="rail-support">
         <div class="glass lane tier-ref" id="laneOnHold" data-lane="onhold" ondrop="onDrop(event,'onhold')" ondragover="onDragOver(event)">
           <div class="lane-head"><i data-lucide="pin"></i><span class="lane-name">On Hold</span><span class="lane-count" id="countOnHold">0</span>
             <div class="lane-controls">
@@ -1493,54 +1592,13 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
           </div>
           <div id="ticketsList" class="panel-body"></div>
         </section>
-      </div>
-
-      <!-- Row 3 — UPCOMING WORK. Not on deck for today, but tracked. -->
-      <div class="lane-row lane-row-upcoming">
-        <div class="glass lane tier-active" id="laneWeek" data-lane="week" ondrop="onDrop(event,'week')" ondragover="onDragOver(event)">
-          <div class="lane-head"><i data-lucide="inbox"></i><span class="lane-name">This Week</span><span class="lane-count" id="countWeek">0</span>
-            <div class="lane-controls">
-              <div class="lane-ctrl-btn" data-maximize="week" title="Expand"><i data-lucide="maximize-2"></i></div>
-              <div class="lane-ctrl-btn" data-collapse="week" title="Collapse"><i data-lucide="chevron-down"></i></div>
-            </div>
-          </div>
-          <div class="lane-summary" id="summaryWeek" title="Expand This Week"></div>
-          <div class="lane-body">
-            <div class="add-task-row" id="addTaskRow">
-              <i data-lucide="plus"></i>
-              <input id="addTaskInput" type="text" placeholder="Add task">
-            </div>
-            <div class="lane-empty" id="weekEmpty">
-              <div class="lane-empty-icon"><i data-lucide="inbox"></i></div>
-              <div class="lane-empty-title">Backlog clear</div>
-              <div class="lane-empty-sub">Captures land here</div>
-            </div>
-            <div id="weekItems"></div>
-          </div>
         </div>
 
-        <div class="glass lane tier-passive" id="laneSomeday" data-lane="someday" ondrop="onDrop(event,'someday')" ondragover="onDragOver(event)">
-          <div class="lane-head"><i data-lucide="archive"></i><span class="lane-name">Someday</span><span class="lane-count" id="countSomeday">0</span>
-            <div class="lane-controls">
-              <div class="lane-ctrl-btn" data-maximize="someday" title="Expand"><i data-lucide="maximize-2"></i></div>
-              <div class="lane-ctrl-btn" data-collapse="someday" title="Collapse"><i data-lucide="chevron-down"></i></div>
-            </div>
-          </div>
-          <div class="lane-summary" id="summarySomeday" title="Expand Someday"></div>
-          <div class="lane-body">
-            <div class="lane-empty" id="somedayEmpty">
-              <div class="lane-empty-icon"><i data-lucide="archive"></i></div>
-              <div class="lane-empty-title">Parking lot empty</div>
-              <div class="lane-empty-sub">Drag future work here to keep the week clean</div>
-            </div>
-            <div id="somedayItems"></div>
-          </div>
-        </div>
       </div>
 
     </div>
 
-    <!-- Row 4 — REFERENCE MATERIAL. Quiet, minimal, out of the way. -->
+    <!-- Row 4 — REFERENCE: Work Notes, Done, Someday. Quiet, minimal, out of the way. -->
     <div class="bottom-grid">
       <section class="glass tier-passive panel-full notes-panel">
         <div class="lane-head"><i data-lucide="notebook-pen"></i><span class="lane-name">Work Notes</span></div>
@@ -1579,6 +1637,24 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
           </div>
           <div id="recentDaysList" class="panel-body"></div>
         </section>
+      </div>
+
+      <div class="glass lane tier-passive" id="laneSomeday" data-lane="someday" ondrop="onDrop(event,'someday')" ondragover="onDragOver(event)">
+        <div class="lane-head"><i data-lucide="archive"></i><span class="lane-name">Someday</span><span class="lane-count" id="countSomeday">0</span>
+          <div class="lane-controls">
+            <div class="lane-ctrl-btn" data-maximize="someday" title="Expand"><i data-lucide="maximize-2"></i></div>
+            <div class="lane-ctrl-btn" data-collapse="someday" title="Collapse"><i data-lucide="chevron-down"></i></div>
+          </div>
+        </div>
+        <div class="lane-summary" id="summarySomeday" title="Expand Someday"></div>
+        <div class="lane-body">
+          <div class="lane-empty" id="somedayEmpty">
+            <div class="lane-empty-icon"><i data-lucide="archive"></i></div>
+            <div class="lane-empty-title">Parking lot empty</div>
+            <div class="lane-empty-sub">Drag future work here</div>
+          </div>
+          <div id="somedayItems"></div>
+        </div>
       </div>
     </div>
 
