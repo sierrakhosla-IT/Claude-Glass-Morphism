@@ -1,115 +1,3491 @@
-The application has reached a point where the remaining opportunity is no longer visual refinement or feature reduction. The next iteration should focus on page composition and workspace orchestration.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Execution Tower</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+/* ============================================================
+   EXECUTIVE GLASS — DESIGN TOKENS
+   ============================================================ */
+:root{
+  /* Core palette — sophisticated warm neutral, luminous violet accent */
+  --cloud: #FAF9FB;
+  --apricot-mid: #A9A8F0;      /* brand, secondary tint — periwinkle */
+  --apricot-deep: #7C7AE0;     /* brand primary — soft indigo */
+  --brand-pressed: #615FC4;
+  --white: #FFFFFF;
+  --gray-light: #F5F5F5;
+  --ink: #1C1B22;
+  --ink-soft: #5C5870;
+  --ink-faint: #827E92;
 
-The goal is to make the application feel like a professional desktop workspace where the user's attention naturally lands on active work, rather than moving through a series of stacked sections.
+  /* Type */
+  --font-body: 'Manrope', 'Segoe UI Variable Text', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Space Grotesk', 'Manrope', system-ui, -apple-system, sans-serif;
 
-Primary Objective
+  /* Status accents — reserved for meaning, never decoration */
+  --pearl: #E1E1E1;
+  --blush: #E3A8CE;
+  --mist: #D9DCE5;
+  --success: #4C9A6A;
+  --success-tint: #E4F4EA;
+  --danger: #D66B7A;
+  --danger-dark: #B54255;
+  --danger-tint: #FCEBEE;
+  --warning: #C08A3E;
+  --warning-raw: #E8B94F;
+  --warning-tint: #FBF1DE;
 
-Redesign the page composition so that Today's Work immediately feels like the center of the application.
+  /* Surface — weightier acrylic; substantial, still translucent */
+  --glass-fill: rgba(255,255,255,0.70);
+  --glass-fill-strong: rgba(255,255,255,0.90);
+  --glass-fill-soft: rgba(255,255,255,0.47);
+  --glass-border: rgba(255,255,255,0.62);
+  --glass-border-soft: rgba(124,122,224,0.10);
+  --glass-blur: 44px;
+  --glass-sat: 150%;
+  --hover-fill: rgba(255,255,255,0.90);
 
-The current layout communicates:
+  /* Elevation — crisp contact shadow, not a diffused glow */
+  --elev-4: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 8px rgba(20,20,30,0.06), 0 20px 48px rgba(124,122,224,0.14);
+  --elev-5: inset 0 1px 0 rgba(255,255,255,0.65), 0 3px 10px rgba(20,20,30,0.07), 0 24px 60px rgba(124,122,224,0.16);
 
-Toolbar → Planning → Mission → Workspace
+  --shadow-1: 0 2px 8px rgba(20,20,30,0.06);
+  --shadow-2: 0 6px 18px rgba(20,20,30,0.07);
+  --shadow-3: 0 10px 26px rgba(20,20,30,0.08);
 
-Instead, the experience should communicate:
+  /* Radius scale — rounder, continuous curves */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 22px;
 
-Toolbar → Today's Workspace
+  /* Spacing (4px base grid) */
+  --s-1: 8px;
+  --s-2: 16px;
+  --s-3: 24px;
+  --s-4: 32px;
+  --s-5: 40px;
 
-Planning, Mission, and supporting context should feel integrated into the workspace rather than existing as separate sections above it.
+  /* Motion — slower, floatier */
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --dur: 220ms;
+}
 
-Design Challenge
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:var(--font-body);
+  color:var(--ink);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  background:var(--cloud);
+}
 
-Reevaluate how Planning and Mission relate to the workspace.
+/* ============================================================
+   BACKGROUND — soft organic wallpaper, disappears behind content
+   ============================================================ */
+.wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(ellipse 1500px 900px at 12% -8%, rgba(214,210,250,0.08), transparent 62%),
+    radial-gradient(ellipse 1300px 900px at 92% 100%, rgba(238,228,214,0.07), transparent 60%),
+    var(--cloud);
+  background-size:130% 130%, 130% 130%, auto;
+}
+@media (prefers-reduced-motion: reduce){
+  .wallpaper{ animation:none; }
+}
+/* Mica — one quiet, mostly-opaque tinted layer behind the shell.
+   No drift blobs, no glow orbs: light behaves like flat daylight, not a scene. */
+.blob{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(160px);
+  z-index:-1;
+  opacity:0.07;
+  pointer-events:none;
+}
+.blob-1{ width:900px; height:900px; top:-220px; left:-180px; background:radial-gradient(circle, rgba(205,203,220,0.5), transparent 70%); }
+.blob-2{ width:820px; height:820px; top:-120px; right:-200px; background:radial-gradient(circle, rgba(212,214,224,0.45), transparent 70%); }
+.blob-3{ width:760px; height:760px; bottom:-180px; left:6%; background:radial-gradient(circle, rgba(232,224,214,0.35), transparent 70%); }
+.blob-4{ display:none; }
+.blob-5{ display:none; }
 
-Planning should no longer read as an independent section of the page.
+/* Organic background motion — restored, barely perceptible until you look for it */
+.ribbon{
+  position:fixed; z-index:-1; pointer-events:none;
+  border-radius:50%;
+  filter:blur(60px);
+  opacity:0.035;
+}
+.ribbon-1{
+  width:50vw; height:130vh; left:-16vw; top:-14vh;
+  transform:rotate(8deg);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9) 35%, rgba(214,210,250,0.4) 60%, transparent);
+}
+.ribbon-2{
+  width:120vw; height:28vh; left:-10vw; top:60vh;
+  transform:rotate(-6deg);
+  background:linear-gradient(90deg, transparent, rgba(238,228,214,0.35) 45%, rgba(255,255,255,0.7) 70%, transparent);
+}
+@media (prefers-reduced-motion: reduce){
+  .blob, .ribbon{ animation:none; }
+}
 
-Instead, it should function as contextual information that supports execution without delaying the user's arrival at Today's work.
+@media (prefers-reduced-motion: reduce){
+  .mode-dot, .focus-icon{ animation:none; }
+}
 
-The first visual anchor after the toolbar should be the workspace itself.
+/* ============================================================
+   GLASS SURFACE — reusable
+   ============================================================ */
+.glass{
+  background:linear-gradient(165deg, rgba(255,255,255,0.10), rgba(255,255,255,0.0)), var(--glass-fill);
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border:1px solid var(--glass-border);
+  border-radius:var(--r-xl);
+  box-shadow:
+    inset 0 1.5px 0 rgba(255,255,255,0.65),
+    inset 0 -1px 0 rgba(20,20,30,0.035),
+    inset 0 0 0 1px rgba(255,255,255,0.05),
+    0 1px 2px rgba(20,20,30,0.05),
+    0 10px 22px rgba(124,122,224,0.07),
+    var(--shadow-2);
+  position:relative;
+}
+/* Internal reflection — a sheet of acrylic catching ambient light.
+   One faint diagonal luminance; a material property, not a decoration. */
+.glass::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(120deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.025) 32%, rgba(255,255,255,0) 55%);
+}
+/* Edge-light bevel — a hairline catch along the top border where the
+   ambient light source would graze the acrylic edge. */
+.glass::after{
+  content:"";
+  position:absolute; inset:0; height:1px; top:0;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.55) 20%, rgba(255,255,255,0.55) 80%, transparent);
+}
+/* Material thickness varies with importance: hero glass is thicker */
+.glass.tier-hero{ backdrop-filter:blur(40px) saturate(122%); -webkit-backdrop-filter:blur(40px) saturate(122%); }
+.glass.tier-passive{ backdrop-filter:blur(18px) saturate(106%); -webkit-backdrop-filter:blur(18px) saturate(106%); }
+/* Lane identity edges survive tier border treatment — the one colored
+   line each status keeps, applied after tiers so the cascade preserves it. */
+.glass.lane[data-lane]{ border-top-color:var(--lane-edge, var(--glass-border)); }
 
-Workspace Composition
 
-Treat the application as a single workspace with supporting context rather than multiple stacked panels.
 
-The relationship should feel similar to:
+.glass-soft{
+  background:var(--glass-fill-soft);
+  backdrop-filter:blur(24px) saturate(160%);
+  -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border:1px solid var(--glass-border-soft);
+}
 
-document + metadata
-canvas + properties
-workspace + context
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.app{
+  display:grid;
+  grid-template-columns:224px 1fr;
+  height:100vh;
+  padding:14px;
+  gap:14px;
+  transition:grid-template-columns var(--dur) var(--ease);
+}
+.app.sidebar-collapsed{
+  grid-template-columns:76px 1fr;
+}
 
-—not—
+/* ---------- Sidebar ---------- */
+.sidebar{
+  display:flex;
+  flex-direction:column;
+  padding:20px 16px;
+  gap:18px;
+  position:relative;
+  transition:padding var(--dur) var(--ease);
+  background:linear-gradient(165deg, rgba(255,255,255,0.07), rgba(255,255,255,0)), linear-gradient(175deg, rgba(30,27,44,0.74), rgba(20,18,30,0.80)) !important;
+  border:1px solid rgba(255,255,255,0.14) !important;
+  border-radius:var(--r-xl);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    0 4px 14px rgba(0,0,0,0.16),
+    0 34px 80px rgba(20,18,30,0.30) !important;
+  backdrop-filter:blur(46px) saturate(160%) !important;
+  -webkit-backdrop-filter:blur(46px) saturate(160%) !important;
+}
+.sidebar::after{ display:none; }
 
-panel
-panel
-panel
-panel
+/* Frosted dark crystal — a faint edge catch of light, not a matte panel */
+.sidebar::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:inherit;
+  background:linear-gradient(120deg, rgba(255,255,255,0.10), transparent 40%);
+  pointer-events:none;
+  display:block;
+}
 
-Every major section should contribute to a single unified workspace.
+.sidebar .brand-name{ color:#F1EFF7; }
+.sidebar .clock-day,
+.sidebar .glance-label{ color:#8B879C; }
+.sidebar .clock-date,
+.sidebar .clock-mode{ color:#B6B2C6; }
+.sidebar .clock-time,
+.sidebar .glance-num{ color:#F1EFF7; }
+.sidebar .glance-num.over-hot{ color:#E38FA0; }
+.sidebar .glance-stat{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.10); }
+.sidebar .glance-stat[data-jump]:hover{ background:rgba(255,255,255,0.10); }
+.sidebar .nav-item{ color:#A7A3B8; }
+.sidebar .nav-item:hover{ background:rgba(255,255,255,0.08); color:#F1EFF7; }
+.sidebar .nav-item.active{
+  background:rgba(255,255,255,0.11);
+  color:#F1EFF7;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 14px rgba(124,122,224,0.20);
+}
+.sidebar .nav-item.active svg{ color:var(--apricot-mid); }
+.sidebar .nav-badge{ background:rgba(255,255,255,0.09); color:#8B879C; }
+.sidebar .ops-div{ background:rgba(255,255,255,0.10); }
+.sidebar .nav-section-label{ color:#6F6B80; }
+.sidebar .sidebar-collapse-btn{ background:rgba(30,27,44,0.9); border-color:rgba(255,255,255,0.16); }
+.sidebar .sidebar-collapse-btn svg{ color:#B6B2C6; }
+.sidebar .clock-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
+.sidebar .leadership-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
+.sidebar .leadership-title{ color:#6F6B80; }
+.sidebar .leadership-name{ color:#A7A3B8; }
+.sidebar .leadership-input{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.10); color:#F1EFF7; }
+.sidebar .leadership-input::placeholder{ color:#5F5B70; }
+.sidebar .mode-dot{ box-shadow:0 0 0 3px rgba(169,168,240,0.28); }
+.sidebar-collapse-btn{
+  position:absolute; top:18px; right:-12px;
+  width:24px;height:24px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--white);
+  border:1px solid var(--glass-border-soft);
+  box-shadow:var(--shadow-1);
+  cursor:pointer; z-index:5;
+  transition:transform var(--dur) var(--ease);
+}
+.sidebar-collapse-btn svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); }
+.app.sidebar-collapsed .sidebar-collapse-btn svg{ transform:rotate(180deg); }
 
-Reevaluate Visual Entry Point
+.app.sidebar-collapsed .sidebar{ padding:var(--s-3) 10px; align-items:center; }
+.app.sidebar-collapsed .brand{ justify-content:center; padding:0 0 var(--s-2); }
+.app.sidebar-collapsed .brand-name,
+.app.sidebar-collapsed .glance-strip,
+.app.sidebar-collapsed .nav-item span,
+.app.sidebar-collapsed .clock-card{
+  display:none;
+}
+.app.sidebar-collapsed .nav-item{
+  justify-content:center; padding:11px; width:44px;
+}
+.app.sidebar-collapsed .nav{ align-items:center; }
 
-Review where the user's eye naturally lands when opening the application.
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 var(--s-1) var(--s-2);
+}
+.brand-mark{
+  width:34px;height:34px;border-radius:12px;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(150deg, #A9A8F0, #7C7AE0);
+  box-shadow:0 1px 2px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4);
+  flex-shrink:0;
+}
 
-The first moment of visual attention should communicate:
 
-what I am working on
-what is most important
-what requires action now
+.brand-name{ font-family:var(--font-display); font-weight:700; font-size:16px; letter-spacing:-0.01em; }
 
-If the eye lands on Planning before active work, the composition should be reconsidered.
+.glance-strip{
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:0 var(--s-1) var(--s-2);
+}
+.glance-stat[data-jump]{ cursor:pointer; }
+.glance-stat[data-jump]:hover{ background:var(--hover-fill); }
+.glance-num.over-hot{ color:var(--danger-dark); }
+.glance-stat{
+  background:rgba(255,255,255,0.34);
+  border:1px solid var(--glass-border-soft);
+  border-radius:var(--r-md);
+  padding:9px 10px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.glance-num{ font-size:19px; font-weight:580; color:var(--ink); line-height:1.1; font-variant-numeric:tabular-nums; }
+.glance-label{ font-size:9.5px; font-weight:540; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-top:3px; }
 
-Strengthen Workspace Hierarchy
+.nav{ display:flex; flex-direction:column; gap:2px; flex:1; }
+.nav-item{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 12px;
+  border-radius:var(--r-md);
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+  -webkit-user-select:none; user-select:none;
+}
+.nav-item svg{ width:17px; height:17px; stroke-width:1.5; flex-shrink:0; opacity:0.85; }
+.nav-item:hover{ background:rgba(255,255,255,0.34); color:var(--ink); }
+.nav-item.active{
+  background:var(--glass-fill-strong);
+  color:var(--ink);
+  box-shadow:0 1px 2px rgba(0,0,0,0.05), 0 3px 10px rgba(0,0,0,0.08);
+  font-weight:520;
+}
+.nav-item.active svg{ opacity:1; color:var(--apricot-deep); }
+.ops-row{ cursor:pointer; }
+.ops-row .nav-badge{ margin-left:auto; font-variant-numeric:tabular-nums; }
+.ops-div{ height:1px; background:var(--glass-border-soft); margin:8px 10px; }
+.nav-section-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); padding:12px 12px 5px; }
+.nav-section-label:first-child{ padding-top:2px; }
+.app.sidebar-collapsed .nav-section-label{ display:none; }
+.nav-badge.badge-hot{ color:#D66B7A; font-weight:580; }
+.nav-all-clear{ display:none; color:var(--ink-faint); cursor:default; }
+.nav-all-clear:hover{ background:none; }
+.nav-all-clear svg{ opacity:0.6; }
+.nav-badge{
+  margin-left:auto;
+  font-size:11px; font-weight:560;
+  color:var(--ink-faint);
+  background:rgba(255,255,255,0.34);
+  padding:1px 8px; border-radius:999px;
+}
 
-Today's Work should become the visual anchor around which the rest of the interface is organized.
+.clock-card{
+  padding:12px 14px;
+  display:flex; flex-direction:column; gap:1px;
+}
+.clock-day{ font-size:10.5px; font-weight:520; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em; }
+.clock-date{ font-size:12px; font-weight:520; color:var(--ink-soft); margin-bottom:3px; }
+.clock-time{ font-family:var(--font-display); font-size:23px; font-weight:600; letter-spacing:-0.01em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.clock-mode{
+  display:flex; align-items:center; gap:7px;
+  margin-top:4px;
+  font-size:11px; font-weight:560; color:var(--ink-soft);
+}
+.mode-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--apricot-deep);
+  box-shadow:0 0 0 3px rgba(124,122,224,0.15);
+  animation:modePulse 2.6s ease-in-out infinite;
+}
+.clock-mode.mode-stop .mode-dot{ background:var(--success); box-shadow:0 0 0 3px rgba(76,154,106,0.15); animation:none; }
+@keyframes modePulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.45; } }
 
-Supporting information—including Planning, Mission, Pending, This Week, Waiting On, Notes, and reference material—should feel like they orbit the workspace rather than compete with it.
+.leadership-card{
+  padding:var(--s-2);
+  display:flex; flex-direction:column; gap:8px;
+  border-radius:var(--r-lg);
+}
+.leadership-title{ font-family:var(--font-display); font-size:10.5px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); }
+.leadership-row{ display:flex; align-items:center; gap:8px; }
+.leadership-name{ font-size:11.5px; font-weight:600; color:var(--ink-soft); flex-shrink:0; width:52px; }
+.leadership-input{
+  flex:1; min-width:0;
+  font-family:inherit; font-size:11.5px; font-weight:500; color:var(--ink);
+  background:rgba(255,255,255,0.36);
+  border:1px solid rgba(255,255,255,0.40);
+  border-radius:8px; padding:5px 9px; outline:none;
+  transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.leadership-input::placeholder{ color:var(--ink-faint); }
+.leadership-input:focus{ background:rgba(255,255,255,0.6); border-color:rgba(124,122,224,0.4); }
+.app.sidebar-collapsed .leadership-card{ display:none; }
 
-The application should visually communicate:
+/* ---------- Main column ---------- */
+.main{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-width:0;
+  min-height:0;
+  height:100%;
+  overflow:hidden;
+  padding-right:4px;
+}
+.main::-webkit-scrollbar{ width:6px; }
+.main::-webkit-scrollbar-thumb{ background:rgba(169,168,240,0.30); border-radius:10px; }
+.lane-body::-webkit-scrollbar, .modal::-webkit-scrollbar, #askMessages::-webkit-scrollbar{ width:6px; }
+.lane-body::-webkit-scrollbar-thumb, .modal::-webkit-scrollbar-thumb, #askMessages::-webkit-scrollbar-thumb{ background:rgba(169,168,240,0.30); border-radius:10px; }
 
-Everything on this screen exists to help me complete Today's work.
+/* Topbar */
+.topbar{
+  display:flex; align-items:center; gap:var(--s-2);
+  padding:9px var(--s-2);
+  flex-shrink:0;
+  flex-wrap:wrap;
+  position:relative;
+  z-index:60; /* keeps the utility dropdown above the glass panels below */
+}
+.topbar .btn{ flex-shrink:0; white-space:nowrap; }
+.capture{
+  flex:1 1 260px;
+  min-width:220px;
+  display:flex; align-items:center; gap:10px;
+  padding:11px 16px;
+  border-radius:var(--r-lg);
+  background:var(--glass-fill-strong);
+  border:1px solid var(--glass-border);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,0.6);
+  transition:box-shadow var(--dur) var(--ease);
+}
+.capture-dump{
+  width:26px; height:26px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink-faint);
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.capture-dump svg{ width:14px; height:14px; stroke-width:1.5; }
+.capture-dump:hover{ background:var(--hover-fill); color:var(--apricot-deep); }
 
-Design Around Relationships Instead of Sections
+.capture:focus-within{ border-color:rgba(124,122,224,0.55); box-shadow:0 0 0 3px rgba(124,122,224,0.18), inset 0 1px 0 rgba(255,255,255,0.5); }
+.capture svg{ width:16px; height:16px; stroke-width:1.5; color:var(--ink-faint); flex-shrink:0; }
+.capture input{
+  flex:1; border:none; background:none; outline:none;
+  font-family:inherit; font-size:13.5px; color:var(--ink);
+}
+.capture input::placeholder{ color:var(--ink-faint); }
+.kbd{
+  font-size:11px; font-weight:520; color:var(--ink-faint);
+  background:rgba(255,255,255,0.40); padding:2px 7px; border-radius:8px;
+  border:1px solid rgba(0,0,0,0.09);
+}
+.topbar-stat{
+  font-size:12.5px; font-weight:520; color:var(--ink-soft);
+  padding:7px 14px; border-radius:var(--r-lg);
+  white-space:nowrap;
+}
+.btn{
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px;
+  border-radius:var(--r-lg);
+  font-family:inherit; font-size:12.5px; font-weight:520;
+  border:1px solid var(--glass-border);
+  background:var(--glass-fill-strong);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.04);
+  color:var(--ink-soft);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.btn svg{ width:14px; height:14px; stroke-width:1.5; }
+.btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,0.85); box-shadow:0 2px 4px rgba(0,0,0,0.06), 0 6px 16px rgba(0,0,0,0.10); }
+.btn:active{ transform:translateY(0); }
+.btn-primary{
+  background:var(--apricot-deep);
+  color:#FFFFFF;
+  border:1px solid rgba(255,255,255,0.25);
+  box-shadow:0 1px 2px rgba(0,0,0,0.10), 0 4px 10px rgba(124,122,224,0.28);
+}
+.btn-primary:hover{ background:var(--brand-pressed); box-shadow:0 2px 4px rgba(0,0,0,0.10), 0 6px 14px rgba(124,122,224,0.32); }
 
-Rather than treating each component as its own independent panel, consider the relationship between components.
+.avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(145deg, #6FB2E8, var(--apricot-deep));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff; font-weight:560; font-size:14px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.12), 0 3px 8px rgba(0,0,0,0.15);
+  flex-shrink:0;
+}
 
-For example:
+/* Section headers */
+.head-icon{ width:16px !important; height:16px !important; stroke-width:1.5 !important; color:var(--ink-faint); flex-shrink:0; }
 
-Mission belongs to Today's work.
-Planning provides context for Today's work.
-Pending and This Week support Today's work.
-Waiting On informs Today's work.
-Notes support Today's work.
+.section-title{
+  font-family:var(--font-display); font-size:16px; font-weight:650; letter-spacing:-0.01em; color:var(--ink);
+}
+.section-sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; font-weight:500; letter-spacing:0.01em; }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; padding:13px 18px 8px; border-bottom:1px solid rgba(124,122,224,0.12); margin-bottom:4px; }
+.panel-body{ padding:0 18px 14px; }
 
-The composition should reinforce these relationships through proximity, grouping, spacing, and hierarchy.
+/* Today context — Mission + Planning nested inside Today's own card.
+   Metadata attached to the workspace, not a section stacked above it. */
+.today-context{
+  padding:2px 18px 10px;
+  border-bottom:1px solid var(--lane-border, rgba(255,255,255,0.18));
+  display:flex; flex-direction:column; gap:6px;
+}
+.snapshot-row{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; padding:2px 0; }
+.snapshot-field{ flex:1 1 45%; min-width:0; display:flex; align-items:baseline; gap:8px; }
+.snapshot-label{ font-family:var(--font-display); font-size:9px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
+.snapshot-field input{ flex:1; min-width:0; border:none; background:none; box-shadow:none; padding:2px 0; font-size:11.5px; }
+.snapshot-field input:focus{ background:none; box-shadow:none; border-color:transparent; }
+.snapshot-div{ display:none; }
 
-Desired Experience
+/* Planning summary — the collapsed, execution-phase state of Planning */
+.planning-summary{ display:none; align-items:center; gap:10px; padding:2px 0; cursor:pointer; }
+.planning-summary-text{ flex:1; min-width:0; font-size:11.5px; color:var(--ink-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.planning-expand-btn{ flex-shrink:0; }
+.planning-collapse-btn{ flex-shrink:0; margin-left:auto; }
 
-Opening the application should feel like sitting down at a desk.
+/* Workspace states — inferred automatically from whether Today has work.
+   Planning: everything expanded, Today's own empty state does triage.
+   Execution: Planning recedes to a summary line; Mission stays put. */
+body.is-executing:not(.planning-expanded) .snapshot-row{ display:none; }
+body.is-executing:not(.planning-expanded) .planning-summary{ display:flex; }
+body.is-planning .planning-collapse-btn{ display:none; }
 
-There should be an immediate sense of:
+/* Mission — attached to execution, stronger than Planning, always visible */
+.mission-row{ display:flex; align-items:center; gap:18px; padding-top:6px; border-top:1px solid rgba(124,122,224,0.12); }
+.mission-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--apricot-deep); flex-shrink:0; }
+.mission-field{ flex:1; display:flex; align-items:center; gap:10px; position:relative; }
+.mission-field input{ flex:1; border:none; background:none; box-shadow:none; padding:2px 0; font-size:12px; font-weight:520; }
+.mission-field input:focus{ background:none; box-shadow:none; border-color:transparent; }
+.mission-divider{ display:none; }
 
-where work begins
-what deserves attention
-what is supporting context
-what can remain in the background
+/* Triage list — lives inside Today's own empty state, replacing a separate
+   Focus section. Ranked candidates from This Week, click to pull in. */
+.triage-list{ display:flex; flex-direction:column; gap:4px; width:100%; margin-top:10px; }
+.triage-list .nextup-row{ cursor:pointer; }
 
-The interface should feel calm, intentional, and effortless to scan.
 
-The user should never feel like they are reading through multiple sections before arriving at the work itself.
+.commit-item{
+  display:flex; align-items:center; gap:12px;
+  padding:13px 14px;
+  border-radius:var(--r-md);
+  background:rgba(255,255,255,0.28);
+  border:1px solid var(--glass-border-soft);
+  margin-bottom:8px;
+  transition:background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.commit-item:hover{ background:rgba(255,255,255,0.38); transform:translateY(-1px); }
+.commit-item:last-child{ margin-bottom:0; }
+.checkbox{
+  width:19px; height:19px; border-radius:50%;
+  border:1.5px solid var(--ink-faint);
+  flex-shrink:0; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all var(--dur) var(--ease);
+  background:rgba(255,255,255,0.34);
+}
+.checkbox svg{ width:11px;height:11px; opacity:0; transition:opacity var(--dur) var(--ease); stroke-width:3; color:#fff; }
+.checkbox.checked{ background:var(--success); border-color:var(--success); }
+.checkbox.checked svg{ opacity:1; }
+.commit-text{ flex:1; font-size:13.5px; font-weight:500; color:var(--ink); }
+.commit-item.done .commit-text{ text-decoration:line-through; color:var(--ink-faint); }
+.tag{
+  display:flex; align-items:center; gap:6px;
+  font-size:11.5px; font-weight:520; color:var(--ink-soft);
+  padding:4px 10px; border-radius:999px;
+  background:rgba(255,255,255,0.40);
+  white-space:nowrap;
+}
+.dot{ width:6px;height:6px;border-radius:50%; flex-shrink:0; }
+.dot-high{ background:var(--apricot-deep); }
+.dot-time{ background:var(--apricot-mid); }
+.dot-personal{ background:#E9BE8E; }
 
-Success Criteria
+.focus-empty{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; text-align:center; padding:0 var(--s-2) var(--s-2);
+}
+.focus-icon{
+  width:54px;height:54px;border-radius:16px;
+  background:rgba(255,255,255,0.34);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-1);
+  animation:focusPulse 4s ease-in-out infinite;
+}
+@keyframes focusPulse{
+  0%,100%{ box-shadow:var(--shadow-1); }
+  50%{ box-shadow:var(--shadow-1); }
+}
+.focus-icon svg{ width:24px;height:24px; stroke-width:1.5; color:var(--apricot-deep); }
+.focus-active{ font-size:13px; font-weight:520; color:var(--ink-faint); }
+.focus-set-text{ font-size:15px; font-weight:560; color:var(--ink); max-width:220px; }
+.done-sub-row{
+  display:flex; align-items:baseline; gap:7px;
+  padding:6px 10px; margin-top:4px;
+  font-size:11px; color:var(--ink-soft);
+  background:rgba(255,255,255,0.30);
+  border:1px solid var(--glass-border-soft);
+  border-radius:8px;
+}
+.done-sub-row .dsr-check{ color:var(--success); font-weight:560; flex-shrink:0; }
+.done-sub-row .dsr-text{ flex:1; }
+.done-sub-row .dsr-parent{ color:var(--ink-faint); font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:44%; }
 
-A successful redesign should achieve the following:
+.task-next{
+  font-size:11px; font-weight:520; color:var(--ink-soft);
+  margin-top:5px; padding-left:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.task-card:not(.card-collapsed) .task-next{ display:none; }
+.task-chip.chip-owner{ color:#6F6690; background:rgba(141,132,169,0.16); }
 
-Today's Work is immediately perceived as the primary workspace.
-Planning transitions from being a page section to becoming contextual workspace metadata.
-Mission feels attached to execution rather than separate from it.
-Supporting panels reinforce the primary workspace instead of competing with it.
-The page feels intentionally composed rather than vertically stacked.
-The user's eye naturally flows from capture → context → execution without unnecessary visual stops.
-Core Design Question
+.ask-msg{ font-size:12px; line-height:1.55; padding:9px 12px; border-radius:12px; white-space:pre-wrap; word-break:break-word; }
+.ask-msg.me{ background:rgba(124,122,224,0.12); border:1px solid rgba(124,122,224,0.20); color:var(--ink); align-self:flex-end; max-width:88%; }
+.ask-msg.ai{ background:rgba(255,255,255,0.60); border:1px solid rgba(255,255,255,0.50); color:var(--ink); align-self:flex-start; max-width:94%; }
+.ask-msg.err{ background:rgba(209,52,56,0.10); border:1px solid rgba(209,52,56,0.25); color:#B54255; }
+.ask-msg.thinking{ color:var(--ink-faint); font-style:italic; }
 
-If a user opens the application and looks at the screen for three seconds, where should their eyes land—and why?
+.nextup-row{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 11px;
+  background:rgba(255,255,255,0.32);
+  border:1px solid var(--glass-border-soft);
+  border-radius:10px;
+  cursor:pointer;
+  transition:background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.nextup-row:hover{ background:var(--hover-fill); box-shadow:var(--shadow-1); }
+.nextup-waitfor{ display:block; font-size:10.5px; font-weight:520; color:var(--ink-faint); margin-top:1px; }
+.nextup-rank{ font-size:12px; font-weight:520; color:var(--apricot-deep); min-width:14px; }
+.nextup-text{
+  flex:1; font-size:12px; font-weight:520; color:var(--ink);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 
-Design the page so the answer is always:
+.field-label{ display:block; font-size:10px; font-weight:540; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; }
+.field-block{ display:flex; flex-direction:column; gap:2px; }
+.icon-btn{
+  width:26px;height:26px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.34);
+  box-shadow:0 2px 6px rgba(124,122,224,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+  cursor:pointer; margin-left:auto;
+  transition:background var(--dur) var(--ease), transform var(--dur) var(--ease);
+  flex-shrink:0;
+}
+.icon-btn svg{ width:14px;height:14px; stroke-width:1.75; color:var(--ink-soft); }
+.icon-btn:hover{ background:var(--white); transform:scale(1.06); }
 
-Today's Work.
+.lane-controls{ display:flex; align-items:center; gap:4px; margin-left:auto; }
+.lane-ctrl-btn{
+  width:24px;height:24px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.34); cursor:pointer; flex-shrink:0;
+  box-shadow:0 2px 6px rgba(124,122,224,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+  transition:background var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.lane-ctrl-btn svg{ width:13px;height:13px; stroke-width:1.75; color:var(--ink-soft); }
+.lane-ctrl-btn:hover{ background:var(--white); }
+.lane-ctrl-btn[data-collapse] svg{ transition:transform var(--dur) var(--ease); }
+.lane.collapsed .lane-body{ display:none; }
+.lane-summary{ display:none; }
+.lane.collapsed .lane-summary{
+  display:flex; flex-direction:column; gap:7px;
+  padding:4px 22px 20px;
+  cursor:pointer;
+}
+.sum-line{ font-size:11.5px; color:var(--ink-soft); line-height:1.4; }
+.sum-line .sum-strong{ color:var(--ink); font-weight:540; font-variant-numeric:tabular-nums; }
+.sum-line.sum-alert .sum-strong{ color:#D66B7A; }
+.sum-line.sum-quiet{ color:var(--ink-faint); }
+.lane.collapsed .lane-ctrl-btn[data-collapse] svg{ transform:rotate(-90deg); }
+
+/* Expand-to-overlay */
+.lane-backdrop{
+  display:none;
+  position:fixed; inset:0; z-index:59;
+  background:rgba(0,0,0,0.26);
+  backdrop-filter:blur(3px);
+}
+.lane-backdrop.show{ display:block; }
+.lane.expanded{
+  position:fixed !important;
+  top:4vh; left:4vw; right:4vw; bottom:4vh;
+  z-index:60;
+  max-height:none;
+  box-shadow:0 30px 80px rgba(0,0,0,0.30);
+}
+.lane.expanded .lane-body{ overflow-y:auto; display:block !important; }
+.lane.expanded .lane-summary{ display:none !important; }
+.lane-ctrl-btn[data-maximize] svg{ transition:transform var(--dur) var(--ease); }
+.lane.expanded .lane-ctrl-btn[data-maximize] svg{ transform:scale(0.85); }
+
+/* Lane grid */
+/* ============================================================
+   SPATIAL HIERARCHY — four emphasis tiers.
+   Hero surfaces are where you work; passive objects support quietly.
+   Weight comes from fill, border presence, and elevation — not effects.
+   ============================================================ */
+.glass.tier-hero{
+  background:linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0.14)), rgba(255,255,255,0.92);
+  border-width:1.5px;
+  border-color:rgba(255,255,255,0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    inset 0 -1px 0 rgba(20,20,30,0.045),
+    0 3px 8px rgba(20,20,30,0.06),
+    0 18px 40px rgba(124,122,224,0.14);
+}
+.glass.tier-active{
+  background:linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.13)), rgba(255,255,255,0.70);
+  border-color:rgba(255,255,255,0.50);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    inset 0 -1px 0 rgba(20,20,30,0.035),
+    0 3px 8px rgba(20,20,30,0.05),
+    0 12px 26px rgba(124,122,224,0.09);
+}
+.glass.tier-ref{
+  background:linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.12)), rgba(255,255,255,0.58);
+  border-color:rgba(255,255,255,0.38);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -1px 0 rgba(20,20,30,0.03),
+    0 3px 8px rgba(20,20,30,0.05),
+    0 12px 28px rgba(124,122,224,0.07);
+}
+.glass.tier-passive{
+  background:linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.09)), rgba(255,255,255,0.40);
+  border:1px solid rgba(255,255,255,0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.32),
+    inset 0 -1px 0 rgba(20,20,30,0.025),
+    0 2px 6px rgba(20,20,30,0.04),
+    0 8px 18px rgba(124,122,224,0.05);
+}
+
+/* Furniture material — Today, This Week, Pending, Waiting On, Done, Someday,
+   Work Notes. These are the objects in the room, not background regions:
+   own radius, own outline, own three-part shadow (bevel + contact + ambient). */
+.lane.tier-hero{
+  background:linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.20)), rgba(255,255,255,0.94);
+  border-color:rgba(255,255,255,0.98);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.55),
+    inset 0 -1px 0 rgba(20,20,30,0.04),
+    0 6px 16px rgba(15,25,60,0.08),
+    0 20px 44px rgba(124,122,224,0.12);
+}
+.lane.tier-active{
+  background:linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.16)), rgba(255,255,255,0.74);
+  border-color:rgba(255,255,255,0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    inset 0 -1px 0 rgba(20,20,30,0.035),
+    0 6px 16px rgba(15,25,60,0.06),
+    0 16px 34px rgba(124,122,224,0.09);
+}
+.lane.tier-ref{
+  background:linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.14)), rgba(255,255,255,0.62);
+  border-color:rgba(255,255,255,0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -1px 0 rgba(20,20,30,0.03),
+    0 6px 16px rgba(15,25,60,0.06),
+    0 14px 30px rgba(124,122,224,0.08);
+}
+.lane.tier-passive, .notes-panel.tier-passive{
+  background:linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.13)), rgba(255,255,255,0.46);
+  border-color:rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.36),
+    inset 0 -1px 0 rgba(20,20,30,0.025),
+    0 5px 14px rgba(15,25,60,0.04),
+    0 20px 48px rgba(124,122,224,0.08);
+}
+
+/* Today is the focal object: distinct via type/tier, not sheer whitespace */
+#laneToday .lane-head{ padding-top:18px; padding-bottom:2px; padding-left:24px; }
+#laneToday .lane-head .lane-name{ font-size:18px; font-weight:700; letter-spacing:0.04em; }
+#laneToday .lane-body{ padding-bottom:18px; padding-left:24px; padding-right:24px; margin-top:12px; }
+
+
+/* Fixed-viewport workspace: the whole board fits one screen. Rows are
+   weighted shares of the remaining height (not content-driven), and each
+   lane scrolls its own card list internally — the frame never moves. */
+/* Desk layout, not stacked rows. Today is the active document — it gets
+   the primary surface, full height, uncontested. Everything you move work
+   between (This Week, Pending, On Hold, Waiting On) lives in a rail beside
+   it: always visible, within a short drag of Today, sized by how often
+   each one is actually touched rather than divided evenly. This also cuts
+   scrolling — nothing stacks vertically fighting Today for height. */
+.lane-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:12px; flex:1; min-height:0; }
+.lane-row-hero{ min-height:0; }
+.lane-rail{ display:flex; flex-direction:column; gap:12px; min-height:0; }
+
+/* Execution state — Today absorbs the space Planning/Focus give up now that
+   Mission+Planning live inside Today's own card and Focus is gone; it doesn't
+   stay proportioned for a layout that assumed a persistent Focus card. Rail widens with it. */
+body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
+/* Rail tier 1 — This Week, Pending: touched constantly, most of the rail */
+.rail-active{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:12px; flex:2; min-height:0; }
+/* Rail tier 2 — On Hold, Waiting On: awareness-only, occasional updates — compact */
+.rail-support{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; flex:0.55; min-height:0; }
+.lane, .notes-panel{
+  border-radius:26px;
+  backdrop-filter:blur(36px) saturate(180%);
+  -webkit-backdrop-filter:blur(36px) saturate(180%);
+}
+/* Outline halo reserved for the hero/active tiers — quieter tiers drop it (Point 4) */
+.lane.tier-hero, .lane.tier-active{
+  outline:1px solid rgba(255,255,255,0.22);
+  outline-offset:2px;
+}
+
+/* Density tapers off as importance drops (Point 7): Someday + Done get tighter,
+   quieter treatment than Today/This Week/Pending. */
+#laneSomeday .lane-body, #laneDone .lane-body{ padding:8px 16px 12px; gap:6px; margin-top:8px; }
+#laneSomeday .task-card, #laneDone .task-card{ padding:7px 11px; font-size:11px; }
+#laneSomeday .lane-head, #laneDone .lane-head{ padding:10px 16px 5px; }
+/* Supporting tier (Waiting On, On Hold) — visible, but quieter than
+   secondary execution; smaller type, tighter padding, no wasted room. */
+#laneOnHold .lane-body, #waitingOnPanel .panel-body{ padding-top:4px; gap:4px; }
+#laneOnHold .task-card{ padding:5px 4px; font-size:11px; }
+#laneOnHold .lane-head, #waitingOnPanel .panel-head{ padding:8px 16px 4px; }
+
+/* ============================================================
+   CHROME REDUCTION — reference & supporting regions are not cards.
+   On Hold, Waiting On, Work Notes, Done, Someday, Follow-ups: no
+   border, no glass fill, no shadow, no blur, no colored edge. They
+   sit directly on the desk; a small label and generous spacing carry
+   the hierarchy that a container used to carry. Today, Pending, and
+   This Week keep their object treatment — they're worked in, not
+   glanced at, so the framing there is still earning its place.
+   ============================================================ */
+.lane.tier-ref, .lane.tier-passive, .notes-panel.tier-passive,
+#waitingOnPanel, .bottom-stack section.tier-ref{
+  background:none;
+  border:none;
+  box-shadow:none;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  border-radius:0;
+}
+.lane.tier-ref::before, .lane.tier-ref::after,
+.lane.tier-passive::before, .lane.tier-passive::after,
+.notes-panel.tier-passive::before, .notes-panel.tier-passive::after,
+#waitingOnPanel::before, #waitingOnPanel::after,
+.bottom-stack section.tier-ref::before, .bottom-stack section.tier-ref::after{
+  content:none;
+}
+.lane.tier-ref .lane-body, .lane.tier-passive .lane-body{ border-top:none; }
+#waitingOnPanel .panel-head{ border-bottom:none; }
+
+/* Their task-cards flatten to plain rows — a hairline between items
+   does the job a bordered box used to do, at a fraction of the weight. */
+.lane.tier-ref .task-card:not(.needs-context),
+.lane.tier-passive .task-card:not(.needs-context){
+  background:none; border:none; box-shadow:none; border-radius:0;
+  padding:7px 4px;
+  border-bottom:1px solid rgba(20,20,30,0.07);
+}
+.lane.tier-ref .task-card:last-child,
+.lane.tier-passive .task-card:last-child{ border-bottom:none; }
+.lane.tier-ref .task-card:not(.needs-context):hover,
+.lane.tier-passive .task-card:not(.needs-context):hover{
+  transform:none; box-shadow:none; background:rgba(255,255,255,0.28);
+}
+.lane{ min-width:0; }
+.lane{ display:flex; flex-direction:column; height:100%; min-height:0; }
+.lane-head{
+  display:flex; align-items:center; gap:8px;
+  padding:13px 18px 7px;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+}
+/* Today keeps the identity wash — it's the one object in the room that
+   earns a bit of color in its header, since it IS the workspace. */
+#laneToday .lane-head{
+  background:linear-gradient(180deg, var(--lane-soft, transparent), transparent);
+}
+.lane-head svg{ width:16px;height:16px; stroke-width:1.75; color:var(--lane-accent, var(--ink-faint)); }
+
+/* Lane identity — one signature hue per status, drawn from the ambient palette.
+   Neutral acrylic stays; the color lives only in the edge, icon, counter, and
+   a whisper of wash behind the header. */
+.lane{ border-top:3px solid var(--lane-edge, transparent); }
+.glass.tier-ref{ border-top-width:1.5px; }
+.glass.tier-passive{ border-top-width:1px; }
+.lane .lane-count{
+  color:var(--lane-accent, var(--ink-faint));
+}
+.lane[data-lane="week"]{
+  --lane-accent:#5B6B85; --lane-edge:rgba(91,107,133,0.40);
+  --lane-soft:rgba(91,107,133,0.07); --lane-border:rgba(91,107,133,0.20);
+}
+.lane[data-lane="today"]{
+  --lane-accent:#7C7AE0; --lane-edge:rgba(124,122,224,0.45);
+  --lane-soft:rgba(124,122,224,0.07); --lane-border:rgba(124,122,224,0.20);
+}
+.lane[data-lane="pending"]{
+  --lane-accent:#C08A3E; --lane-edge:rgba(157,93,0,0.40);
+  --lane-soft:rgba(157,93,0,0.08); --lane-border:rgba(157,93,0,0.20);
+}
+.lane[data-lane="onhold"]{
+  --lane-accent:#8892A0; --lane-edge:rgba(136,146,160,0.42);
+  --lane-soft:rgba(136,146,160,0.09); --lane-border:rgba(136,146,160,0.22);
+}
+.lane[data-lane="done"]{
+  --lane-accent:#4C9A6A; --lane-edge:rgba(76,154,106,0.40);
+  --lane-soft:rgba(76,154,106,0.08); --lane-border:rgba(76,154,106,0.20);
+}
+.lane[data-lane="someday"]{
+  --lane-accent:#9C9A98; --lane-edge:rgba(156,154,152,0.36);
+  --lane-soft:rgba(156,154,152,0.07); --lane-border:rgba(156,154,152,0.20);
+}
+.lane-name{ font-family:var(--font-display); font-size:13px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:rgba(35,38,60,0.85); }
+.lane-count{
+  font-size:10.5px; font-weight:540; color:var(--ink-faint);
+  padding:0; font-variant-numeric:tabular-nums;
+}
+.lane-body{
+  flex:1; display:flex; flex-direction:column; gap:9px;
+  margin-top:10px;
+  padding:10px 16px 14px;
+  border-top:1px solid var(--lane-border, rgba(255,255,255,0.18));
+  min-height:0;
+  overflow-y:auto;
+}
+.lane-body::-webkit-scrollbar{ width:5px; }
+.lane-body::-webkit-scrollbar-thumb{ background:var(--lane-edge, rgba(169,168,240,0.30)); border-radius:10px; opacity:0.5; }
+.add-task-row{
+  display:flex; align-items:center; gap:8px;
+  padding:7px 11px;
+  border-radius:var(--r-md);
+  background:rgba(255,255,255,0.28);
+  border:1px dashed var(--glass-border);
+  cursor:text;
+}
+.add-task-row svg{ width:14px;height:14px; stroke-width:1.75; color:var(--ink-faint); }
+.add-task-row input{
+  border:none; background:none; outline:none; flex:1;
+  font-family:inherit; font-size:12.5px; color:var(--ink);
+}
+.add-task-row input::placeholder{ color:var(--ink-faint); }
+
+.task-card{
+  padding:10px 13px;
+  border-radius:var(--r-md);
+  background:rgba(255,255,255,0.62);
+  border:1px solid rgba(255,255,255,0.55);
+  font-size:12px; font-weight:500; color:var(--ink);
+  cursor:grab;
+  position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(20,20,30,0.025), 0 1px 2px rgba(20,20,30,0.03), 0 6px 14px rgba(20,30,70,0.06);
+  transition:transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.task-card:hover{ transform:translateY(-1px); background:rgba(255,255,255,0.78); box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(20,20,30,0.03), 0 1px 2px rgba(20,20,30,0.04), 0 12px 28px rgba(20,30,70,0.09); }
+.task-card:active{ cursor:grabbing; }
+.task-card.dragging{ opacity:0.4; }
+.task-card.done-card .task-title{ flex:1; font-size:12.5px; font-weight:480; color:var(--ink); line-height:1.45; }
+.task-card.needs-context{ border:1px solid rgba(232,185,79,0.65); background:rgba(232,185,79,0.14); }
+
+.task-head{ display:flex; align-items:flex-start; gap:8px; }
+.task-title{ flex:1; font-size:13px; font-weight:560; line-height:1.4; color:var(--ink); }
+.task-chips{ display:flex; align-items:center; gap:6px; margin-top:4px; flex-wrap:wrap; }
+.task-chips:empty{ display:none; }
+/* When expanded, the ticket & due inputs are visible — their echo chips hide */
+.task-card:not(.card-collapsed) .chip-echo{ display:none; }
+.task-chip{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px; font-weight:540; letter-spacing:0.01em;
+  color:var(--ink-soft);
+  background:rgba(255,255,255,0.42);
+  border:1px solid rgba(0,0,0,0.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.45);
+  padding:2.5px 9px; border-radius:8px;
+  white-space:nowrap;
+}
+.task-chip.warn{ color:#C08A3E; background:rgba(232,185,79,0.35); }
+.task-chip svg{ width:10px;height:10px; stroke-width:2.25; }
+.task-chip.linkable{ cursor:pointer; color:var(--apricot-deep); background:rgba(169,168,240,0.22); }
+.task-chip.linkable:hover{ background:rgba(169,168,240,0.38); }
+.task-chip.chip-due-today{ color:#C08A3E; background:rgba(232,185,79,0.40); }
+.task-chip.chip-overdue{
+  color:#fff; background:var(--danger);
+  box-shadow:0 1px 2px rgba(0,0,0,0.12);
+}
+.task-chip.chip-age{ color:#C08A3E; background:rgba(232,185,79,0.42); }
+.task-chip.chip-age-hot{
+  color:#fff; background:linear-gradient(145deg, #E0554A, var(--danger-dark));
+  box-shadow:0 1px 2px rgba(0,0,0,0.12);
+}
+
+/* One-click Set Focus — no prompt dialog */
+
+/* Always-visible fields — everything shows, nothing hidden behind a click */
+.field-row{ display:flex; gap:6px; margin-top:8px; }
+.mini-input{
+  font-family:inherit; font-size:11.5px; font-weight:500;
+  color:var(--ink);
+  background:rgba(255,255,255,0.50);
+  border:1px solid rgba(255,255,255,0.50);
+  border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(0,0,0,0.04);
+  padding:6px 10px;
+  outline:none;
+  transition:border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.field-row .mini-input{ flex:1; }
+.mini-input:focus{ background:rgba(255,255,255,0.75); border-color:rgba(124,122,224,0.45); box-shadow:0 0 0 3px rgba(124,122,224,0.14); }
+.mini-input::placeholder{ color:var(--ink-faint); }
+.mini-input.required-empty{
+  border-color:rgba(232,185,79,0.7);
+  background:rgba(232,185,79,0.12);
+}
+.field-block{ margin-top:8px; }
+.field-block textarea.mini-input{
+  width:100%; resize:none; min-height:36px; line-height:1.4; font-size:11.5px;
+  overflow:hidden;
+}
+
+/* Card-level collapse — independent of size tier, just for saving space */
+.task-x{
+  width:20px;height:20px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0; cursor:pointer; opacity:0.30;
+  transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.task-x svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); }
+.task-x:hover{ opacity:1; background:rgba(232,106,80,0.20); }
+.task-x:hover svg{ color:#D66B7A; }
+.subs{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
+.sub-row{ display:flex; align-items:center; gap:7px; padding:1px 0; }
+.sub-check{
+  width:14px; height:14px; border-radius:8px; flex-shrink:0;
+  border:1.5px solid var(--ink-faint); cursor:pointer;
+  transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.sub-check.on{ background:var(--success); border-color:var(--success); }
+.sub-input{
+  flex:1; border:none; background:none; outline:none;
+  font-family:inherit; font-size:11.5px; color:var(--ink);
+  padding:2px 2px; border-bottom:1px dashed transparent;
+}
+.sub-input:focus{ border-bottom-color:var(--glass-border-soft); }
+.sub-input.done{ text-decoration:line-through; color:var(--ink-faint); }
+.sub-x{
+  width:16px; height:16px; border-radius:8px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; opacity:0.25; transition:opacity var(--dur) var(--ease);
+}
+.sub-x svg{ width:10px; height:10px; stroke-width:2; color:var(--ink-soft); }
+.sub-x:hover{ opacity:1; }
+
+.task-collapse-btn{
+  width:20px;height:20px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.34); flex-shrink:0; cursor:pointer;
+  margin-left:auto;
+  transition:transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.task-collapse-btn svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); transition:transform var(--dur) var(--ease); }
+.task-collapse-btn:hover{ opacity:0.9; background:var(--hover-fill); }
+.task-collapse-btn.collapsed svg{ transform:rotate(-90deg); }
+.task-card.card-collapsed .task-body{ display:none; }
+
+
+/* Context toggle — one optional free-text field, hidden until needed */
+.context-toggle{
+  margin-top:8px;
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px; font-weight:560; letter-spacing:.02em;
+  color:var(--ink-faint); cursor:pointer;
+  transition:color var(--dur) var(--ease);
+}
+.context-toggle:hover{ color:var(--apricot-deep); }
+
+.field-ticket-wrap{ position:relative; flex:1 1 auto; }
+.field-ticket-wrap .mini-input{ width:100%; padding-right:26px; }
+.ticket-link-btn{
+  position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  width:20px; height:20px; border-radius:8px;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(169,168,240,0.25); cursor:pointer;
+  transition:background var(--dur) var(--ease);
+}
+.ticket-link-btn.show{ display:flex; }
+.ticket-link-btn:hover{ background:rgba(169,168,240,0.45); }
+.ticket-link-btn svg{ width:11px;height:11px; stroke-width:2; color:var(--apricot-deep); }
+
+
+.lane-empty{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; text-align:center; padding:14px var(--s-2);
+}
+.lane-empty svg{ width:24px;height:24px; stroke-width:1.25; color:var(--ink-faint); opacity:0.55; }
+.lane-empty-title{ font-size:12px; font-weight:560; color:var(--ink-soft); }
+.lane-empty-sub{ font-size:11px; color:var(--ink-faint); line-height:1.35; max-width:150px; }
+
+.notes-area{
+  padding:0 18px 16px;
+  flex:1; min-height:0; display:flex;
+}
+textarea.notes-input{
+  display:block; width:100%; resize:none; border:none; outline:none; background:none;
+  font-family:inherit; font-size:12.5px; color:var(--ink);
+  line-height:1.6;
+  flex:1; min-height:0; overflow-y:auto;
+}
+textarea.notes-input::placeholder{ color:var(--ink-faint); }
+
+/* Full width panels */
+.panel-full{ display:flex; flex-direction:column; height:100%; min-height:0; }
+.panel-full .panel-body{ flex:1; min-height:0; overflow-y:auto; }
+.notes-panel{ height:100%; min-height:0; }
+/* Row 4 — Reference: Work Notes, Done, Someday. Consulted occasionally,
+   never worked in continuously — smallest footprint on the board. */
+.bottom-grid{ display:grid; grid-template-columns:minmax(0,240px) minmax(0,1fr) minmax(0,210px); gap:12px; align-items:stretch; flex:0 0 auto; height:210px; min-height:0; }
+.bottom-stack{ display:flex; flex-direction:column; gap:10px; min-height:0; }
+.bottom-stack #laneDone{ flex:1.3; min-height:0; }
+.bottom-stack .panel-full{ flex:1; min-height:0; }
+.tickets-empty, .recent-empty{
+  display:flex; align-items:center; gap:10px;
+  padding:8px var(--s-2) 10px;
+}
+.tickets-empty svg, .recent-empty svg{ width:24px;height:24px; stroke-width:1.25; color:var(--apricot-deep); opacity:0.6; }
+
+.recent-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:11px 18px;
+  border-bottom:1px solid rgba(124,122,224,0.12);
+  margin-bottom:4px;
+}
+.ticket-row{
+  display:flex; align-items:center; gap:12px;
+  padding:5px var(--s-2);
+  border-top:1px solid var(--glass-border-soft);
+}
+.ticket-row:first-child{ border-top:none; }
+.ticket-row .ticket-num{
+  font-size:12.5px; font-weight:560; color:var(--apricot-deep);
+  display:flex; align-items:center; gap:4px;
+  flex-shrink:0; min-width:110px;
+}
+.ticket-row .ticket-num.linkable{ cursor:pointer; }
+.ticket-row .ticket-num.linkable:hover{ text-decoration:underline; }
+.ticket-row .ticket-num svg{ width:11px;height:11px; stroke-width:2; }
+.ticket-row .ticket-title{ flex:1; font-size:12.5px; color:var(--ink); font-weight:500; }
+.ticket-row .ticket-lane-badge{
+  font-size:10.5px; font-weight:560; color:var(--ink-soft);
+  background:rgba(255,255,255,0.40);
+  padding:2px 9px; border-radius:999px; white-space:nowrap;
+}
+.ticket-row .ticket-lane-badge.pending{ color:#C08A3E; background:rgba(232,185,79,0.28); }
+.recent-row .btn{ padding:8px 14px; }
+
+/* Add-commitment modal */
+.modal-backdrop{
+  display:none;
+  position:fixed; inset:0; z-index:80;
+  background:rgba(0,0,0,0.30);
+  backdrop-filter:blur(4px);
+  align-items:center; justify-content:center;
+}
+.modal-backdrop.show{ display:flex; }
+.modal{ box-shadow:var(--elev-4); backdrop-filter:blur(56px) saturate(160%); -webkit-backdrop-filter:blur(56px) saturate(160%); background:linear-gradient(165deg, rgba(255,255,255,0.20), rgba(255,255,255,0.0)), rgba(255,255,255,0.62);
+  width:380px; max-width:90vw;
+  padding:var(--s-3);
+  display:flex; flex-direction:column; gap:14px;
+}
+.modal-title{ font-family:var(--font-display); font-size:16px; font-weight:600; letter-spacing:-0.01em; color:var(--ink); }
+.modal .drawer-field{ display:flex; flex-direction:column; gap:6px; }
+.modal .drawer-field label{
+  font-size:11px; font-weight:560; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--ink-faint);
+}
+.modal .drawer-field input, .modal .drawer-field select{
+  font-family:inherit; font-size:13.5px; color:var(--ink);
+  background:rgba(255,255,255,0.40);
+  border:1px solid var(--glass-border-soft);
+  border-radius:10px; padding:10px 12px;
+  outline:none;
+  transition:background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.modal .drawer-field input:focus, .modal .drawer-field select:focus{
+  background:var(--white); border-color:var(--apricot-deep); box-shadow:0 0 0 2px rgba(124,122,224,0.20);
+}
+.modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+
+
+/* Modal close X */
+.modal-x{
+  position:absolute; top:12px; right:12px;
+  width:26px; height:26px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:var(--ink-faint);
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.modal-x svg{ width:14px; height:14px; stroke-width:2; }
+.push-x{ position:absolute; right:4px; top:50%; transform:translateY(-50%); width:24px; height:24px; }
+.modal-x:hover{ background:var(--hover-fill); color:var(--ink); }
+
+/* Utility menu — backup/restore/day controls tucked behind "⋯" */
+.util-menu-wrap{ position:relative; }
+.util-menu{
+  display:none;
+  position:absolute; top:calc(100% + 8px); right:0;
+  min-width:190px;
+  padding:8px;
+  flex-direction:column; gap:2px;
+  z-index:70;
+  box-shadow:var(--elev-5);
+}
+.util-menu.show{ display:flex; }
+.util-menu-item{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px;
+  border:none; border-radius:var(--r-md);
+  background:none;
+  font-family:inherit; font-size:12.5px; font-weight:520;
+  color:var(--ink-soft);
+  cursor:pointer; text-align:left;
+  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.util-menu-item svg{ width:14px; height:14px; stroke-width:1.5; }
+.util-menu-item:hover{ background:var(--hover-fill); color:var(--ink); }
+.util-menu-divider{ height:1px; background:var(--glass-border-soft); margin:4px 6px; }
+
+/* Utility */
+.flex{ display:flex; align-items:center; }
+.gap-1{ gap:8px; } .gap-2{ gap:12px; }
+::selection{ background:rgba(169,168,240,0.4); }
+
+@media (max-width:1180px){
+  .lane-grid{ grid-template-columns:1fr !important; }
+  .rail-active, .rail-support{ grid-template-columns:1fr; }
+  .bottom-grid{ grid-template-columns:1fr !important; }
+  /* Fixed-viewport board only works with the desk layout side-by-side;
+     once it stacks, go back to a normal scrolling page instead of
+     crushing every lane. */
+  .main{ overflow-y:auto; height:auto; }
+  .lane-grid, .bottom-grid, .lane-row-hero, .lane-rail, .rail-active, .rail-support{ flex:none; }
+  .bottom-grid{ height:auto !important; }
+  body.is-executing .lane-grid{ grid-template-columns:1fr !important; }
+  .lane{ min-height:280px; height:auto; }
+  .panel-full{ height:auto; }
+  .lane-body, .panel-full .panel-body, textarea.notes-input{ overflow-y:visible; }
+}
+@media (max-width:760px){
+  .lane{ min-height:320px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wallpaper"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+<div class="blob blob-5"></div>
+<div class="ribbon ribbon-1"></div>
+<div class="ribbon ribbon-2"></div>
+<div class="ribbon ribbon-3"></div>
+
+<div class="app" id="appRoot">
+<div class="lane-backdrop" id="laneBackdrop"></div>
+
+<div class="modal-backdrop" id="dumpModalBackdrop">
+  <div class="modal glass" style="width:540px; max-height:86vh; overflow-y:auto; position:relative;">
+    <div class="modal-x" id="dumpCloseBtn" title="Close"><i data-lucide="x"></i></div>
+    <div class="modal-title">Brain Dump</div>
+    <div class="section-sub" style="margin:-4px 0 8px;">Think out loud. Structuring it is my job, not yours.</div>
+    <textarea class="mini-input" id="dumpInput" placeholder="e.g. Need to email Edil because Karin signed the contract. Should I update the deployment tracker? Kickoff is coming and I want to be ready…" style="width:100%; min-height:110px;"></textarea>
+    <div class="modal-actions" style="margin-top:10px;">
+      <button class="btn" id="dumpRawBtn" title="Structure it without AI — first line becomes the title">Add without AI</button>
+      <button class="btn btn-primary" id="dumpGoBtn"><i data-lucide="sparkles"></i>Summarize</button>
+    </div>
+    <div id="dumpErr" style="display:none; font-size:11.5px; color:#B54255; margin-top:8px;"></div>
+
+    <div id="dumpPreview" style="display:none; flex-direction:column; gap:10px; margin-top:14px;">
+      <div class="ops-div"></div>
+      <div class="field-block"><span class="field-label">Title</span><input class="mini-input" id="dumpTitle" style="width:100%;"></div>
+      <div class="field-block"><span class="field-label">Current Step — becomes Next Action</span><input class="mini-input" id="dumpCurrent" style="width:100%;"></div>
+      <div class="field-block"><span class="field-label">Next Step — becomes first subtask</span><input class="mini-input" id="dumpNext" style="width:100%;"></div>
+      <div class="field-block"><span class="field-label">Success</span><input class="mini-input" id="dumpSuccess" style="width:100%;"></div>
+      <div class="modal-actions">
+        <button class="btn" id="dumpAddWeekBtn">Add to This Week</button>
+        <button class="btn btn-primary" id="dumpAddTodayBtn">Add to Today</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="askModalBackdrop">
+  <div class="modal glass" style="width:560px; max-height:84vh; overflow-y:auto; position:relative;">
+    <div class="modal-x" id="askCloseBtn" title="Close"><i data-lucide="x"></i></div>
+    <div class="modal-title">Assistant</div>
+
+    <div id="askSetup" style="display:none; flex-direction:column; gap:10px;">
+      <div class="section-sub" style="margin:0; line-height:1.5;">
+        Runs on your own Anthropic API key (console.anthropic.com → API keys, billing required — a question costs fractions of a cent).
+        The key is stored only in this browser, never included in backups, and your board is sent to the API only when you ask a question.
+      </div>
+      <input class="mini-input" id="askKeyInput" type="password" placeholder="sk-ant-..." style="width:100%;">
+      <div class="modal-actions" style="margin-top:2px;">
+        <button class="btn btn-primary" id="askKeySaveBtn">Save key</button>
+      </div>
+    </div>
+
+    <div id="askChat" style="display:none; flex-direction:column; gap:10px;">
+      <div id="askMessages" style="display:flex; flex-direction:column; gap:8px; max-height:44vh; overflow-y:auto;"></div>
+      <textarea class="mini-input" id="askInput" placeholder="Ask anything — the assistant sees your whole board" style="width:100%; min-height:56px;"></textarea>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-soft); cursor:pointer;">
+          <input type="checkbox" id="askIncludeBoard" checked> Include board context
+        </label>
+        <div style="flex:1;"></div>
+        <button class="btn" id="askKeyClearBtn" title="Remove the stored API key">Clear key</button>
+        <button class="btn btn-primary" id="askSendBtn">Ask</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="pendingModalBackdrop">
+  <div class="modal glass" style="width:400px; position:relative;">
+    <div class="modal-x" id="pendingCloseBtn" title="Skip"><i data-lucide="x"></i></div>
+    <div class="modal-title">Moved to Pending</div>
+    <div class="section-sub" style="margin:-6px 0 4px;">Who or what are you waiting on?</div>
+    <input class="mini-input" id="pendingWhoInput" placeholder="Waiting on — who / what" style="width:100%;">
+    <input class="mini-input" id="pendingDueInput" placeholder="Due (optional) — Jul 15, today…" style="width:100%;">
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="pendingSaveBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="planModalBackdrop">
+  <div class="modal glass" style="width:560px; max-height:82vh; overflow-y:auto;">
+    <div class="modal-title" id="planModalTitle">Today's Plan</div>
+    <div id="planBody" style="display:flex; flex-direction:column; gap:12px;"></div>
+    <div class="modal-actions">
+      <button class="btn" id="planCopyBtn"><i data-lucide="copy"></i>Copy plan</button>
+      <button class="btn btn-primary" id="planCloseBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar glass tier-passive">
+    <div class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar"><i data-lucide="chevron-left"></i></div>
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">Execution Tower</div>
+    </div>
+
+    <nav class="nav" id="opsList">
+      <div class="nav-section-label">Needs Attention</div>
+      <div class="nav-item ops-row" id="navOverdue" data-jump="laneWeek"><i data-lucide="alert-triangle"></i><span>Overdue</span><span class="nav-badge" id="opsOverdue">0</span></div>
+      <div class="nav-item ops-row" id="navDue" data-jump="laneToday"><i data-lucide="calendar-days"></i><span>Due Today</span><span class="nav-badge" id="opsDue">0</span></div>
+      <div class="nav-item ops-row" id="navStale" data-jump="lanePending"><i data-lucide="clock"></i><span>Waiting &gt;3d</span><span class="nav-badge" id="opsStale">0</span></div>
+      <div class="nav-item ops-row" id="navLead" data-jump="laneWeek"><i data-lucide="target"></i><span>Leadership</span><span class="nav-badge" id="opsLead">0</span></div>
+      <div class="nav-item ops-row" id="navVendor" data-jump="laneWeek"><i data-lucide="file-text"></i><span>Vendor</span><span class="nav-badge" id="opsVendor">0</span></div>
+      <div class="nav-item nav-all-clear" id="navAllClear"><i data-lucide="check-circle-2"></i><span>All clear</span></div>
+    </nav>
+
+    <div class="clock-card glass-soft" style="border-radius:var(--r-lg);">
+      <div class="clock-day" id="clockDay">Wednesday</div>
+      <div class="clock-date" id="clockDate">Jul 8, 2026</div>
+      <div class="clock-time" id="clockTime">9:41 AM</div>
+      <div class="clock-mode" id="clockMode"><span class="mode-dot"></span><span id="clockModeText">Deep work</span></div>
+    </div>
+
+    <div class="leadership-card glass-soft">
+      <div class="leadership-title">Leadership</div>
+      <div class="leadership-row">
+        <span class="leadership-name">Enrique</span>
+        <input class="leadership-input" id="leadEnrique" placeholder="What he needs from you">
+      </div>
+      <div class="leadership-row">
+        <span class="leadership-name">Karin</span>
+        <input class="leadership-input" id="leadKarin" placeholder="What she needs from you">
+      </div>
+      <div class="leadership-row">
+        <span class="leadership-name">Juan</span>
+        <input class="leadership-input" id="leadJuan" placeholder="—">
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <div class="topbar glass">
+      <div class="capture">
+        <i data-lucide="plus"></i>
+        <input id="captureInput" type="text" placeholder="Capture… (RITM/INC → ticket · anything else → This Week)">
+        <span class="kbd">/</span>
+        <div class="capture-dump" id="dumpBtn" title="Brain dump — describe it in your own words, I'll structure the work"><i data-lucide="sparkles"></i></div>
+      </div>
+      <button class="btn btn-primary" id="planDayBtn" title="Rank the board by your priority hierarchy"><i data-lucide="route"></i>Plan My Day</button>
+      <div class="util-menu-wrap">
+        <button class="btn" id="utilMenuBtn" title="More actions"><i data-lucide="more-horizontal"></i></button>
+        <div class="util-menu glass" id="utilMenu">
+          <button class="util-menu-item" id="askBtn" title="Ask the built-in assistant — it sees your whole board"><i data-lucide="message-circle"></i>Ask AI</button>
+          <button class="util-menu-item" id="recapBtn" title="Copy an end-of-day recap for Teams or email"><i data-lucide="clipboard-check"></i>Day Recap</button>
+          <button class="util-menu-item" id="sendClaudeBtn" title="Copy the full board as a prompt for Claude"><i data-lucide="send"></i>Send to Claude</button>
+          <div class="util-menu-divider"></div>
+          <button class="util-menu-item" id="collapseAllBtn" title="Fold every open task card back to one line"><i data-lucide="chevrons-up"></i>Collapse all tasks</button>
+          <div class="util-menu-divider"></div>
+          <button class="util-menu-item" id="backupBtn" title="Download a backup file"><i data-lucide="download"></i>Backup</button>
+          <button class="util-menu-item" id="restoreBtn" title="Restore from a backup file"><i data-lucide="upload"></i>Restore</button>
+          <div class="util-menu-divider"></div>
+          <button class="util-menu-item" id="newDayBtn"><i data-lucide="sunrise"></i>New Day</button>
+          <button class="util-menu-item" id="cleanSessionBtn"><i data-lucide="sparkles"></i>Clean Session</button>
+        </div>
+        <input type="file" id="restoreInput" accept="application/json" style="display:none;">
+      </div>
+      <div class="avatar">S</div>
+    </div>
+
+    <!-- Lanes -->
+    <div class="lane-grid">
+
+      <!-- Row 1 — TODAY'S EXECUTION. The dominant workspace, alone.
+           Mission + Planning live inside it as context, not as page sections above it. -->
+      <div class="lane-row lane-row-hero">
+        <div class="glass lane tier-hero" id="laneToday" data-lane="today" ondrop="onDrop(event,'today')" ondragover="onDragOver(event)">
+          <div class="lane-head"><i data-lucide="sun"></i><span class="lane-name">Today</span><span class="lane-count" id="countToday">0</span>
+            <div class="lane-controls">
+              <div class="lane-ctrl-btn" data-maximize="today" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="today" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+
+          <div class="today-context" id="todayContext">
+            <div class="planning-summary" id="planningSummary" title="Click to expand planning">
+              <span class="snapshot-label">Planning</span>
+              <span class="planning-summary-text" id="planningSummaryText"></span>
+              <div class="lane-ctrl-btn planning-expand-btn" id="planningExpandBtn" title="Expand"><i data-lucide="chevron-down"></i></div>
+            </div>
+            <div class="snapshot-row" id="snapshotRow">
+              <div class="snapshot-field">
+                <span class="snapshot-label">Objective</span>
+                <input class="mini-input" id="snapObjective" placeholder="What today needs to accomplish">
+              </div>
+              <div class="snapshot-field">
+                <span class="snapshot-label">Risk</span>
+                <input class="mini-input" id="snapRisk" placeholder="What could derail it">
+              </div>
+              <div class="snapshot-field">
+                <span class="snapshot-label">Key Conversation</span>
+                <input class="mini-input" id="snapConversation" placeholder="Who to align with">
+              </div>
+              <div class="snapshot-field">
+                <span class="snapshot-label">Deliverable</span>
+                <input class="mini-input" id="snapDeliverable" placeholder="What you hand off">
+              </div>
+              <div class="lane-ctrl-btn planning-collapse-btn" id="planningCollapseBtn" title="Collapse"><i data-lucide="chevron-up"></i></div>
+            </div>
+            <div class="mission-row" id="commitPanel">
+              <span class="mission-label">Mission</span>
+              <div class="mission-field">
+                <input class="mini-input" id="pushPrimary" placeholder="Primary — the thing that must move today" style="width:100%; padding-right:30px;">
+                <div class="modal-x push-x" data-push-clear="primary" title="Clear"><i data-lucide="x"></i></div>
+              </div>
+              <div class="mission-divider"></div>
+              <div class="mission-field">
+                <input class="mini-input" id="pushSecondary" placeholder="Secondary — if the first one lands" style="width:100%; padding-right:30px;">
+                <div class="modal-x push-x" data-push-clear="secondary" title="Clear"><i data-lucide="x"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lane-summary" id="summaryToday" title="Expand Today"></div>
+          <div class="lane-body">
+            <div class="lane-empty" id="todayEmpty">
+              <div class="lane-empty-icon"><i data-lucide="sun"></i></div>
+              <div class="lane-empty-title">Nothing pulled in</div>
+              <div class="lane-empty-sub">Auto-ranked from This Week — click to pull into Today</div>
+              <div id="todayTriageList" class="triage-list"></div>
+            </div>
+            <div id="todayItems"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rail — everything you move work between, within a short drag of Today. -->
+      <div class="lane-rail">
+
+        <!-- Rail tier 1 — Pending + This Week: worked constantly, second only to Today. -->
+        <div class="rail-active">
+        <div class="glass lane tier-active" id="lanePending" data-lane="pending" ondrop="onDrop(event,'pending')" ondragover="onDragOver(event)">
+          <div class="lane-head"><i data-lucide="lock"></i><span class="lane-name">Pending</span><span class="lane-count" id="countPending">0</span>
+            <div class="lane-controls">
+              <div class="lane-ctrl-btn" data-maximize="pending" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="pending" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+          <div class="lane-summary" id="summaryPending" title="Expand Pending"></div>
+          <div class="lane-body">
+            <div id="pendingItems"></div>
+            <div class="lane-empty" id="pendingEmpty">
+              <i data-lucide="lock"></i>
+              <div class="lane-empty-title">No blocked items</div>
+              <div class="lane-empty-sub">You're all clear!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass lane tier-active" id="laneWeek" data-lane="week" ondrop="onDrop(event,'week')" ondragover="onDragOver(event)">
+          <div class="lane-head"><i data-lucide="inbox"></i><span class="lane-name">This Week</span><span class="lane-count" id="countWeek">0</span>
+            <div class="lane-controls">
+              <div class="lane-ctrl-btn" data-maximize="week" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="week" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+          <div class="lane-summary" id="summaryWeek" title="Expand This Week"></div>
+          <div class="lane-body">
+            <div class="add-task-row" id="addTaskRow">
+              <i data-lucide="plus"></i>
+              <input id="addTaskInput" type="text" placeholder="Add task">
+            </div>
+            <div class="lane-empty" id="weekEmpty">
+              <div class="lane-empty-icon"><i data-lucide="inbox"></i></div>
+              <div class="lane-empty-title">Backlog clear</div>
+              <div class="lane-empty-sub">Captures land here</div>
+            </div>
+            <div id="weekItems"></div>
+          </div>
+        </div>
+        </div>
+
+        <!-- Rail tier 2 — On Hold + Waiting On: visible, not worked in — compact. -->
+        <div class="rail-support">
+        <div class="glass lane tier-ref" id="laneOnHold" data-lane="onhold" ondrop="onDrop(event,'onhold')" ondragover="onDragOver(event)">
+          <div class="lane-head"><i data-lucide="pin"></i><span class="lane-name">On Hold</span><span class="lane-count" id="countOnHold">0</span>
+            <div class="lane-controls">
+              <div class="lane-ctrl-btn" data-maximize="onhold" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="onhold" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+          <div class="lane-summary" id="summaryOnHold" title="Expand On Hold"></div>
+          <div class="lane-body">
+            <div id="onholdItems"></div>
+            <div class="lane-empty" id="onholdEmpty">
+              <i data-lucide="pin"></i>
+              <div class="lane-empty-title">Nothing on hold</div>
+              <div class="lane-empty-sub">Leadership-directed pauses — not awaiting a response</div>
+            </div>
+          </div>
+        </div>
+
+        <section class="glass tier-ref panel-full" id="waitingOnPanel">
+          <div class="panel-head">
+            <div class="flex gap-1"><i data-lucide="clock" class="head-icon"></i><span class="section-title" style="font-size:14px;">Waiting On</span><span class="lane-count" id="countTickets">0</span></div>
+          </div>
+          <div class="tickets-empty" id="ticketsEmpty">
+            <i data-lucide="clipboard-check"></i>
+            <div>
+              <div class="lane-empty-title">No active tickets</div>
+              <div class="lane-empty-sub" style="max-width:none;">You're all caught up!</div>
+            </div>
+          </div>
+          <div id="ticketsList" class="panel-body"></div>
+        </section>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Row 4 — REFERENCE: Work Notes, Done, Someday. Quiet, minimal, out of the way. -->
+    <div class="bottom-grid">
+      <section class="glass tier-passive panel-full notes-panel">
+        <div class="lane-head"><i data-lucide="notebook-pen"></i><span class="lane-name">Work Notes</span></div>
+        <div class="notes-area">
+          <textarea class="notes-input" id="notesInput" placeholder="Jot anything here… phone numbers, vendor notes, inventory, links, reminders. Enter starts a new bullet."></textarea>
+        </div>
+      </section>
+
+      <div class="bottom-stack">
+        <div class="glass lane tier-passive" id="laneDone" data-lane="done" ondrop="onDrop(event,'done')" ondragover="onDragOver(event)">
+          <div class="lane-head" style="justify-content:space-between;">
+            <div class="flex gap-1"><i data-lucide="check-circle-2"></i><span class="lane-name">Done Today</span><span class="lane-count" id="countDone">0</span></div>
+            <div class="lane-controls">
+              <div class="icon-btn" id="archiveBtn" style="margin-left:0;"><i data-lucide="archive"></i></div>
+              <div class="lane-ctrl-btn" data-maximize="done" title="Expand"><i data-lucide="maximize-2"></i></div>
+              <div class="lane-ctrl-btn" data-collapse="done" title="Collapse"><i data-lucide="chevron-down"></i></div>
+            </div>
+          </div>
+          <div class="lane-summary" id="summaryDone" title="Expand Done Today"></div>
+          <div class="lane-body">
+            <div id="doneItems"></div>
+            <div id="doneSubs"></div>
+            <div class="lane-empty" id="doneEmpty">
+              <i data-lucide="check-circle-2"></i>
+              <div class="lane-empty-title">No completed work</div>
+              <div class="lane-empty-sub">Let's get something done!</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Days -->
+        <section class="glass tier-ref panel-full" style="margin-bottom:4px;">
+          <div class="recent-row">
+            <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">Follow-ups</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
+            <div class="task-collapse-btn" id="recentCollapseBtn" title="Collapse"><i data-lucide="chevron-down"></i></div>
+          </div>
+          <div id="recentDaysList" class="panel-body"></div>
+        </section>
+      </div>
+
+      <div class="glass lane tier-passive" id="laneSomeday" data-lane="someday" ondrop="onDrop(event,'someday')" ondragover="onDragOver(event)">
+        <div class="lane-head"><i data-lucide="archive"></i><span class="lane-name">Someday</span><span class="lane-count" id="countSomeday">0</span>
+          <div class="lane-controls">
+            <div class="lane-ctrl-btn" data-maximize="someday" title="Expand"><i data-lucide="maximize-2"></i></div>
+            <div class="lane-ctrl-btn" data-collapse="someday" title="Collapse"><i data-lucide="chevron-down"></i></div>
+          </div>
+        </div>
+        <div class="lane-summary" id="summarySomeday" title="Expand Someday"></div>
+        <div class="lane-body">
+          <div class="lane-empty" id="somedayEmpty">
+            <div class="lane-empty-icon"><i data-lucide="archive"></i></div>
+            <div class="lane-empty-title">Parking lot empty</div>
+            <div class="lane-empty-sub">Drag future work here</div>
+          </div>
+          <div id="somedayItems"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   INLINE ICON SET — self-contained replacement for the lucide
+   CDN script. Same API (lucide.createIcons()), zero network
+   dependency, so this never breaks in a sandboxed preview,
+   offline, or behind a corporate proxy.
+   ============================================================ */
+const ICONS = {
+  'plus': '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>',
+  'chevron-down': '<polyline points="6 9 12 15 18 9"></polyline>',
+  'chevron-left': '<polyline points="15 18 9 12 15 6"></polyline>',
+  'sun': '<circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>',
+  'target': '<circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle>',
+  'crosshair': '<circle cx="12" cy="12" r="10"></circle><line x1="22" y1="12" x2="18" y2="12"></line><line x1="6" y1="12" x2="2" y2="12"></line><line x1="12" y1="6" x2="12" y2="2"></line><line x1="12" y1="22" x2="12" y2="18"></line>',
+  'list': '<line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>',
+  'list-todo': '<rect x="3" y="5" width="6" height="6" rx="1"></rect><path d="m3 17 2 2 4-4"></path><line x1="13" y1="6" x2="21" y2="6"></line><line x1="13" y1="18" x2="21" y2="18"></line>',
+  'check-check': '<path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path>',
+  'file-text': '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><line x1="8" y1="9" x2="10" y2="9"></line>',
+  'notebook-pen': '<path d="M13.4 2.6a2.1 2.1 0 1 1 3 3L7 15l-4 1 1-4Z"></path><path d="M4 22h14a2 2 0 0 0 2-2V8"></path><path d="M2 6h4"></path><path d="M2 10h4"></path><path d="M2 14h2"></path><path d="M2 18h2"></path>',
+  'calendar-days': '<rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><line x1="8" y1="14" x2="8" y2="14"></line><line x1="12" y1="14" x2="12" y2="14"></line><line x1="16" y1="14" x2="16" y2="14"></line><line x1="8" y1="18" x2="8" y2="18"></line><line x1="12" y1="18" x2="12" y2="18"></line>',
+  'settings': '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path>',
+  'inbox': '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11Z"></path>',
+  'lock': '<rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
+  'clock': '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+  'check-circle-2': '<circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path>',
+  'archive': '<rect x="2" y="4" width="20" height="5" rx="1"></rect><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"></path><line x1="10" y1="13" x2="14" y2="13"></line>',
+  'clipboard-list': '<rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><line x1="9" y1="12" x2="15" y2="12"></line><line x1="9" y1="16" x2="15" y2="16"></line><line x1="9" y1="8" x2="10" y2="8"></line>',
+  'clipboard-check': '<rect x="8" y="2" width="8" height="4" rx="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="m9 14 2 2 4-4"></path>',
+  'external-link': '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>',
+  'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>',
+  'upload': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>',
+  'sunrise': '<path d="M12 2v7"></path><path d="m4.93 10.93 1.41 1.41"></path><path d="M2 18h2"></path><path d="M20 18h2"></path><path d="m17.66 12.34 1.41-1.41"></path><path d="M22 22H2"></path><path d="m8 6 4-4 4 4"></path><path d="M16 18a4 4 0 0 0-8 0"></path>',
+  'sparkles': '<path d="M12 3v4M12 17v4M5 12H1M23 12h-4M6.34 6.34 3.5 3.5M20.5 20.5l-2.84-2.84M6.34 17.66 3.5 20.5M20.5 3.5l-2.84 2.84"></path><circle cx="12" cy="12" r="3"></circle>',
+  'refresh-ccw': '<path d="M3 2v6h6"></path><path d="M21 12A9 9 0 0 0 6 5.3L3 8"></path><path d="M21 22v-6h-6"></path><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"></path>',
+  'tag': '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle>',
+  'alert-triangle': '<path d="m21.73 18-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
+  'pin': '<path d="M12 17v5"></path><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1Z"></path>',
+  'maximize-2': '<polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line>',
+  'route': '<circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle>',
+  'send': '<path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path>',
+  'copy': '<rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
+  'more-horizontal': '<circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle>',
+  'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+  'message-circle': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>',
+  'play': '<polygon points="6 3 20 12 6 21 6 3"></polygon>',
+  'chevrons-up': '<path d="m17 11-5-5-5 5"></path><path d="m17 18-5-5-5 5"></path>'
+};
+
+const lucide = {
+  createIcons(){
+    document.querySelectorAll('[data-lucide]').forEach(el=>{
+      const name = el.getAttribute('data-lucide');
+      const inner = ICONS[name];
+      if(!inner) return;
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 24 24');
+      svg.setAttribute('width','20');
+      svg.setAttribute('height','20');
+      svg.setAttribute('fill','none');
+      svg.setAttribute('stroke','currentColor');
+      svg.setAttribute('stroke-width','1.5');
+      svg.setAttribute('stroke-linecap','round');
+      svg.setAttribute('stroke-linejoin','round');
+      /* Carry over every attribute from the placeholder (class, id, style, title, etc.)
+         so any CSS rule targeting the original element still applies to the swapped-in svg. */
+      for(const attr of el.attributes){
+        if(attr.name === 'data-lucide') continue;
+        svg.setAttribute(attr.name, attr.value);
+      }
+      svg.innerHTML = inner;
+      el.replaceWith(svg);
+    });
+  }
+};
+</script>
+<script>
+/* ============================================================
+   STATE — localStorage persisted
+   ============================================================ */
+const STORE_KEY = 'executionTower_v1';
+const state = Object.assign({
+  commitments: [
+    { id: cid(), text: 'Finish onboarding deck', tag: 'high', done: false },
+    { id: cid(), text: 'Return U-Haul by 9:30 AM', tag: 'time', done: false },
+    { id: cid(), text: 'Work from home & stay focused', tag: 'personal', done: false },
+  ],
+  focus: null,
+  today: [],
+  week: [],
+  someday: [],
+  pending: [],
+  onhold: [],
+  subDone: [],
+  push: { primary:'', secondary:'' },
+  snapshot: { objective:'', risk:'', conversation:'', deliverable:'' },
+  leadership: { enrique:'', karin:'', juan:'' },
+  done: [],
+  doneHistory: [],   // [{ date: 'Jul 7, 2026', items: [ {text, ticket, ...} ] }]
+  notes: '',
+  settings: { snowTemplate: '' }  // e.g. https://repsol.service-now.com/nav_to.do?uri=sc_req_item.do?sysparm_query=number={number}
+}, load());
+
+function cid(){ return Math.random().toString(36).slice(2,9); }
+
+/* One-time cleanup of legacy fields: In Progress flags are dropped, and the old
+   structured fields (Objective / Impact / Status / Next Action / Success Criteria)
+   are folded into the single Context field so nothing typed is ever lost. */
+function migrateItems(){
+  /* V2 pipeline migration: Queue -> This Week, In Progress -> Today,
+     commitments -> This Week tasks, dependency links dropped. */
+  ['today','week','someday','pending','onhold','done'].forEach(k=>{ if(!Array.isArray(state[k])) state[k] = []; });
+  if(!Array.isArray(state.subDone)) state.subDone = [];
+  if(!state.push || typeof state.push !== 'object') state.push = { primary:'', secondary:'' };
+  if(!state.snapshot || typeof state.snapshot !== 'object') state.snapshot = { objective:'', risk:'', conversation:'', deliverable:'' };
+  if(!state.leadership || typeof state.leadership !== 'object') state.leadership = { enrique:'', karin:'', juan:'' };
+  if(Array.isArray(state.queue)){ state.week = state.week.concat(state.queue); delete state.queue; }
+  if(Array.isArray(state.progress)){ state.today = state.today.concat(state.progress); delete state.progress; }
+  if(Array.isArray(state.commitments) && state.commitments.length){
+    state.commitments.filter(c=>!c.done).forEach(c=>{
+      state.week.push({ id:cid(), text:c.text, createdAt:Date.now() });
+    });
+    state.commitments = [];
+  }
+  ['today','week','someday','pending','onhold','done'].forEach(k=>{
+    (state[k]||[]).forEach(i=>{
+      const legacy = [];
+      if(i.objective) legacy.push('Objective: ' + i.objective);
+      if(i.businessImpact) legacy.push('Impact: ' + i.businessImpact);
+      if(i.currentStatus) legacy.push('Status: ' + i.currentStatus);
+      if(i.actions) legacy.push('Next: ' + i.actions);
+      if(i.nextAction) legacy.push('Next: ' + i.nextAction);
+      if(i.successCriteria) legacy.push('Done when: ' + i.successCriteria);
+      if(legacy.length && !i.context) i.context = legacy.join('\n');
+      if(!i.createdAt) i.createdAt = Date.now();
+      if(k === 'pending' && !i.waitingSince) i.waitingSince = Date.now();
+      delete i.inProgress; delete i.size; delete i.after;
+      delete i.objective; delete i.businessImpact; delete i.currentStatus;
+      delete i.actions; delete i.nextAction; delete i.successCriteria;
+    });
+  });
+}
+migrateItems();
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  }catch(e){ return {}; }
+}
+function save(){
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+
+
+/* Today's Push — two protected fields, no ceremony */
+function renderPush(){
+  const a = document.getElementById('pushPrimary');
+  const b = document.getElementById('pushSecondary');
+  if(document.activeElement !== a) a.value = state.push.primary || '';
+  if(document.activeElement !== b) b.value = state.push.secondary || '';
+}
+document.getElementById('pushPrimary').addEventListener('input', e=>{ state.push.primary = e.target.value; save(); });
+document.getElementById('pushSecondary').addEventListener('input', e=>{ state.push.secondary = e.target.value; save(); });
+document.querySelectorAll('[data-push-clear]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const key = el.dataset.pushClear;
+    state.push[key] = '';
+    const inp = document.getElementById(key === 'primary' ? 'pushPrimary' : 'pushSecondary');
+    if(inp) inp.value = '';
+    save();
+  });
+});
+
+/* Leadership widget — quiet reference, not derived from tasks */
+function renderLeadership(){
+  const map = { leadEnrique:'enrique', leadKarin:'karin', leadJuan:'juan' };
+  Object.keys(map).forEach(elId=>{
+    const el = document.getElementById(elId);
+    if(el && document.activeElement !== el) el.value = state.leadership[map[elId]] || '';
+  });
+}
+Object.entries({ leadEnrique:'enrique', leadKarin:'karin', leadJuan:'juan' }).forEach(([elId,key])=>{
+  const el = document.getElementById(elId);
+  if(el) el.addEventListener('input', e=>{ state.leadership[key] = e.target.value; save(); });
+});
+
+/* Adaptive workspace state — Planning vs Execution, inferred from Today,
+   no manual mode switch. Execution collapses Planning to a summary line
+   and removes Focus (Today itself is now the ranked list). */
+let planningExpanded = false;
+function planningSummaryLine(){
+  const s = state.snapshot || {};
+  const parts = [];
+  if(s.objective) parts.push(s.objective);
+  if(s.risk) parts.push('Risk: ' + s.risk);
+  if(s.conversation) parts.push('Talk to: ' + s.conversation);
+  if(s.deliverable) parts.push('Hand off: ' + s.deliverable);
+  return parts.length ? parts.join('  ·  ') : 'No objective set — click to add';
+}
+function renderWorkspaceState(){
+  const executing = state.today.length > 0;
+  if(!executing) planningExpanded = false;
+  document.body.classList.toggle('is-executing', executing);
+  document.body.classList.toggle('is-planning', !executing);
+  document.body.classList.toggle('planning-expanded', planningExpanded);
+  const txt = document.getElementById('planningSummaryText');
+  if(txt) txt.textContent = planningSummaryLine();
+}
+document.getElementById('planningSummary').addEventListener('click', ()=>{ planningExpanded = true; renderWorkspaceState(); });
+document.getElementById('planningCollapseBtn').addEventListener('click', ()=>{ planningExpanded = false; renderWorkspaceState(); });
+
+/* Executive Snapshot — four fields, ~15 seconds to read, orients the day */
+function renderSnapshot(){
+  const map = { snapObjective:'objective', snapRisk:'risk', snapConversation:'conversation', snapDeliverable:'deliverable' };
+  Object.keys(map).forEach(elId=>{
+    const el = document.getElementById(elId);
+    if(el && document.activeElement !== el) el.value = state.snapshot[map[elId]] || '';
+  });
+}
+Object.entries({ snapObjective:'objective', snapRisk:'risk', snapConversation:'conversation', snapDeliverable:'deliverable' }).forEach(([elId,key])=>{
+  const el = document.getElementById(elId);
+  if(el) el.addEventListener('input', e=>{ state.snapshot[key] = e.target.value; save(); });
+});
+
+/* Collapsed lane summaries — a closed lane still answers "what's in there?" */
+function sumLine(html, cls){ return `<div class="sum-line ${cls||''}">${html}</div>`; }
+/* Completed subtasks — logged the moment they're checked, shown in Done Today
+   so finished work counts even when its parent task is still open. */
+function renderDoneSubs(){
+  const wrap = document.getElementById('doneSubs');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  state.subDone.forEach(d=>{
+    const row = document.createElement('div');
+    row.className = 'done-sub-row';
+    row.innerHTML = '<span class="dsr-check">✓</span>'
+      + '<span class="dsr-text">' + escapeHtml(d.t) + '</span>'
+      + '<span class="dsr-parent">' + escapeHtml(d.parent) + '</span>';
+    wrap.appendChild(row);
+  });
+  /* lane count = everything finished today: whole tasks + subtasks */
+  const count = document.getElementById('countDone');
+  if(count) count.textContent = state.done.length + state.subDone.length;
+  const empty = document.getElementById('doneEmpty');
+  if(empty && state.subDone.length) empty.style.display = 'none';
+}
+
+function renderLaneSummaries(){
+  const st_ = document.getElementById('summaryToday');
+  const wk = document.getElementById('summaryWeek');
+  const sd = document.getElementById('summarySomeday');
+  const pd = document.getElementById('summaryPending');
+  const oh = document.getElementById('summaryOnHold');
+  const dn = document.getElementById('summaryDone');
+  if(!st_ || !wk || !sd || !pd || !oh || !dn) return;
+
+  const laneSum = (el, items, emptyMsg) => {
+    if(items.length === 0){ el.innerHTML = sumLine(emptyMsg, 'sum-quiet'); return; }
+    const dueToday = items.filter(i=>dueStatus(i.due) === 'today').length;
+    const overdue = items.filter(i=>dueStatus(i.due) === 'overdue').length;
+    let bits = `<span class="sum-strong">${items.length}</span> open`;
+    if(dueToday) bits += ` · <span class="sum-strong">${dueToday}</span> due today`;
+    el.innerHTML = sumLine(bits) +
+      (overdue ? sumLine(`<span class="sum-strong">${overdue}</span> overdue`, 'sum-alert') : '') +
+      sumLine('Next: ' + escapeHtml(sortForDisplay(items)[0].text), 'sum-quiet');
+  };
+  laneSum(st_, state.today, 'Nothing pulled in yet');
+  laneSum(wk, state.week, 'Backlog clear');
+  sd.innerHTML = state.someday.length === 0
+    ? sumLine('Parking lot empty', 'sum-quiet')
+    : sumLine(`<span class="sum-strong">${state.someday.length}</span> parked`, 'sum-quiet');
+
+  const pend = state.pending;
+  if(pend.length === 0){
+    pd.innerHTML = sumLine('Nothing blocked — all clear', 'sum-quiet');
+  }else{
+    const oldest = pend.reduce((a,b)=> (a.waitingSince||Infinity) < (b.waitingSince||Infinity) ? a : b);
+    const d = oldest.waitingSince ? Math.floor((Date.now() - oldest.waitingSince) / 86400000) : 0;
+    pd.innerHTML = sumLine(`<span class="sum-strong">${pend.length}</span> waiting`, d >= 3 ? 'sum-alert' : '') +
+      sumLine('Oldest: ' + (d < 1 ? '<1d' : d + 'd') + (oldest.waitingOn ? ' — ' + escapeHtml(oldest.waitingOn) : ''), 'sum-quiet');
+  }
+
+  oh.innerHTML = state.onhold.length === 0
+    ? sumLine('Nothing on hold', 'sum-quiet')
+    : sumLine(`<span class="sum-strong">${state.onhold.length}</span> paused by leadership`, 'sum-quiet');
+
+  const done = state.done;
+  const subN = state.subDone.length;
+  if(done.length === 0 && subN === 0){
+    dn.innerHTML = sumLine('Nothing completed yet', 'sum-quiet');
+  }else if(done.length === 0){
+    dn.innerHTML = sumLine(`<span class="sum-strong">${subN}</span> subtask${subN>1?'s':''} completed`) +
+      sumLine('Latest: ' + escapeHtml(state.subDone[subN-1].t), 'sum-quiet');
+  }else{
+    const ticketed = done.filter(i=>i.ticket).length;
+    dn.innerHTML = sumLine(`<span class="sum-strong">${done.length}</span> completed` +
+      (ticketed ? ` · <span class="sum-strong">${ticketed}</span> ticketed` : '') +
+      (subN ? ` · <span class="sum-strong">${subN}</span> subtask${subN>1?'s':''}` : '')) +
+      sumLine('Latest: ' + escapeHtml(done[done.length-1].text), 'sum-quiet');
+  }
+}
+
+document.querySelectorAll('.lane-summary').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    el.closest('.lane').classList.remove('collapsed');
+  });
+});
+
+
+/* ============================================================
+   NEXT UP ENGINE — dependency-driven, zero manual ranking.
+   Rule 1: Pending is excluded — you can't start blocked-on-people work.
+   Rule 2: dependency-blocked tasks never rank; they appear below as
+           "Waiting for: <prerequisite>".
+   Rule 3: available work ranks by due date, then unblock leverage,
+           then commitment relevance (High > Time Sensitive > Personal),
+           then queue order. Plan My Day keeps the work hierarchy —
+           this engine answers "what do I start right now".
+   ============================================================ */
+function nextUpDueScore(item){
+  const st = dueStatus(item.due);
+  if(st === 'overdue') return 0;
+  if(st === 'today') return 1;
+  if(parseDueDate(item.due)) return 2;
+  return 3;
+}
+
+function buildNextUpEntries(){
+  /* Kanban-native: Today leads, This Week backs it up. Pending and Someday
+     never enter. Rank: due date, then lane, then capture order. */
+  const rows = [];
+  state.today.forEach(i=> rows.push({ text:i.text, src:'Today', laneRank:0, item:i }));
+  state.week.forEach(i=> rows.push({ text:i.text, src:'This Week', laneRank:1, item:i }));
+  rows.forEach(r=>{ r.due = nextUpDueScore(r.item); });
+  rows.sort((a,b)=>
+    a.due - b.due ||
+    a.laneRank - b.laneRank ||
+    (a.item.createdAt || 0) - (b.item.createdAt || 0)
+  );
+  return rows;
+}
+
+function renderNextUp(){
+  const wrap = document.getElementById('todayTriageList');
+  if(!wrap) return;
+  wrap.innerHTML = '';
+  if(state.today.length > 0) return; // triage only matters while Today is empty
+  const rows = buildNextUpEntries();
+  if(rows.length === 0){
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:11.5px; color:var(--ink-faint); padding:4px 0 0;';
+    empty.textContent = 'This Week is empty too — capture something.';
+    wrap.appendChild(empty);
+    return;
+  }
+  rows.slice(0, 5).forEach((e, i)=>{
+    const row = document.createElement('div');
+    row.className = 'nextup-row';
+    row.title = 'Click to pull into Today';
+    const st = dueStatus(e.item.due);
+    const chip = st === 'overdue' ? '<span class="task-chip chip-overdue">Overdue</span>'
+               : st === 'today' ? '<span class="task-chip chip-due-today">Due today</span>'
+               : '<span class="task-chip" style="flex-shrink:0;">' + e.src + '</span>';
+    row.innerHTML = '<span class="nextup-rank">' + (i+1) + '</span>'
+      + '<span class="nextup-text">' + escapeHtml(e.text)
+      + (e.item.next ? ' <span class="nextup-waitfor">→ ' + escapeHtml(e.item.next) + '</span>' : '')
+      + '</span>' + chip;
+    row.addEventListener('click', ()=>{
+      const arr = state[e.src === 'Today' ? 'today' : 'week'];
+      const idx = arr.findIndex(x=> x.id === e.item.id);
+      if(idx > -1){
+        const [moved] = arr.splice(idx, 1);
+        state.today.push(moved);
+        save(); renderAll();
+      }
+    });
+    wrap.appendChild(row);
+  });
+}
+
+
+/* Session-only: which cards have the Context field revealed */
+const contextRevealIds = new Set();
+
+/* Cards are collapsed by default — expanding is the session-only exception.
+   The chevron is the drop-down that reveals ticket/due/waiting/context/subtasks. */
+const expandedCardIds = new Set();
+
+/* Free-text due parsing — "Jul 11", "7/11", "today", "tomorrow" */
+const MONTHS = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 };
+function parseDueDate(str){
+  if(!str) return null;
+  const t = str.trim();
+  const now = new Date();
+  const yr = now.getFullYear();
+  if(/^today$/i.test(t)) return new Date(yr, now.getMonth(), now.getDate());
+  if(/^tomorrow$/i.test(t)) return new Date(yr, now.getMonth(), now.getDate() + 1);
+  let m = t.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
+  if(m){
+    const y = m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : yr;
+    return new Date(y, +m[1] - 1, +m[2]);
+  }
+  m = t.match(/^([a-zA-Z]{3,9})\.?\s+(\d{1,2})(?:,?\s*(\d{4}))?$/);
+  if(m){
+    const mo = MONTHS[m[1].slice(0,3).toLowerCase()];
+    if(mo === undefined) return null;
+    return new Date(m[3] ? +m[3] : yr, mo, +m[2]);
+  }
+  return null;
+}
+function dueStatus(str){
+  const d = parseDueDate(str);
+  if(!d || isNaN(d)) return null;
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  if(d.getTime() < today) return 'overdue';
+  if(d.getTime() === today) return 'today';
+  return null;
+}
+
+function isUrl(str){
+  return /^https?:\/\//i.test((str||'').trim());
+}
+
+/* Resolve a ticket value to an openable URL, or null if it isn't linkable yet. */
+function ticketLink(ticketValue){
+  if(!ticketValue) return null;
+  const val = ticketValue.trim();
+  if(isUrl(val)) return val;
+  const m = val.match(/^(RITM|INC)\s*0*([0-9]+)/i);
+  const template = state.settings && state.settings.snowTemplate;
+  if(m && template && template.includes('{number}')){
+    return template.replace('{number}', m[1].toUpperCase() + m[2]);
+  }
+  return null;
+}
+
+/* Signal chips — deadlines and stale blockers surface without reading */
+function dueChipHtml(item){
+  const st = dueStatus(item.due);
+  if(st === 'overdue') return `<span class="task-chip chip-overdue"><i data-lucide="alert-triangle"></i>Overdue</span>`;
+  if(st === 'today') return `<span class="task-chip chip-due-today">Due today</span>`;
+  return '';
+}
+function ageChipHtml(item, laneKey){
+  if(laneKey !== 'pending') return '';
+  const d = waitingDaysChip(item);
+  if(d === null || d < 1) return '';
+  const hot = d >= 3;
+  return `<span class="task-chip ${hot ? 'chip-age-hot' : 'chip-age'}">Waiting ${d}d</span>`;
+}
+function waitingDaysChip(item){
+  if(!item.waitingSince) return null;
+  return Math.floor((Date.now() - item.waitingSince) / 86400000);
+}
+
+
+/* Display order: due-date urgency first, then tier, then age. Presentation only. */
+function sortForDisplay(items){
+  const score = i => {
+    const st = dueStatus(i.due);
+    if(st === 'overdue') return 0;
+    if(st === 'today') return 1;
+    if(parseDueDate(i.due)) return 2;
+    return 3;
+  };
+  return [...items].sort((a,b)=>
+    score(a) - score(b) ||
+    planTier(a) - planTier(b) ||
+    (a.createdAt || 0) - (b.createdAt || 0)
+  );
+}
+
+function buildTaskCard(item, laneKey){
+
+  const card = document.createElement('div');
+  card.className = 'task-card';
+  card.draggable = true;
+  card.dataset.id = item.id;
+  card.dataset.lane = laneKey;
+
+  const link = ticketLink(item.ticket);
+  const ticketBtn = `
+    <div class="field-ticket-wrap">
+      <input class="mini-input" data-field="ticket" data-id="${item.id}" value="${escapeHtml(item.ticket||'')}" placeholder="RITM / INC or paste ticket link">
+      <div class="ticket-link-btn ${link ? 'show' : ''}" data-open-ticket="${item.id}" title="Open ticket"><i data-lucide="external-link"></i></div>
+    </div>`;
+
+  const pendingRow = laneKey === 'pending' ? `
+    <div class="field-row">
+      <input class="mini-input" data-field="waitingOn" data-id="${item.id}" value="${escapeHtml(item.waitingOn||'')}" placeholder="Waiting on — who / what">
+    </div>` : '';
+
+  /* One optional Context field. Hidden behind a toggle until it has content. */
+  const showContext = !!item.context || contextRevealIds.has(item.id);
+  const contextBlock = showContext ? `
+    <div class="field-block">
+      <span class="field-label">Context</span>
+      <textarea class="mini-input" data-field="context" data-id="${item.id}" placeholder="Anything worth remembering — links, names, next step">${escapeHtml(item.context||'')}</textarea>
+    </div>` : `
+    <div class="context-toggle" data-context-toggle="${item.id}">+ Context</div>`;
+
+  const subs = item.subs || [];
+  const subsBlock = subs.length ? `
+    <div class="subs">${subs.map(sb => `
+      <div class="sub-row">
+        <div class="sub-check ${sb.done ? 'on' : ''}" data-sub-check="${sb.id}"></div>
+        <input class="sub-input ${sb.done ? 'done' : ''}" data-sub-input="${sb.id}" value="${escapeHtml(sb.t || '')}" placeholder="Subtask">
+        <div class="sub-x" data-sub-x="${sb.id}" title="Remove"><i data-lucide="x"></i></div>
+      </div>`).join('')}
+    </div>` : '';
+
+  const isCollapsed = !expandedCardIds.has(item.id);
+  if(isCollapsed) card.classList.add('card-collapsed');
+
+  /* Single chip row — the ONLY place chips render, collapsed or expanded.
+     Ticket + plain-due chips are echoes of the inputs, so they hide when expanded. */
+  const chips = [];
+  const sigDue = dueChipHtml(item);
+  if(sigDue) chips.push(sigDue);
+  else if(item.due) chips.push(`<span class="task-chip chip-echo">Due ${escapeHtml(item.due)}</span>`);
+  const sigAge = ageChipHtml(item, laneKey);
+  if(sigAge) chips.push(sigAge);
+  if(laneKey === 'pending' && item.waitingOn){
+    chips.push(`<span class="task-chip chip-owner">${escapeHtml(item.waitingOn.slice(0,22))}</span>`);
+  }
+  if((item.subs || []).length){
+    const doneN = item.subs.filter(x=>x.done).length;
+    chips.push(`<span class="task-chip">${doneN}/${item.subs.length} subs</span>`);
+  }
+
+  card.innerHTML = `
+    <div class="task-head">
+      <div class="task-title">${escapeHtml(item.text)}</div>
+      <div class="task-x" data-del="${item.id}" title="Remove — not needed / cancelled"><i data-lucide="x"></i></div>
+      <div class="task-collapse-btn ${isCollapsed?'collapsed':''}" data-collapse-card="${item.id}" title="Collapse"><i data-lucide="chevron-down"></i></div>
+    </div>
+    <div class="task-chips">${chips.join('')}</div>
+    ${item.next ? `<div class="task-next">→ ${escapeHtml(item.next)}</div>` : ''}
+    <div class="task-body">
+      <div class="field-row">
+        ${ticketBtn}
+        <input class="mini-input field-due" style="flex:0 0 100px;" data-field="due" data-id="${item.id}" value="${escapeHtml(item.due||'')}" placeholder="Due">
+      </div>
+      <div class="field-block">
+        <span class="field-label">Next Action</span>
+        <input class="mini-input" data-field="next" data-id="${item.id}" value="${escapeHtml(item.next||'')}" placeholder="The very next thing — Email Juan, Call CDW, Update SNOW…" style="width:100%;">
+      </div>
+      ${pendingRow}
+      ${contextBlock}
+      ${subsBlock}
+      <div class="context-toggle" data-add-sub="${item.id}">+ Subtask</div>
+    </div>
+  `;
+
+  card.querySelector('.task-collapse-btn').addEventListener('click', e=>{
+    e.stopPropagation();
+    if(expandedCardIds.has(item.id)) expandedCardIds.delete(item.id);
+    else expandedCardIds.add(item.id);
+    renderAll();
+  });
+
+  const previewLink = card.querySelector('.task-chips [data-open-link]');
+  if(previewLink){
+    previewLink.addEventListener('click', e=>{
+      e.stopPropagation();
+      window.open(previewLink.dataset.openLink, '_blank', 'noopener');
+    });
+  }
+
+  card.querySelector('.task-x').addEventListener('click', e=>{
+    e.stopPropagation();
+    const arr = state[laneKey];
+    const i = arr.findIndex(t=>t.id === item.id);
+    if(i > -1){ arr.splice(i,1); save(); renderAll(); }
+  });
+
+  /* Subtasks — add, edit, check, remove; Enter chains a new one */
+  const addSub = card.querySelector('[data-add-sub]');
+  addSub.addEventListener('mousedown', e=> e.stopPropagation());
+  addSub.addEventListener('click', e=>{
+    e.stopPropagation();
+    item.subs = item.subs || [];
+    const nid = cid();
+    item.subs.push({ id:nid, t:'', done:false });
+    expandedCardIds.add(item.id);
+    save(); renderAll();
+    const inp = document.querySelector(`input[data-sub-input="${nid}"]`);
+    if(inp) inp.focus();
+  });
+  card.querySelectorAll('[data-sub-check]').forEach(el=>{
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      const sb = (item.subs||[]).find(x=>x.id === el.dataset.subCheck);
+      if(sb){
+        sb.done = !sb.done;
+        if(sb.done){
+          state.subDone.push({ id:sb.id, t:sb.t || '(untitled)', parent:item.text, at:Date.now() });
+        }else{
+          state.subDone = state.subDone.filter(d=>d.id !== sb.id);
+        }
+        save(); renderAll();
+      }
+    });
+  });
+  card.querySelectorAll('[data-sub-input]').forEach(el=>{
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('click', e=> e.stopPropagation());
+    el.addEventListener('change', ()=>{
+      const sb = (item.subs||[]).find(x=>x.id === el.dataset.subInput);
+      if(sb){ sb.t = el.value; save(); }
+    });
+    el.addEventListener('keydown', e=>{
+      if(e.key !== 'Enter') return;
+      e.preventDefault();
+      const sb = (item.subs||[]).find(x=>x.id === el.dataset.subInput);
+      if(sb){ sb.t = el.value; }
+      const nid = cid();
+      const at = (item.subs||[]).findIndex(x=>x.id === el.dataset.subInput);
+      item.subs.splice(at + 1, 0, { id:nid, t:'', done:false });
+      save(); renderAll();
+      const inp = document.querySelector(`input[data-sub-input="${nid}"]`);
+      if(inp) inp.focus();
+    });
+  });
+  card.querySelectorAll('[data-sub-x]').forEach(el=>{
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      item.subs = (item.subs||[]).filter(x=>x.id !== el.dataset.subX);
+      save(); renderAll();
+    });
+  });
+
+  const ctxToggle = card.querySelector('[data-context-toggle]');
+  if(ctxToggle){
+    ctxToggle.addEventListener('click', e=>{
+      e.stopPropagation();
+      contextRevealIds.add(item.id);
+      renderAll();
+      const ta = document.querySelector(`textarea[data-field="context"][data-id="${item.id}"]`);
+      if(ta) ta.focus();
+    });
+    ctxToggle.addEventListener('mousedown', e=> e.stopPropagation());
+  }
+
+  card.querySelectorAll('[data-field]').forEach(el=>{
+    el.addEventListener('click', e=> e.stopPropagation());
+    el.addEventListener('mousedown', e=> e.stopPropagation());
+    el.addEventListener('input', e=>{
+      if(el.dataset.field === 'ticket'){
+        const btn = card.querySelector('.ticket-link-btn');
+        if(btn) btn.classList.toggle('show', !!ticketLink(el.value));
+      }
+      if(el.tagName === 'TEXTAREA') autosize(el);
+    });
+    if(el.dataset.field === 'context'){
+      el.addEventListener('focus', ()=>{
+        if(!el.value){ el.value = '• '; autosize(el); }
+      });
+      el.addEventListener('keydown', e=>{
+        if(e.key !== 'Enter') return;
+        e.preventDefault();
+        const start = el.selectionStart, end = el.selectionEnd;
+        const before = el.value.slice(0, start);
+        const lineStart = before.lastIndexOf('\n') + 1;
+        const currentLine = before.slice(lineStart);
+        if(/^\s*•\s*$/.test(currentLine)){
+          el.value = el.value.slice(0, lineStart) + el.value.slice(end);
+          el.selectionStart = el.selectionEnd = lineStart;
+        }else{
+          const ins = '\n• ';
+          el.value = el.value.slice(0, start) + ins + el.value.slice(end);
+          el.selectionStart = el.selectionEnd = start + ins.length;
+        }
+        item.context = el.value;
+        save(); autosize(el);
+      });
+      el.addEventListener('blur', ()=>{
+        const cleaned = el.value.split('\n').filter(l => !/^\s*•\s*$/.test(l)).join('\n');
+        if(cleaned !== el.value){ el.value = cleaned; }
+        item.context = el.value.trim() === '•' ? '' : el.value;
+        save();
+      });
+    }
+    el.addEventListener('change', e=>{
+      item[el.dataset.field] = el.value;
+      save();
+      if(el.dataset.field === 'ticket' || el.dataset.field === 'due' || el.dataset.field === 'waitingOn' || el.dataset.field === 'next'){
+        renderAll();
+      }
+    });
+  });
+
+  const linkBtn = card.querySelector('.ticket-link-btn');
+  if(linkBtn){
+    linkBtn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const l = ticketLink(item.ticket);
+      if(l) window.open(l, '_blank', 'noopener');
+    });
+    linkBtn.addEventListener('mousedown', e=> e.stopPropagation());
+  }
+
+  card.addEventListener('dragstart', e=>{
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey, text:item.text }));
+  });
+  card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+
+  /* Intra-lane reorder — drop a card onto another card in the same lane to reposition it */
+  card.addEventListener('dragover', e=> e.preventDefault());
+  card.addEventListener('drop', e=>{
+    let data;
+    try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
+    if(!data || data.from !== laneKey || data.id === item.id) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const arr = state[laneKey];
+    const fromIdx = arr.findIndex(i=>i.id === data.id);
+    if(fromIdx === -1) return;
+    const [moved] = arr.splice(fromIdx, 1);
+    const toIdx = arr.findIndex(i=>i.id === item.id);
+    arr.splice(toIdx === -1 ? arr.length : toIdx, 0, moved);
+    save(); renderAll();
+  });
+
+  return card;
+}
+
+function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
+  const wrap = document.getElementById(itemsElId);
+  const empty = document.getElementById(emptyElId);
+  const count = document.getElementById(countElId);
+  const items = state[laneKey];
+  wrap.innerHTML = '';
+
+  const display = (laneKey === 'done') ? items : sortForDisplay(items);
+  count.textContent = display.length;
+  empty.style.display = display.length ? 'none' : 'flex';
+
+  display.forEach(item=>{
+    if(doneStyle){
+      const card = document.createElement('div');
+      card.className = 'task-card done-card';
+      card.draggable = true;
+      card.dataset.id = item.id;
+      card.dataset.lane = laneKey;
+      card.innerHTML = `<div class="task-head"><div class="task-title">${escapeHtml(item.text)}</div></div>`;
+      card.addEventListener('dragstart', e=>{
+        card.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey, text:item.text }));
+      });
+      card.addEventListener('dragend', ()=> card.classList.remove('dragging'));
+      wrap.appendChild(card);
+      return;
+    }
+    wrap.appendChild(buildTaskCard(item, laneKey));
+  });
+}
+
+function renderRecentDays(){
+  /* Follow-ups — actionable attention list, not history */
+  const wrap = document.getElementById('recentDaysList');
+  wrap.innerHTML = '';
+  const rows = [];
+  const openWork = [...state.today, ...state.week];
+  openWork.filter(i=>dueStatus(i.due) === 'overdue').forEach(i=>
+    rows.push({ label:'Overdue', hot:true, text:i.text, meta:'due ' + i.due, jump:'laneToday' }));
+  openWork.filter(i=>dueStatus(i.due) === 'today').forEach(i=>
+    rows.push({ label:'Due today', hot:false, text:i.text, meta:'', jump:'laneToday' }));
+  state.pending.forEach(i=>{
+    const d = i.waitingSince ? Math.floor((Date.now() - i.waitingSince) / 86400000) : 0;
+    if(d >= 3) rows.push({ label:'Waiting ' + d + 'd', hot:true, text:i.text, meta: i.waitingOn ? '— ' + i.waitingOn : '', jump:'lanePending' });
+  });
+  if(rows.length === 0){
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12px; color:var(--ink-faint); padding:2px 0 6px;';
+    empty.textContent = 'Nothing needs chasing. Clear runway.';
+    wrap.appendChild(empty);
+    return;
+  }
+  rows.slice(0, 8).forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'nextup-row';
+    row.innerHTML = '<span class="task-chip ' + (r.hot ? 'chip-age-hot' : 'chip-due-today') + '" style="flex-shrink:0;">' + escapeHtml(r.label) + '</span>'
+      + '<span class="nextup-text">' + escapeHtml(r.text)
+      + (r.meta ? ' <span class="nextup-waitfor">' + escapeHtml(r.meta) + '</span>' : '') + '</span>';
+    row.addEventListener('click', ()=>{
+      const t = document.getElementById(r.jump);
+      if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    wrap.appendChild(row);
+  });
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+  wrap.style.gap = '7px';
+}
+
+function renderActiveTickets(){
+  /* Waiting On — who currently owes me something, grouped from Pending */
+  const wrap = document.getElementById('ticketsList');
+  const count = document.getElementById('countTickets');
+  wrap.innerHTML = '';
+  const groups = {};
+  state.pending.forEach(i=>{
+    const key = (i.waitingOn || 'Unassigned').trim() || 'Unassigned';
+    const norm = key.toLowerCase();
+    if(!groups[norm]) groups[norm] = { name:key, items:[] };
+    groups[norm].items.push(i);
+  });
+  const list = Object.values(groups).sort((a,b)=> b.items.length - a.items.length);
+  count.textContent = list.length;
+  const empty = document.getElementById('ticketsEmpty');
+  if(empty) empty.style.display = list.length ? 'none' : '';
+  list.forEach(g=>{
+    const oldest = g.items.reduce((a,b)=> (a.waitingSince||Infinity) < (b.waitingSince||Infinity) ? a : b);
+    const d = oldest.waitingSince ? Math.floor((Date.now() - oldest.waitingSince) / 86400000) : 0;
+    const row = document.createElement('div');
+    row.className = 'nextup-row';
+    row.innerHTML = '<span class="nextup-text"><strong>' + escapeHtml(g.name) + '</strong>'
+      + ' <span class="nextup-waitfor">' + g.items.length + ' item' + (g.items.length>1?'s':'') + ' · oldest ' + (d < 1 ? '<1d' : d + 'd') + '</span></span>'
+      + (d >= 3 ? '<span class="task-chip chip-age-hot">Chase</span>' : '');
+    row.addEventListener('click', ()=>{
+      const t = document.getElementById('lanePending');
+      if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+    wrap.appendChild(row);
+  });
+}
+
+/* Operational dashboard — awareness instead of navigation */
+function renderOps(){
+  const set = (id, n, hot) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = n;
+    el.classList.toggle('badge-hot', !!hot && n > 0);
+  };
+  const openWork = [...state.today, ...state.week, ...state.pending];
+  set('opsDue', openWork.filter(i=>dueStatus(i.due) === 'today').length);
+  set('opsOverdue', openWork.filter(i=>dueStatus(i.due) === 'overdue').length, true);
+  set('opsStale', state.pending.filter(i=> i.waitingSince && (Date.now() - i.waitingSince) >= 3*86400000).length, true);
+  set('opsLead', openWork.filter(i=> PLAN_TIERS[0].test(i.text || '', i)).length);
+  set('opsVendor', openWork.filter(i=> PLAN_TIERS[2].test(i.text || '', i)).length);
+
+  const rows = [
+    ['navOverdue', openWork.filter(i=>dueStatus(i.due) === 'overdue').length],
+    ['navDue', openWork.filter(i=>dueStatus(i.due) === 'today').length],
+    ['navStale', state.pending.filter(i=> i.waitingSince && (Date.now() - i.waitingSince) >= 3*86400000).length],
+    ['navLead', openWork.filter(i=> PLAN_TIERS[0].test(i.text || '', i)).length],
+    ['navVendor', openWork.filter(i=> PLAN_TIERS[2].test(i.text || '', i)).length],
+  ];
+  let anyAttention = false;
+  rows.forEach(([id, n])=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = n > 0 ? '' : 'none';
+    if(n > 0) anyAttention = true;
+  });
+  const clear = document.getElementById('navAllClear');
+  if(clear) clear.style.display = anyAttention ? 'none' : 'flex';
+}
+
+document.querySelectorAll('.ops-row[data-jump]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const t = document.getElementById(el.dataset.jump);
+    if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+});
+
+function renderAll(){
+  renderWorkspaceState();
+  renderPush();
+  renderLeadership();
+  renderSnapshot();
+  renderNextUp();
+  renderLaneSummaries();
+  renderLane('today','todayItems','todayEmpty','countToday', false);
+  renderLane('week','weekItems','weekEmpty','countWeek', false);
+  renderLane('someday','somedayItems','somedayEmpty','countSomeday', false);
+  renderLane('pending','pendingItems','pendingEmpty','countPending', false);
+  renderLane('onhold','onholdItems','onholdEmpty','countOnHold', false);
+  renderLane('done','doneItems','doneEmpty','countDone', true);
+  renderDoneSubs();
+  renderRecentDays();
+  renderActiveTickets();
+  document.getElementById('notesInput').value = state.notes || '';
+  renderOps();
+
+  lucide.createIcons();
+  autosizeAll();
+}
+
+/* Auto-grow textareas — no scrollbars, content just breathes */
+function autosize(el){
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight + 2) + 'px';
+}
+function autosizeAll(){
+  document.querySelectorAll('.task-card textarea.mini-input').forEach(autosize);
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ============================================================
+   DRAG & DROP between lanes
+   ============================================================ */
+function onDragOver(e){ e.preventDefault(); }
+function onDrop(e, targetLane){
+  e.preventDefault();
+  let data;
+  try{ data = JSON.parse(e.dataTransfer.getData('text/plain')); }catch(err){ return; }
+  if(!data || data.from === targetLane) return;
+  const fromArr = state[data.from];
+  const idx = fromArr.findIndex(i=>i.id === data.id);
+  if(idx === -1) return;
+  const [moved] = fromArr.splice(idx,1);
+  if(targetLane === 'pending'){ moved.waitingSince = Date.now(); }
+  else{ delete moved.waitingSince; }
+  state[targetLane].push(moved);
+  save(); renderAll();
+  if(targetLane === 'pending') openPendingPrompt(moved.id);
+}
+window.onDrop = onDrop;
+
+/* Pending prompt — one clean question instead of a nagging chip */
+let pendingPromptId = null;
+function openPendingPrompt(id){
+  const item = state.pending.find(i=>i.id === id);
+  if(!item) return;
+  pendingPromptId = id;
+  document.getElementById('pendingWhoInput').value = item.waitingOn || '';
+  document.getElementById('pendingDueInput').value = item.due || '';
+  document.getElementById('pendingModalBackdrop').classList.add('show');
+  lucide.createIcons();
+  setTimeout(()=> document.getElementById('pendingWhoInput').focus(), 60);
+}
+function closePendingPrompt(){
+  pendingPromptId = null;
+  document.getElementById('pendingModalBackdrop').classList.remove('show');
+}
+document.getElementById('pendingCloseBtn').addEventListener('click', closePendingPrompt);
+document.getElementById('pendingModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'pendingModalBackdrop') closePendingPrompt();
+});
+document.getElementById('pendingSaveBtn').addEventListener('click', ()=>{
+  const item = state.pending.find(i=>i.id === pendingPromptId);
+  if(item){
+    item.waitingOn = document.getElementById('pendingWhoInput').value.trim();
+    const due = document.getElementById('pendingDueInput').value.trim();
+    if(due) item.due = due;
+    save(); renderAll();
+  }
+  closePendingPrompt();
+});
+document.getElementById('pendingWhoInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') document.getElementById('pendingSaveBtn').click();
+});
+document.getElementById('pendingDueInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') document.getElementById('pendingSaveBtn').click();
+});
+window.onDragOver = onDragOver;
+
+/* ============================================================
+   INTERACTIONS
+   ============================================================ */
+
+/* Deterministic capture cleanup — no AI call, works fully offline and inside GitHub Pages.
+   Trims noise, strips filler prefixes, fixes capitalization. Doesn't rewrite your wording,
+   just removes the busywork of cleaning it up by hand every time. */
+function cleanupCaptureText(raw){
+  let text = raw.trim().replace(/\s+/g, ' ');
+  const fillerPrefixes = [
+    /^please\s+/i, /^need to\s+/i, /^needs to\s+/i, /^i need to\s+/i,
+    /^gotta\s+/i, /^have to\s+/i, /^i have to\s+/i, /^should\s+/i,
+    /^todo:?\s+/i, /^task:?\s+/i, /^to do:?\s+/i, /^reminder:?\s+/i
+  ];
+  for(const re of fillerPrefixes){
+    if(re.test(text)){ text = text.replace(re, ''); break; }
+  }
+  text = text.trim();
+  if(text.length && /[a-z]/.test(text[0]) && text[0] === text[0].toLowerCase()){
+    text = text[0].toUpperCase() + text.slice(1);
+  }
+  return text;
+}
+
+/* Real ticket parsing — pull a RITM/INC/REQ number out of the capture text and
+   populate the ticket field automatically, instead of leaving it as part of the title. */
+function parseTicketFromCapture(raw){
+  const m = raw.match(/^(RITM|INC|REQ)\s*0*([0-9]+)\b\s*(.*)$/i);
+  if(!m) return { ticket: '', text: cleanupCaptureText(raw) };
+  const ticket = m[1].toUpperCase() + m[2];
+  const rest = m[3].trim();
+  const text = rest ? cleanupCaptureText(rest) : ticket;
+  return { ticket, text };
+}
+
+document.getElementById('captureInput').addEventListener('keydown', e=>{
+  if(e.key !== 'Enter') return;
+  const val = e.target.value.trim();
+  if(!val) return;
+  const { ticket, text } = parseTicketFromCapture(val);
+  state.week.push({ id:cid(), text, ticket, createdAt: Date.now() });
+  e.target.value = '';
+  save(); renderAll();
+});
+
+document.getElementById('addTaskInput').addEventListener('keydown', e=>{
+  if(e.key !== 'Enter') return;
+  const val = e.target.value.trim();
+  if(!val) return;
+  const { ticket, text } = parseTicketFromCapture(val);
+  state.week.push({ id:cid(), text, ticket, createdAt: Date.now() });
+  e.target.value = '';
+  save(); renderAll();
+});
+
+document.getElementById('notesInput').addEventListener('input', e=>{
+  state.notes = e.target.value;
+  save();
+});
+
+/* Work Notes bullets — Enter starts a new bullet; Enter on an empty bullet removes it
+   instead of stacking blank bullets. Trailing empty bullets are swept on blur. */
+document.getElementById('notesInput').addEventListener('keydown', e=>{
+  if(e.key !== 'Enter') return;
+  e.preventDefault();
+  const ta = e.target;
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const before = ta.value.slice(0, start);
+  const lineStart = before.lastIndexOf('\n') + 1;
+  const currentLine = before.slice(lineStart);
+  if(/^\s*•\s*$/.test(currentLine)){
+    /* empty bullet — exit the list: remove the bullet, keep the newline */
+    ta.value = ta.value.slice(0, lineStart) + ta.value.slice(end);
+    ta.selectionStart = ta.selectionEnd = lineStart;
+  }else{
+    const insertion = '\n• ';
+    ta.value = ta.value.slice(0, start) + insertion + ta.value.slice(end);
+    ta.selectionStart = ta.selectionEnd = start + insertion.length;
+  }
+  state.notes = ta.value;
+  save();
+});
+
+/* Sweep orphan bullets when leaving the field */
+document.getElementById('notesInput').addEventListener('blur', e=>{
+  const cleaned = e.target.value
+    .split('\n')
+    .filter(line => !/^\s*•\s*$/.test(line))
+    .join('\n');
+  if(cleaned !== e.target.value){
+    e.target.value = cleaned;
+    state.notes = cleaned;
+    save();
+  }
+});
+
+/* First focus on an empty notes box starts the first bullet automatically */
+document.getElementById('notesInput').addEventListener('focus', e=>{
+  if(e.target.value) return;
+  e.target.value = '• ';
+  state.notes = e.target.value;
+  save();
+  e.target.selectionStart = e.target.selectionEnd = e.target.value.length;
+});
+
+function todayLabel(){
+  const now = new Date();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+}
+
+function archiveDoneToHistory(){
+  if(state.done.length === 0 && state.subDone.length === 0) return false;
+  const label = todayLabel();
+  const subsAsItems = state.subDone.map(d=>({ id:d.id, text:d.t + ' — ' + d.parent }));
+  const dayItems = state.done.concat(subsAsItems);
+  const existing = state.doneHistory.find(d=>d.date === label);
+  if(existing){
+    existing.items = existing.items.concat(dayItems);
+  }else{
+    state.doneHistory.push({ date: label, items: dayItems });
+  }
+  state.done = [];
+  state.subDone = [];
+  return true;
+}
+
+document.getElementById('archiveBtn').addEventListener('click', ()=>{
+  if(state.done.length === 0) return;
+  if(!confirm('Archive ' + state.done.length + ' completed item(s) to Recent Days?')) return;
+  archiveDoneToHistory();
+  save(); renderAll();
+});
+
+document.getElementById('backupBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `execution-tower-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  localStorage.setItem('executionTower_lastBackup', Date.now().toString());
+});
+
+document.getElementById('restoreBtn').addEventListener('click', ()=>{
+  document.getElementById('restoreInput').click();
+});
+
+document.getElementById('restoreInput').addEventListener('change', e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = evt=>{
+    try{
+      const parsed = JSON.parse(evt.target.result);
+      if(!confirm('Restore this backup? It will replace everything currently on screen.')) return;
+      Object.assign(state, {
+        commitments: parsed.commitments || [],
+        focus: parsed.focus || null,
+        queue: parsed.queue || [],
+        pending: parsed.pending || [],
+        done: parsed.done || [],
+        doneHistory: parsed.doneHistory || [],
+        notes: parsed.notes || '',
+        settings: parsed.settings || { snowTemplate: '' }
+      });
+      migrateItems();
+      save(); renderAll();
+    }catch(err){
+      alert('That file could not be read as a valid backup.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* Nudge toward a backup if it's been a while — never blocks work, just a quiet reminder */
+(function backupReminder(){
+  const last = parseInt(localStorage.getItem('executionTower_lastBackup') || '0', 10);
+  const days = (Date.now() - last) / (1000*60*60*24);
+  if(!last || days > 3){
+    const btn = document.getElementById('backupBtn');
+    if(btn){ btn.title = 'Tip: back up your data — it has been a while.'; }
+  }
+})();
+
+/* ============================================================
+   DAY RECAP — one click, paste into Teams or an EOD email.
+   Completed, tickets touched, blocked-and-on-whom, open queue.
+   ============================================================ */
+function waitingDays(item){
+  if(!item.waitingSince) return 0;
+  return Math.floor((Date.now() - item.waitingSince) / 86400000);
+}
+
+function dayRecapText(){
+  const L = [];
+  L.push('DAY RECAP — ' + todayLabel());
+  L.push('');
+  L.push('Completed (' + (state.done.length + state.subDone.length) + '):');
+  if(state.done.length === 0 && state.subDone.length === 0) L.push('- none yet');
+  state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  state.subDone.forEach(d=> L.push('- ' + d.t + ' (subtask of: ' + d.parent + ')'));
+  const tickets = [...state.today, ...state.week, ...state.pending].filter(i=>i.ticket);
+  if(tickets.length){
+    L.push('');
+    L.push('Active tickets (' + tickets.length + '):');
+    tickets.forEach(i=> L.push('- ' + i.ticket + ' — ' + i.text));
+  }
+  if(state.today.length){
+    L.push('');
+    L.push('Still in Today (' + state.today.length + '):');
+    state.today.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  }
+  if(state.pending.length){
+    L.push('');
+    L.push('Blocked / waiting (' + state.pending.length + '):');
+    state.pending.forEach(i=>{
+      const d = waitingDays(i);
+      L.push('- ' + i.text + (i.waitingOn ? ' — waiting on ' + i.waitingOn : '') + (d >= 1 ? ' (' + d + 'd)' : ''));
+    });
+  }
+  if(state.onhold.length){
+    L.push('');
+    L.push('On hold (' + state.onhold.length + '):');
+    state.onhold.forEach(i=> L.push('- ' + i.text + (i.context ? ' — ' + i.context.replace(/\n/g, ' | ') : '')));
+  }
+  L.push('');
+  L.push('Today remaining: ' + state.today.length + ' · This Week: ' + state.week.length);
+  return L.join('\n');
+}
+
+document.getElementById('recapBtn').addEventListener('click', ()=>{
+  copyText(dayRecapText(), document.getElementById('recapBtn'), 'Day Recap', 'clipboard-check');
+});
+
+document.getElementById('newDayBtn').addEventListener('click', ()=>{
+  if(!confirm('Start a new day? Done Today moves to Recent Days.')) return;
+  archiveDoneToHistory();
+  save(); renderAll();
+});
+
+document.getElementById('cleanSessionBtn').addEventListener('click', ()=>{
+  if(!confirm('Start a clean session? This resets the push and all active lanes.')) return;
+  archiveDoneToHistory();
+  state.today = [];
+  state.week = [];
+  state.someday = [];
+  state.pending = [];
+  state.onhold = [];
+  state.subDone = [];
+  state.push = { primary:'', secondary:'' };
+  state.notes = '';
+  save(); renderAll();
+});
+
+/* Lane collapse (accordion) — click chevron to hide/show the lane body */
+document.querySelectorAll('[data-collapse]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const lane = btn.closest('.lane');
+    lane.classList.toggle('collapsed');
+  });
+});
+
+/* Lane expand (fullscreen overlay) — click maximize to enlarge one lane, click again or the backdrop to restore */
+const laneBackdrop = document.getElementById('laneBackdrop');
+function closeExpandedLane(){
+  document.querySelectorAll('.lane.expanded').forEach(l=>l.classList.remove('expanded'));
+  laneBackdrop.classList.remove('show');
+}
+document.querySelectorAll('[data-maximize]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const lane = btn.closest('.lane');
+    const alreadyExpanded = lane.classList.contains('expanded');
+    closeExpandedLane();
+    if(!alreadyExpanded){
+      lane.classList.remove('collapsed');   /* a maximized lane always shows its content */
+      lane.classList.add('expanded');
+      laneBackdrop.classList.add('show');
+    }
+  });
+});
+laneBackdrop.addEventListener('click', closeExpandedLane);
+
+/* Sidebar collapse — persisted across sessions */
+(function(){
+  const appRoot = document.getElementById('appRoot');
+  const btn = document.getElementById('sidebarCollapseBtn');
+  if(localStorage.getItem('executionTower_sidebarCollapsed') === '1'){
+    appRoot.classList.add('sidebar-collapsed');
+  }
+  btn.addEventListener('click', ()=>{
+    appRoot.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('executionTower_sidebarCollapsed', appRoot.classList.contains('sidebar-collapsed') ? '1' : '0');
+  });
+})();
+
+/* Sidebar nav — visual state only, except Settings which configures the ServiceNow link template */
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    item.classList.add('active');
+    if(item.dataset.view === 'settings'){
+      const current = (state.settings && state.settings.snowTemplate) || '';
+      const val = prompt('ServiceNow ticket URL template. Use {number} where the RITM/INC number goes:\n\ne.g. https://repsol.service-now.com/nav_to.do?uri=sc_req_item.do?sysparm_query=number={number}', current);
+      if(val === null) return;
+      state.settings = state.settings || {};
+      state.settings.snowTemplate = val.trim();
+      save();
+    }
+  });
+});
+
+/* ============================================================
+   PLAN MY DAY — deterministic ranking, no AI, works offline.
+   Priority hierarchy: Leadership visibility → Deadlines → Vendors
+   → Juan → Tickets → Strategic → Admin. Deep work 8–11 AM,
+   15-min buffers, hard stop 4 PM.
+   ============================================================ */
+const PLAN_TIERS = [
+  { label:'Leadership visibility', test:(t,i)=>/(enrique|karin|carolina|director|leadership|exec)/i.test(t) },
+  { label:'Deadlines',             test:(t,i)=>!!i.due || /deadline|\beod\b|end of day|by today|by tomorrow/i.test(t) },
+  { label:'Vendors',               test:(t,i)=>/(at&t|\batt\b|verizon|t.?mobile|vendor|carrier|edil|montoya)/i.test(t) },
+  { label:'Juan',                  test:(t,i)=>/\bjuan\b/i.test(t) },
+  { label:'Tickets',               test:(t,i)=>!!i.ticket || /\b(ritm|inc|req)\s*\d+/i.test(t) },
+  { label:'Strategic',             test:(t,i)=>/(power ?bi|dashboard|report|inventory|reconcil|asset|presentation|deck|guide|onboard)/i.test(t) },
+  { label:'Admin',                 test:()=>true }
+];
+
+function planTier(item){
+  const t = [item.text, item.ticket, item.waitingOn, item.context].filter(Boolean).join(' ');
+  for(let i = 0; i < PLAN_TIERS.length; i++){
+    if(PLAN_TIERS[i].test(t, item)) return i;
+  }
+  return PLAN_TIERS.length - 1;
+}
+
+function buildPlanEntries(){
+  const entries = [];
+  state.today.forEach(i=> entries.push({ text:i.text, src:'Today', item:i }));
+  state.week.forEach(i=> entries.push({ text:i.text, src:'This Week', item:i }));
+  state.pending.forEach(i=> entries.push({ text:i.text, src:'Pending', item:i }));
+  entries.forEach(e=>{ e.tier = planTier(e.item); });
+  entries.sort((a,b)=>
+    a.tier - b.tier ||
+    (b.item.due ? 1 : 0) - (a.item.due ? 1 : 0)
+  );
+  return entries;
+}
+
+function planEntryMeta(e){
+  const bits = [];
+  if(e.item.ticket) bits.push(e.item.ticket);
+  if(e.item.due) bits.push('due ' + e.item.due);
+  if(e.src === 'Pending' && e.item.waitingOn) bits.push('waiting on ' + e.item.waitingOn);
+  return bits.join(' · ');
+}
+
+function planAsText(entries){
+  const lines = [];
+  lines.push('PLAN — ' + todayLabel());
+  lines.push('Deep work 8:00–11:00 AM. 15-min buffers. Hard stop 4:00 PM.');
+  lines.push('');
+  let rank = 0, lastTier = -1;
+  entries.forEach(e=>{
+    if(e.tier !== lastTier){
+      lines.push(PLAN_TIERS[e.tier].label.toUpperCase());
+      lastTier = e.tier;
+    }
+    rank++;
+    const meta = planEntryMeta(e);
+    lines.push('  ' + rank + '. ' + e.text + (meta ? ' (' + meta + ')' : ''));
+  });
+  if(rank === 0) lines.push('Board is empty — capture something first.');
+  return lines.join('\n');
+}
+
+function openPlanModal(){
+  const entries = buildPlanEntries();
+  const body = document.getElementById('planBody');
+  body.innerHTML = '';
+
+  const note = document.createElement('div');
+  note.style.cssText = 'font-size:12px; color:var(--ink-faint); font-weight:520;';
+  note.textContent = 'Deep work 8:00–11:00 AM · 15-min buffers · hard stop 4:00 PM';
+  body.appendChild(note);
+
+  if(entries.length === 0){
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:12.5px; color:var(--ink-soft); padding:8px 0;';
+    empty.textContent = 'Board is empty — capture something first.';
+    body.appendChild(empty);
+  }
+
+  let rank = 0, lastTier = -1;
+  entries.forEach(e=>{
+    if(e.tier !== lastTier){
+      const h = document.createElement('div');
+      h.className = 'field-label';
+      h.style.cssText = 'margin:6px 0 0;';
+      h.textContent = PLAN_TIERS[e.tier].label;
+      body.appendChild(h);
+      lastTier = e.tier;
+    }
+    rank++;
+    const meta = planEntryMeta(e);
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex; align-items:baseline; gap:10px; padding:9px 12px; background:rgba(255,255,255,0.32); border:1px solid var(--glass-border-soft); border-radius:10px;';
+    row.innerHTML = '<span style="font-size:12px; font-weight:520; color:var(--apricot-deep); min-width:18px;">' + rank + '</span>'
+      + '<span style="flex:1; font-size:12.5px; font-weight:500; color:var(--ink);">' + escapeHtml(e.text)
+      + (meta ? ' <span style="color:var(--ink-faint); font-weight:520; font-size:11px;">— ' + escapeHtml(meta) + '</span>' : '')
+      + '</span>'
+      + '<span class="task-chip">' + e.src + '</span>';
+    body.appendChild(row);
+  });
+
+  document.getElementById('planModalBackdrop').classList.add('show');
+  lucide.createIcons();
+}
+
+document.getElementById('planDayBtn').addEventListener('click', openPlanModal);
+document.getElementById('planCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('planModalBackdrop').classList.remove('show');
+});
+document.getElementById('planModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'planModalBackdrop') e.target.classList.remove('show');
+});
+document.getElementById('planCopyBtn').addEventListener('click', ()=>{
+  copyText(planAsText(buildPlanEntries()), document.getElementById('planCopyBtn'), 'Copy plan', 'copy');
+});
+
+/* ============================================================
+   SEND TO CLAUDE — one click packages the whole board as a
+   structured prompt on the clipboard. Paste into Claude to get
+   the day organized or ask anything. No data leaves this file.
+   ============================================================ */
+function boardAsPrompt(){
+  const L = [];
+  L.push('You are my execution partner. Here is my Execution Tower board for ' + todayLabel() + '.');
+  L.push('Organize my day (or answer my question) using this priority hierarchy: Leadership visibility > Deadlines > Vendors > Juan > Tickets > Strategic > Admin.');
+  L.push('Protect 8:00-11:00 AM for deep work, add 15-min buffers, hard stop at 4:00 PM. Be direct, no fluff.');
+  L.push('');
+  L.push("TODAY'S PUSH:");
+  L.push('- Primary: ' + (state.push.primary || 'none'));
+  L.push('- Secondary: ' + (state.push.secondary || 'none'));
+  L.push('');
+  L.push('THIS WEEK:');
+  if(state.week.length === 0) L.push('- none');
+  state.week.forEach(i=>{
+    let line = '- ' + i.text;
+    const bits = [];
+    if(i.ticket) bits.push(i.ticket);
+    if(i.due) bits.push('due ' + i.due);
+    if(i.next) bits.push('next: ' + i.next);
+    if(bits.length) line += ' (' + bits.join(', ') + ')';
+    L.push(line);
+    if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('TODAY:');
+  if(state.today.length === 0) L.push('- none');
+  state.today.forEach(i=>{
+    let line = '- ' + i.text;
+    const bits = [];
+    if(i.ticket) bits.push(i.ticket);
+    if(i.due) bits.push('due ' + i.due);
+    if(bits.length) line += ' (' + bits.join(', ') + ')';
+    L.push(line);
+    if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('SOMEDAY (parked): ' + state.someday.length + ' item' + (state.someday.length === 1 ? '' : 's'));
+  L.push('');
+  L.push('PENDING / BLOCKED:');
+  if(state.pending.length === 0) L.push('- none');
+  state.pending.forEach(i=>{
+    let line = '- ' + i.text;
+    const bits = [];
+    if(i.ticket) bits.push(i.ticket);
+    if(i.waitingOn) bits.push('waiting on ' + i.waitingOn);
+    if(i.due) bits.push('due ' + i.due);
+    if(bits.length) line += ' (' + bits.join(', ') + ')';
+    L.push(line);
+    if(i.context) L.push('    context: ' + i.context.replace(/\n/g, ' | '));
+  });
+  L.push('');
+  L.push('ON HOLD (leadership-directed pause, not awaiting a response):');
+  if(state.onhold.length === 0) L.push('- none');
+  state.onhold.forEach(i=>{
+    let line = '- ' + i.text;
+    if(i.context) line += ' — ' + i.context.replace(/\n/g, ' | ');
+    L.push(line);
+  });
+  L.push('');
+  L.push('DONE TODAY:');
+  if(state.done.length === 0 && state.subDone.length === 0) L.push('- none');
+  state.done.forEach(i=> L.push('- ' + i.text + (i.ticket ? ' (' + i.ticket + ')' : '')));
+  state.subDone.forEach(d=> L.push('- ' + d.t + ' (subtask of: ' + d.parent + ')'));
+  if(state.notes && state.notes.trim()){
+    L.push('');
+    L.push('WORK NOTES:');
+    L.push(state.notes.trim());
+  }
+  return L.join('\n');
+}
+
+/* ============================================================
+   ASK AI — built-in assistant on the user's own Anthropic key.
+   Key lives in its own localStorage slot, OUTSIDE board state,
+   so Backup files never contain it. Board data leaves the file
+   only at the moment a question is asked.
+   ============================================================ */
+const ASK_KEY_SLOT = 'executionTower_apiKey';
+let askHistory = [];   /* session-only: [{role, content}] */
+
+function askGetKey(){ return localStorage.getItem(ASK_KEY_SLOT) || ''; }
+
+function askRefreshView(){
+  const hasKey = !!askGetKey();
+  document.getElementById('askSetup').style.display = hasKey ? 'none' : 'flex';
+  document.getElementById('askChat').style.display = hasKey ? 'flex' : 'none';
+}
+
+function openAskModal(){
+  askRefreshView();
+  document.getElementById('askModalBackdrop').classList.add('show');
+  lucide.createIcons();
+  setTimeout(()=>{
+    const t = askGetKey() ? document.getElementById('askInput') : document.getElementById('askKeyInput');
+    t.focus();
+  }, 60);
+}
+function closeAskModal(){ document.getElementById('askModalBackdrop').classList.remove('show'); }
+
+function askAddMsg(text, cls){
+  const wrap = document.getElementById('askMessages');
+  const div = document.createElement('div');
+  div.className = 'ask-msg ' + cls;
+  div.textContent = text;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  return div;
+}
+
+async function askSend(){
+  const input = document.getElementById('askInput');
+  const q = input.value.trim();
+  if(!q) return;
+  const key = askGetKey();
+  if(!key){ askRefreshView(); return; }
+  input.value = '';
+  askAddMsg(q, 'me');
+  const includeBoard = document.getElementById('askIncludeBoard').checked;
+  const thinking = askAddMsg('Thinking…', 'ai thinking');
+  const btn = document.getElementById('askSendBtn');
+  btn.disabled = true;
+
+  const sys = "You are Sierra's execution partner inside her Execution Tower workspace. She is a Senior IT Deskside Support Analyst and Mobility Administrator. Be direct, concise, and concrete — no fluff, no corporate tone. When organizing work, use her hierarchy: Leadership visibility > Deadlines > Vendors > Juan > Tickets > Strategic > Admin. Deep work 8-11 AM, 15-min buffers, hard stop 4 PM.";
+  const userContent = (includeBoard ? boardAsPrompt() + '\n\n' : '') + 'QUESTION: ' + q;
+  const messages = [...askHistory, { role:'user', content:userContent }];
+
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'content-type':'application/json',
+        'x-api-key': key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1200, system:sys, messages })
+    });
+    const data = await resp.json();
+    thinking.remove();
+    if(!resp.ok){
+      const msg = (data && data.error && data.error.message) ? data.error.message : ('HTTP ' + resp.status);
+      askAddMsg('Error: ' + msg + (resp.status === 401 ? ' — check your API key (Clear key to re-enter).' : ''), 'err');
+    }else{
+      const text = (data.content || []).filter(b=>b.type === 'text').map(b=>b.text).join('\n').trim() || '(empty response)';
+      askAddMsg(text, 'ai');
+      askHistory.push({ role:'user', content:userContent });
+      askHistory.push({ role:'assistant', content:text });
+      if(askHistory.length > 8) askHistory = askHistory.slice(-8);   /* keep the last 4 exchanges */
+    }
+  }catch(err){
+    thinking.remove();
+    askAddMsg('Network error: ' + err.message + ' — if you are on the corporate network, api.anthropic.com may be blocked by the proxy.', 'err');
+  }
+  btn.disabled = false;
+}
+
+document.getElementById('askBtn').addEventListener('click', openAskModal);
+document.getElementById('askCloseBtn').addEventListener('click', closeAskModal);
+document.getElementById('askModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'askModalBackdrop') closeAskModal();
+});
+document.getElementById('askKeySaveBtn').addEventListener('click', ()=>{
+  const v = document.getElementById('askKeyInput').value.trim();
+  if(!v) return;
+  localStorage.setItem(ASK_KEY_SLOT, v);
+  document.getElementById('askKeyInput').value = '';
+  askRefreshView();
+  document.getElementById('askInput').focus();
+});
+document.getElementById('askKeyClearBtn').addEventListener('click', ()=>{
+  localStorage.removeItem(ASK_KEY_SLOT);
+  askHistory = [];
+  document.getElementById('askMessages').innerHTML = '';
+  askRefreshView();
+});
+document.getElementById('askSendBtn').addEventListener('click', askSend);
+document.getElementById('askInput').addEventListener('keydown', e=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); askSend(); }
+});
+
+/* ============================================================
+   BRAIN DUMP — capture naturally, translate intelligently,
+   execute immediately. Turns a raw thought stream into one
+   executable workstream: Title, Current Step (Next Action),
+   Next Step (subtask), Success (context). Uses the same stored
+   key as Ask AI; degrades gracefully without one.
+   ============================================================ */
+let dumpExtra = [];
+function openDumpModal(){
+  document.getElementById('dumpErr').style.display = 'none';
+  document.getElementById('dumpPreview').style.display = 'none';
+  document.getElementById('dumpModalBackdrop').classList.add('show');
+  lucide.createIcons();
+  setTimeout(()=> document.getElementById('dumpInput').focus(), 60);
+}
+function closeDumpModal(){ document.getElementById('dumpModalBackdrop').classList.remove('show'); }
+document.getElementById('dumpBtn').addEventListener('click', openDumpModal);
+document.getElementById('dumpCloseBtn').addEventListener('click', closeDumpModal);
+document.getElementById('dumpModalBackdrop').addEventListener('click', e=>{
+  if(e.target.id === 'dumpModalBackdrop') closeDumpModal();
+});
+
+function dumpShowPreview(title, current, next, success, extra){
+  dumpExtra = extra || [];
+  document.getElementById('dumpTitle').value = title || '';
+  document.getElementById('dumpCurrent').value = current || '';
+  document.getElementById('dumpNext').value = next || '';
+  document.getElementById('dumpSuccess').value = success || '';
+  document.getElementById('dumpPreview').style.display = 'flex';
+}
+
+document.getElementById('dumpRawBtn').addEventListener('click', ()=>{
+  const raw = document.getElementById('dumpInput').value.trim();
+  if(!raw) return;
+  const lines = raw.split(/\n|(?<=[.?!])\s+/).map(l=>l.trim()).filter(Boolean);
+  dumpShowPreview(
+    cleanupCaptureText(lines[0] || '').slice(0, 80),
+    lines[1] ? cleanupCaptureText(lines[1]).slice(0, 60) : '',
+    lines[2] ? cleanupCaptureText(lines[2]).slice(0, 60) : '',
+    '', lines.slice(3).map(l=>cleanupCaptureText(l).slice(0,60))
+  );
+});
+
+document.getElementById('dumpGoBtn').addEventListener('click', async ()=>{
+  const raw = document.getElementById('dumpInput').value.trim();
+  const err = document.getElementById('dumpErr');
+  err.style.display = 'none';
+  if(!raw) return;
+  const key = askGetKey();
+  if(!key){
+    err.textContent = 'No API key saved yet — set one in Ask AI, or use "Add without AI".';
+    err.style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('dumpGoBtn');
+  btn.disabled = true; btn.textContent = 'Thinking…';
+  const sys = 'You translate a raw brain dump into ONE executable workstream. Respond ONLY with JSON, no prose, no code fences: {"title":string,"current_step":string,"next_step":string,"success":string,"extra_steps":string[]}. title: short workstream name in title case, no filler. current_step: the single most immediate concrete action, imperative, max 6 words. next_step: the action after that. success: one short line describing what done looks like. extra_steps: any further concrete steps, else [].';
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'content-type':'application/json', 'x-api-key':key, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+      body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:400, system:sys, messages:[{ role:'user', content: raw }] })
+    });
+    const data = await resp.json();
+    if(!resp.ok) throw new Error((data && data.error && data.error.message) || ('HTTP ' + resp.status));
+    const text = (data.content || []).filter(b=>b.type === 'text').map(b=>b.text).join('').replace(/```json|```/g, '').trim();
+    const j = JSON.parse(text);
+    dumpShowPreview(j.title, j.current_step, j.next_step, j.success, j.extra_steps);
+  }catch(e2){
+    err.textContent = 'Error: ' + e2.message;
+    err.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i data-lucide="sparkles"></i>Summarize';
+  lucide.createIcons();
+});
+
+function dumpCommit(lane){
+  const title = document.getElementById('dumpTitle').value.trim();
+  if(!title) return;
+  const next = document.getElementById('dumpNext').value.trim();
+  const success = document.getElementById('dumpSuccess').value.trim();
+  const item = {
+    id: cid(),
+    text: title,
+    next: document.getElementById('dumpCurrent').value.trim(),
+    createdAt: Date.now()
+  };
+  if(success) item.context = '• Success: ' + success;
+  const subs = [];
+  if(next) subs.push({ id:cid(), t:next, done:false });
+  dumpExtra.forEach(t=>{ if(t && t.trim()) subs.push({ id:cid(), t:t.trim(), done:false }); });
+  if(subs.length) item.subs = subs;
+  state[lane].push(item);
+  save(); renderAll();
+  document.getElementById('dumpInput').value = '';
+  closeDumpModal();
+}
+document.getElementById('dumpAddWeekBtn').addEventListener('click', ()=> dumpCommit('week'));
+document.getElementById('dumpAddTodayBtn').addEventListener('click', ()=> dumpCommit('today'));
+
+/* Clipboard with file:// fallback — flashes the button label to confirm */
+function copyText(text, btn, restoreLabel, icon){
+  const done = ()=>{
+    if(!btn) return;
+    btn.innerHTML = '<i data-lucide="check-check"></i>Copied';
+    lucide.createIcons();
+    setTimeout(()=>{
+      btn.innerHTML = '<i data-lucide="' + (icon || 'copy') + '"></i>' + restoreLabel;
+      lucide.createIcons();
+    }, 1600);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=> legacyCopy(text, done));
+  }else{
+    legacyCopy(text, done);
+  }
+}
+function legacyCopy(text, done){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed; opacity:0;';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  ta.remove();
+  done();
+}
+
+document.getElementById('sendClaudeBtn').addEventListener('click', ()=>{
+  copyText(boardAsPrompt(), document.getElementById('sendClaudeBtn'), 'Send to Claude', 'send');
+});
+
+/* Signal tiles jump to their lane */
+document.querySelectorAll('.glance-stat[data-jump]').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    const t = document.getElementById(el.dataset.jump);
+    if(t) t.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+});
+
+/* Recent Days condense — persisted */
+(function(){
+  const btn = document.getElementById('recentCollapseBtn');
+  const list = document.getElementById('recentDaysList');
+  function apply(){
+    const c = !!(state.settings && state.settings.recentCollapsed);
+    list.style.display = c ? 'none' : '';
+    btn.classList.toggle('collapsed', c);
+  }
+  btn.addEventListener('click', ()=>{
+    state.settings = state.settings || {};
+    state.settings.recentCollapsed = !state.settings.recentCollapsed;
+    save(); apply();
+  });
+  apply();
+})();
+
+/* Collapse all tasks — every expanded card folds back to its one-line state */
+document.getElementById('collapseAllBtn').addEventListener('click', ()=>{
+  expandedCardIds.clear();
+  contextRevealIds.clear();
+  renderAll();
+});
+
+/* Utility menu open/close */
+(function(){
+  const btn = document.getElementById('utilMenuBtn');
+  const menu = document.getElementById('utilMenu');
+  btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    menu.classList.toggle('show');
+  });
+  menu.addEventListener('click', ()=> menu.classList.remove('show'));
+  document.addEventListener('click', e=>{
+    if(!menu.contains(e.target) && e.target !== btn) menu.classList.remove('show');
+  });
+})();
+
+/* ============================================================
+   KEYBOARD — "/" focuses capture from anywhere (no OS conflict),
+   Esc closes modals and expanded lanes.
+   ============================================================ */
+document.addEventListener('keydown', e=>{
+  if(e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey){
+    const tag = document.activeElement && document.activeElement.tagName;
+    if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    e.preventDefault();
+    document.getElementById('captureInput').focus();
+  }
+  if(e.key === 'Escape'){
+    closeExpandedLane();
+    document.getElementById('planModalBackdrop').classList.remove('show');
+    document.getElementById('utilMenu').classList.remove('show');
+    closePendingPrompt();
+    closeAskModal();
+    closeDumpModal();
+  }
+});
+
+/* Clock */
+function tickClock(){
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('clockDay').textContent = days[now.getDay()];
+  document.getElementById('clockDate').textContent = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  let h = now.getHours();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h === 0) h = 12;
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${h}:${m} ${ampm}`;
+
+  /* Daily Execution Engine mode — matches the framework, not the mood */
+  const hr = now.getHours() + now.getMinutes() / 60;
+  const modeEl = document.getElementById('clockMode');
+  const txtEl = document.getElementById('clockModeText');
+  modeEl.classList.remove('mode-stop');
+  if(hr < 8){ txtEl.textContent = 'Ramp-up — deep work starts at 8'; }
+  else if(hr < 11){ txtEl.textContent = 'Deep work — protect this block'; }
+  else if(hr < 12){ txtEl.textContent = 'Execution block'; }
+  else if(hr < 13){ txtEl.textContent = 'Lunch admin block'; }
+  else if(hr < 15.5){ txtEl.textContent = 'Execution block'; }
+  else if(hr < 16){ txtEl.textContent = 'Wrap-up — hard stop at 4'; }
+  else{ txtEl.textContent = 'Hard stop — you are done'; modeEl.classList.add('mode-stop'); }
+}
+tickClock();
+setInterval(tickClock, 1000 * 15);
+
+/* Init */
+lucide.createIcons();
+renderAll();
+</script>
+</body>
+</html>
