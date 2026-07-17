@@ -546,6 +546,9 @@ body.is-planning .planning-collapse-btn{ display:none; }
 
 /* Mission — attached to execution, stronger than Planning, always visible */
 .mission-row{ display:flex; align-items:center; gap:16px; padding-top:4px; border-top:1px solid rgba(124,122,224,0.12); }
+/* Key Conversation field removed from view per request — snapConversation
+   stays wired in JS/state, just not rendered. */
+.snapshot-field:has(#snapConversation){ display:none; }
 .mission-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--apricot-deep); flex-shrink:0; }
 .mission-field{ flex:1; display:flex; align-items:center; gap:10px; position:relative; }
 .mission-field input{ flex:1; border:none; background:none; box-shadow:none; padding:2px 0; font-size:12px; font-weight:520; }
@@ -812,16 +815,21 @@ body.is-planning .planning-collapse-btn{ display:none; }
    it: always visible, within a short drag of Today, sized by how often
    each one is actually touched rather than divided evenly. This also cuts
    scrolling — nothing stacks vertically fighting Today for height. */
-.lane-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:9px; flex:1; min-height:0; }
-.lane-row-hero{ min-height:0; }
-.lane-rail{ display:flex; flex-direction:column; gap:9px; min-height:0; }
+/* Three-lane top row: Today | Pending | Queue, at parity widths with Today
+   noticeably but not overwhelmingly larger. lane-row-hero, lane-rail, and
+   rail-active are all display:contents — their children (Today, Pending,
+   Queue) become direct grid items of lane-grid. rail-support (On Hold /
+   Waiting On) stays display:none regardless, so it contributes nothing. */
+.lane-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:9px; flex:1; min-height:0; }
+.lane-row-hero{ display:contents; }
+.lane-rail{ display:contents; }
 
 /* Execution state — Today absorbs the space Planning/Focus give up now that
    Mission+Planning live inside Today's own card and Focus is gone; it doesn't
    stay proportioned for a layout that assumed a persistent Focus card. Rail widens with it. */
-body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
-/* Rail tier 1 — This Week, Pending: touched constantly, most of the rail */
-.rail-active{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:9px; flex:2; min-height:0; }
+body.is-executing .lane-grid{ grid-template-columns:1.4fr 1fr 1fr; }
+/* Rail tier 1 — Pending + Queue: touched constantly, now direct top-row lanes */
+.rail-active{ display:contents; }
 /* Rail tier 2 — On Hold, Waiting On: removed from the workspace per request.
    rail-active is now the sole flex child of lane-rail and fills the height. */
 .rail-support{ display:none; }
@@ -981,7 +989,10 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 .task-card:hover{ transform:translateY(-1px); background:rgba(255,255,255,0.78); box-shadow:inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(20,20,30,0.03), 0 1px 2px rgba(20,20,30,0.04), 0 12px 28px rgba(20,30,70,0.09); }
 .task-card:active{ cursor:grabbing; }
 .task-card.dragging{ opacity:0.4; }
-.task-card.done-card .task-title{ flex:1; font-size:12.5px; font-weight:480; color:var(--ink); line-height:1.45; }
+.task-card.done-card{ padding:6px 10px; }
+.task-card.done-card .done-head{ align-items:center; gap:7px; }
+.task-card.done-card .task-title{ flex:1; font-size:12px; font-weight:480; color:var(--ink-soft); line-height:1.3; }
+.done-check{ width:13px; height:13px; color:var(--success); flex-shrink:0; }
 .task-card.needs-context{ border:1px solid rgba(232,185,79,0.65); background:rgba(232,185,79,0.14); }
 
 .task-head{ display:flex; align-items:flex-start; gap:8px; }
@@ -1139,7 +1150,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 .notes-panel{ height:100%; min-height:0; }
 /* Row 4 — Reference: Work Notes, Done, Someday. Consulted occasionally,
    never worked in continuously — smallest footprint on the board. */
-.bottom-grid{ display:grid; grid-template-columns:minmax(0,232px) minmax(0,1fr) minmax(0,1fr); gap:10px; align-items:stretch; flex:0 0 auto; height:188px; min-height:0; }
+.bottom-grid{ display:grid; grid-template-columns:minmax(0,232px) minmax(0,0.72fr) minmax(0,1fr); gap:10px; align-items:stretch; flex:0 0 auto; height:188px; min-height:0; }
 .bottom-stack{ display:contents; }
 #laneSomeday{ display:none; }
 .tickets-empty, .recent-empty{
@@ -1308,7 +1319,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="field-block"><span class="field-label">Next Step — becomes first subtask</span><input class="mini-input" id="dumpNext" style="width:100%;"></div>
       <div class="field-block"><span class="field-label">Success</span><input class="mini-input" id="dumpSuccess" style="width:100%;"></div>
       <div class="modal-actions">
-        <button class="btn" id="dumpAddWeekBtn">Add to This Week</button>
+        <button class="btn" id="dumpAddWeekBtn">Add to Queue</button>
         <button class="btn btn-primary" id="dumpAddTodayBtn">Add to Today</button>
       </div>
     </div>
@@ -1422,7 +1433,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
     <div class="topbar glass">
       <div class="capture">
         <i data-lucide="plus"></i>
-        <input id="captureInput" type="text" placeholder="Capture… (RITM/INC → ticket · anything else → This Week)">
+        <input id="captureInput" type="text" placeholder="Capture… (RITM/INC → ticket · anything else → Queue)">
         <span class="kbd">/</span>
         <div class="capture-dump" id="dumpBtn" title="Brain dump — describe it in your own words, I'll structure the work"><i data-lucide="sparkles"></i></div>
       </div>
@@ -1505,7 +1516,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
             <div class="lane-empty" id="todayEmpty">
               <div class="lane-empty-icon"><i data-lucide="sun"></i></div>
               <div class="lane-empty-title">Nothing pulled in</div>
-              <div class="lane-empty-sub">Auto-ranked from This Week — click to pull into Today</div>
+              <div class="lane-empty-sub">Auto-ranked from Queue — click to pull into Today</div>
               <div id="todayTriageList" class="triage-list"></div>
             </div>
             <div id="todayItems"></div>
@@ -1537,13 +1548,13 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         </div>
 
         <div class="glass lane tier-active" id="laneWeek" data-lane="week" ondrop="onDrop(event,'week')" ondragover="onDragOver(event)">
-          <div class="lane-head"><i data-lucide="inbox"></i><span class="lane-name">This Week</span><span class="lane-count" id="countWeek">0</span>
+          <div class="lane-head"><i data-lucide="inbox"></i><span class="lane-name">Queue</span><span class="lane-count" id="countWeek">0</span>
             <div class="lane-controls">
               <div class="lane-ctrl-btn" data-maximize="week" title="Expand"><i data-lucide="maximize-2"></i></div>
               <div class="lane-ctrl-btn" data-collapse="week" title="Collapse"><i data-lucide="chevron-down"></i></div>
             </div>
           </div>
-          <div class="lane-summary" id="summaryWeek" title="Expand This Week"></div>
+          <div class="lane-summary" id="summaryWeek" title="Expand Queue"></div>
           <div class="lane-body">
             <div class="add-task-row" id="addTaskRow">
               <i data-lucide="plus"></i>
@@ -1632,7 +1643,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <!-- Recent Days -->
         <section class="glass tier-ref panel-full" style="margin-bottom:4px;">
           <div class="recent-row">
-            <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">Follow-ups</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
+            <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">This Week</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
             <div class="task-collapse-btn" id="recentCollapseBtn" title="Collapse"><i data-lucide="chevron-down"></i></div>
           </div>
           <div id="recentDaysList" class="panel-body"></div>
@@ -1997,7 +2008,7 @@ function buildNextUpEntries(){
      never enter. Rank: due date, then lane, then capture order. */
   const rows = [];
   state.today.forEach(i=> rows.push({ text:i.text, src:'Today', laneRank:0, item:i }));
-  state.week.forEach(i=> rows.push({ text:i.text, src:'This Week', laneRank:1, item:i }));
+  state.week.forEach(i=> rows.push({ text:i.text, src:'Queue', laneRank:1, item:i }));
   rows.forEach(r=>{ r.due = nextUpDueScore(r.item); });
   rows.sort((a,b)=>
     a.due - b.due ||
@@ -2016,7 +2027,7 @@ function renderNextUp(){
   if(rows.length === 0){
     const empty = document.createElement('div');
     empty.style.cssText = 'font-size:11.5px; color:var(--ink-faint); padding:4px 0 0;';
-    empty.textContent = 'This Week is empty too — capture something.';
+    empty.textContent = 'Queue is empty too — capture something.';
     wrap.appendChild(empty);
     return;
   }
@@ -2414,7 +2425,7 @@ function renderLane(laneKey, itemsElId, emptyElId, countElId, doneStyle){
       card.draggable = true;
       card.dataset.id = item.id;
       card.dataset.lane = laneKey;
-      card.innerHTML = `<div class="task-head"><div class="task-title">${escapeHtml(item.text)}</div></div>`;
+      card.innerHTML = `<div class="task-head done-head"><svg class="done-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><div class="task-title">${escapeHtml(item.text)}</div></div>`;
       card.addEventListener('dragstart', e=>{
         card.classList.add('dragging');
         e.dataTransfer.setData('text/plain', JSON.stringify({ id:item.id, from:laneKey, text:item.text }));
@@ -2867,7 +2878,7 @@ function dayRecapText(){
     state.onhold.forEach(i=> L.push('- ' + i.text + (i.context ? ' — ' + i.context.replace(/\n/g, ' | ') : '')));
   }
   L.push('');
-  L.push('Today remaining: ' + state.today.length + ' · This Week: ' + state.week.length);
+  L.push('Today remaining: ' + state.today.length + ' · Queue: ' + state.week.length);
   return L.join('\n');
 }
 
@@ -2979,7 +2990,7 @@ function planTier(item){
 function buildPlanEntries(){
   const entries = [];
   state.today.forEach(i=> entries.push({ text:i.text, src:'Today', item:i }));
-  state.week.forEach(i=> entries.push({ text:i.text, src:'This Week', item:i }));
+  state.week.forEach(i=> entries.push({ text:i.text, src:'Queue', item:i }));
   state.pending.forEach(i=> entries.push({ text:i.text, src:'Pending', item:i }));
   entries.forEach(e=>{ e.tier = planTier(e.item); });
   entries.sort((a,b)=>
