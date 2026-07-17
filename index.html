@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Execution Tower</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;480;500;520;540;560;580;600;700;800&family=Space+Grotesk:wght@500;600;650;660;700&display=swap');
 /* ============================================================
    EXECUTIVE GLASS — DESIGN TOKENS
    ============================================================ */
@@ -199,10 +199,10 @@ body{
    ============================================================ */
 .app{
   display:grid;
-  grid-template-columns:224px 1fr;
+  grid-template-columns:216px 1fr;
   height:100vh;
-  padding:14px;
-  gap:14px;
+  padding:10px;
+  gap:10px;
   transition:grid-template-columns var(--dur) var(--ease);
 }
 .app.sidebar-collapsed{
@@ -213,8 +213,8 @@ body{
 .sidebar{
   display:flex;
   flex-direction:column;
-  padding:20px 16px;
-  gap:18px;
+  padding:14px 13px;
+  gap:13px;
   position:relative;
   transition:padding var(--dur) var(--ease);
   background:linear-gradient(165deg, rgba(255,255,255,0.07), rgba(255,255,255,0)), linear-gradient(175deg, rgba(30,27,44,0.74), rgba(20,18,30,0.80)) !important;
@@ -325,7 +325,7 @@ body{
   background:rgba(255,255,255,0.34);
   border:1px solid var(--glass-border-soft);
   border-radius:var(--r-md);
-  padding:9px 10px;
+  padding:7px 9px;
   display:flex; flex-direction:column; gap:1px;
 }
 .glance-num{ font-size:19px; font-weight:580; color:var(--ink); line-height:1.1; font-variant-numeric:tabular-nums; }
@@ -334,7 +334,7 @@ body{
 .nav{ display:flex; flex-direction:column; gap:2px; flex:1; }
 .nav-item{
   display:flex; align-items:center; gap:11px;
-  padding:9px 12px;
+  padding:7px 12px;
   border-radius:var(--r-md);
   font-size:13.5px;
   font-weight:500;
@@ -355,7 +355,7 @@ body{
 .ops-row{ cursor:pointer; }
 .ops-row .nav-badge{ margin-left:auto; font-variant-numeric:tabular-nums; }
 .ops-div{ height:1px; background:var(--glass-border-soft); margin:8px 10px; }
-.nav-section-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); padding:12px 12px 5px; }
+.nav-section-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); padding:8px 12px 4px; }
 .nav-section-label:first-child{ padding-top:2px; }
 .app.sidebar-collapsed .nav-section-label{ display:none; }
 .nav-badge.badge-hot{ color:#D66B7A; font-weight:580; }
@@ -371,7 +371,7 @@ body{
 }
 
 .clock-card{
-  padding:12px 14px;
+  padding:9px 12px;
   display:flex; flex-direction:column; gap:1px;
 }
 .clock-day{ font-size:10.5px; font-weight:520; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em; }
@@ -392,8 +392,8 @@ body{
 @keyframes modePulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.45; } }
 
 .leadership-card{
-  padding:var(--s-2);
-  display:flex; flex-direction:column; gap:8px;
+  padding:11px 13px;
+  display:flex; flex-direction:column; gap:6px;
   border-radius:var(--r-lg);
 }
 .leadership-title{ font-family:var(--font-display); font-size:10.5px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); }
@@ -415,7 +415,7 @@ body{
 .main{
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:9px;
   min-width:0;
   min-height:0;
   height:100%;
@@ -430,7 +430,7 @@ body{
 /* Topbar */
 .topbar{
   display:flex; align-items:center; gap:var(--s-2);
-  padding:9px var(--s-2);
+  padding:6px var(--s-2);
   flex-shrink:0;
   flex-wrap:wrap;
   position:relative;
@@ -441,7 +441,7 @@ body{
   flex:1 1 260px;
   min-width:220px;
   display:flex; align-items:center; gap:10px;
-  padding:11px 16px;
+  padding:8px 15px;
   border-radius:var(--r-lg);
   background:var(--glass-fill-strong);
   border:1px solid var(--glass-border);
@@ -476,7 +476,7 @@ body{
 }
 .btn{
   display:flex; align-items:center; gap:6px;
-  padding:7px 14px;
+  padding:6px 13px;
   border-radius:var(--r-lg);
   font-family:inherit; font-size:12.5px; font-weight:520;
   border:1px solid var(--glass-border);
@@ -514,17 +514,17 @@ body{
   font-family:var(--font-display); font-size:16px; font-weight:650; letter-spacing:-0.01em; color:var(--ink);
 }
 .section-sub{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; font-weight:500; letter-spacing:0.01em; }
-.panel-head{ display:flex; align-items:center; justify-content:space-between; padding:13px 18px 8px; border-bottom:1px solid rgba(124,122,224,0.12); margin-bottom:4px; }
-.panel-body{ padding:0 18px 14px; }
+.panel-head{ display:flex; align-items:center; justify-content:space-between; padding:12px 17px 7px; border-bottom:1px solid rgba(124,122,224,0.12); margin-bottom:4px; }
+.panel-body{ padding:0 17px 12px; }
 
 /* Today context — Mission + Planning nested inside Today's own card.
    Metadata attached to the workspace, not a section stacked above it. */
 .today-context{
-  padding:2px 18px 10px;
+  padding:2px 16px 7px;
   border-bottom:1px solid var(--lane-border, rgba(255,255,255,0.18));
-  display:flex; flex-direction:column; gap:6px;
+  display:flex; flex-direction:column; gap:4px;
 }
-.snapshot-row{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 18px; padding:2px 0; }
+.snapshot-row{ display:flex; flex-wrap:wrap; align-items:center; gap:5px 16px; padding:1px 0; }
 .snapshot-field{ flex:1 1 45%; min-width:0; display:flex; align-items:baseline; gap:8px; }
 .snapshot-label{ font-family:var(--font-display); font-size:9px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
 .snapshot-field input{ flex:1; min-width:0; border:none; background:none; box-shadow:none; padding:2px 0; font-size:11.5px; }
@@ -545,7 +545,7 @@ body.is-executing:not(.planning-expanded) .planning-summary{ display:flex; }
 body.is-planning .planning-collapse-btn{ display:none; }
 
 /* Mission — attached to execution, stronger than Planning, always visible */
-.mission-row{ display:flex; align-items:center; gap:18px; padding-top:6px; border-top:1px solid rgba(124,122,224,0.12); }
+.mission-row{ display:flex; align-items:center; gap:16px; padding-top:4px; border-top:1px solid rgba(124,122,224,0.12); }
 .mission-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--apricot-deep); flex-shrink:0; }
 .mission-field{ flex:1; display:flex; align-items:center; gap:10px; position:relative; }
 .mission-field input{ flex:1; border:none; background:none; box-shadow:none; padding:2px 0; font-size:12px; font-weight:520; }
@@ -798,9 +798,9 @@ body.is-planning .planning-collapse-btn{ display:none; }
 }
 
 /* Today is the focal object: distinct via type/tier, not sheer whitespace */
-#laneToday .lane-head{ padding-top:18px; padding-bottom:2px; padding-left:24px; }
-#laneToday .lane-head .lane-name{ font-size:18px; font-weight:700; letter-spacing:0.04em; }
-#laneToday .lane-body{ padding-bottom:18px; padding-left:24px; padding-right:24px; margin-top:12px; }
+#laneToday .lane-head{ padding-top:15px; padding-bottom:2px; padding-left:21px; }
+#laneToday .lane-head .lane-name{ font-size:17px; font-weight:700; letter-spacing:0.04em; }
+#laneToday .lane-body{ padding-bottom:15px; padding-left:21px; padding-right:21px; margin-top:10px; }
 
 
 /* Fixed-viewport workspace: the whole board fits one screen. Rows are
@@ -812,18 +812,19 @@ body.is-planning .planning-collapse-btn{ display:none; }
    it: always visible, within a short drag of Today, sized by how often
    each one is actually touched rather than divided evenly. This also cuts
    scrolling — nothing stacks vertically fighting Today for height. */
-.lane-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:12px; flex:1; min-height:0; }
+.lane-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:9px; flex:1; min-height:0; }
 .lane-row-hero{ min-height:0; }
-.lane-rail{ display:flex; flex-direction:column; gap:12px; min-height:0; }
+.lane-rail{ display:flex; flex-direction:column; gap:9px; min-height:0; }
 
 /* Execution state — Today absorbs the space Planning/Focus give up now that
    Mission+Planning live inside Today's own card and Focus is gone; it doesn't
    stay proportioned for a layout that assumed a persistent Focus card. Rail widens with it. */
 body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 /* Rail tier 1 — This Week, Pending: touched constantly, most of the rail */
-.rail-active{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:12px; flex:2; min-height:0; }
-/* Rail tier 2 — On Hold, Waiting On: awareness-only, occasional updates — compact */
-.rail-support{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; flex:0.55; min-height:0; }
+.rail-active{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:9px; flex:2; min-height:0; }
+/* Rail tier 2 — On Hold, Waiting On: removed from the workspace per request.
+   rail-active is now the sole flex child of lane-rail and fills the height. */
+.rail-support{ display:none; }
 .lane, .notes-panel{
   border-radius:26px;
   backdrop-filter:blur(36px) saturate(180%);
@@ -837,14 +838,14 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 
 /* Density tapers off as importance drops (Point 7): Someday + Done get tighter,
    quieter treatment than Today/This Week/Pending. */
-#laneSomeday .lane-body, #laneDone .lane-body{ padding:8px 16px 12px; gap:6px; margin-top:8px; }
-#laneSomeday .task-card, #laneDone .task-card{ padding:7px 11px; font-size:11px; }
-#laneSomeday .lane-head, #laneDone .lane-head{ padding:10px 16px 5px; }
+#laneSomeday .lane-body, #laneDone .lane-body{ padding:8px 16px 11px; gap:6px; margin-top:7px; }
+#laneSomeday .task-card, #laneDone .task-card{ padding:8px 12px; font-size:11px; }
+#laneSomeday .lane-head, #laneDone .lane-head{ padding:10px 16px 6px; }
 /* Supporting tier (Waiting On, On Hold) — visible, but quieter than
    secondary execution; smaller type, tighter padding, no wasted room. */
-#laneOnHold .lane-body, #waitingOnPanel .panel-body{ padding-top:4px; gap:4px; }
-#laneOnHold .task-card{ padding:5px 4px; font-size:11px; }
-#laneOnHold .lane-head, #waitingOnPanel .panel-head{ padding:8px 16px 4px; }
+#laneOnHold .lane-body, #waitingOnPanel .panel-body{ padding-top:5px; gap:5px; }
+#laneOnHold .task-card{ padding:6px 5px; font-size:11px; }
+#laneOnHold .lane-head, #waitingOnPanel .panel-head{ padding:9px 16px 5px; }
 
 /* ============================================================
    CHROME REDUCTION — reference & supporting regions are not cards.
@@ -892,7 +893,7 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 .lane{ display:flex; flex-direction:column; height:100%; min-height:0; }
 .lane-head{
   display:flex; align-items:center; gap:8px;
-  padding:13px 18px 7px;
+  padding:11px 17px 6px;
   border-radius:var(--r-xl) var(--r-xl) 0 0;
 }
 /* Today keeps the identity wash — it's the one object in the room that
@@ -941,9 +942,9 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
   padding:0; font-variant-numeric:tabular-nums;
 }
 .lane-body{
-  flex:1; display:flex; flex-direction:column; gap:9px;
-  margin-top:10px;
-  padding:10px 16px 14px;
+  flex:1; display:flex; flex-direction:column; gap:8px;
+  margin-top:8px;
+  padding:8px 15px 11px;
   border-top:1px solid var(--lane-border, rgba(255,255,255,0.18));
   min-height:0;
   overflow-y:auto;
@@ -952,7 +953,7 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 .lane-body::-webkit-scrollbar-thumb{ background:var(--lane-edge, rgba(169,168,240,0.30)); border-radius:10px; opacity:0.5; }
 .add-task-row{
   display:flex; align-items:center; gap:8px;
-  padding:7px 11px;
+  padding:6px 11px;
   border-radius:var(--r-md);
   background:rgba(255,255,255,0.28);
   border:1px dashed var(--glass-border);
@@ -966,7 +967,7 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 .add-task-row input::placeholder{ color:var(--ink-faint); }
 
 .task-card{
-  padding:10px 13px;
+  padding:9px 13px;
   border-radius:var(--r-md);
   background:rgba(255,255,255,0.62);
   border:1px solid rgba(255,255,255,0.55);
@@ -1017,7 +1018,7 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 /* One-click Set Focus — no prompt dialog */
 
 /* Always-visible fields — everything shows, nothing hidden behind a click */
-.field-row{ display:flex; gap:6px; margin-top:8px; }
+.field-row{ display:flex; gap:6px; margin-top:7px; }
 .mini-input{
   font-family:inherit; font-size:11.5px; font-weight:500;
   color:var(--ink);
@@ -1036,7 +1037,7 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
   border-color:rgba(232,185,79,0.7);
   background:rgba(232,185,79,0.12);
 }
-.field-block{ margin-top:8px; }
+.field-block{ margin-top:6px; }
 .field-block textarea.mini-input{
   width:100%; resize:none; min-height:36px; line-height:1.4; font-size:11.5px;
   overflow:hidden;
@@ -1052,7 +1053,7 @@ body.is-executing .lane-grid{ grid-template-columns:1.65fr 1fr; }
 .task-x svg{ width:12px;height:12px; stroke-width:2; color:var(--ink-soft); }
 .task-x:hover{ opacity:1; background:rgba(232,106,80,0.20); }
 .task-x:hover svg{ color:#D66B7A; }
-.subs{ display:flex; flex-direction:column; gap:2px; margin-top:6px; }
+.subs{ display:flex; flex-direction:column; gap:2px; margin-top:5px; }
 .sub-row{ display:flex; align-items:center; gap:7px; padding:1px 0; }
 .sub-check{
   width:14px; height:14px; border-radius:8px; flex-shrink:0;
@@ -1138,10 +1139,9 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 .notes-panel{ height:100%; min-height:0; }
 /* Row 4 — Reference: Work Notes, Done, Someday. Consulted occasionally,
    never worked in continuously — smallest footprint on the board. */
-.bottom-grid{ display:grid; grid-template-columns:minmax(0,240px) minmax(0,1fr) minmax(0,210px); gap:12px; align-items:stretch; flex:0 0 auto; height:210px; min-height:0; }
-.bottom-stack{ display:flex; flex-direction:column; gap:10px; min-height:0; }
-.bottom-stack #laneDone{ flex:1.3; min-height:0; }
-.bottom-stack .panel-full{ flex:1; min-height:0; }
+.bottom-grid{ display:grid; grid-template-columns:minmax(0,232px) minmax(0,1fr) minmax(0,1fr); gap:10px; align-items:stretch; flex:0 0 auto; height:188px; min-height:0; }
+.bottom-stack{ display:contents; }
+#laneSomeday{ display:none; }
 .tickets-empty, .recent-empty{
   display:flex; align-items:center; gap:10px;
   padding:8px var(--s-2) 10px;
@@ -1150,7 +1150,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
 
 .recent-row{
   display:flex; align-items:center; justify-content:space-between;
-  padding:11px 18px;
+  padding:10px 17px;
   border-bottom:1px solid rgba(124,122,224,0.12);
   margin-bottom:4px;
 }
