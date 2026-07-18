@@ -3111,7 +3111,7 @@ function boardAsPrompt(){
   L.push('- Primary: ' + (state.push.primary || 'none'));
   L.push('- Secondary: ' + (state.push.secondary || 'none'));
   L.push('');
-  L.push('THIS WEEK:');
+  L.push('QUEUE:');
   if(state.week.length === 0) L.push('- none');
   state.week.forEach(i=>{
     let line = '- ' + i.text;
