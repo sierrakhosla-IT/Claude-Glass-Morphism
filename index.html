@@ -263,11 +263,11 @@ body{
 .sidebar .sidebar-collapse-btn{ background:rgba(30,27,44,0.9); border-color:rgba(255,255,255,0.16); }
 .sidebar .sidebar-collapse-btn svg{ color:#B6B2C6; }
 .sidebar .clock-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
-.sidebar .leadership-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
-.sidebar .leadership-title{ color:#6F6B80; }
-.sidebar .leadership-name{ color:#A7A3B8; }
-.sidebar .leadership-input{ background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.10); color:#F1EFF7; }
-.sidebar .leadership-input::placeholder{ color:#5F5B70; }
+.sidebar .quicklinks-card{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.09); }
+.sidebar .quicklinks-title{ color:#6F6B80; }
+.sidebar .quicklink-label{ color:#A7A3B8; }
+.sidebar .quicklink-row i{ color:#6F6B80; }
+.sidebar .quicklink-row:hover{ background:rgba(255,255,255,0.07); }
 .sidebar .mode-dot{ box-shadow:0 0 0 3px rgba(169,168,240,0.28); }
 .sidebar-collapse-btn{
   position:absolute; top:18px; right:-12px;
@@ -391,25 +391,23 @@ body{
 .clock-mode.mode-stop .mode-dot{ background:var(--success); box-shadow:0 0 0 3px rgba(76,154,106,0.15); animation:none; }
 @keyframes modePulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.45; } }
 
-.leadership-card{
-  padding:11px 13px;
-  display:flex; flex-direction:column; gap:6px;
+.quicklinks-card{
+  padding:9px 13px;
+  display:flex; flex-direction:column; gap:1px;
   border-radius:var(--r-lg);
 }
-.leadership-title{ font-family:var(--font-display); font-size:10.5px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); }
-.leadership-row{ display:flex; align-items:center; gap:8px; }
-.leadership-name{ font-size:11.5px; font-weight:600; color:var(--ink-soft); flex-shrink:0; width:52px; }
-.leadership-input{
-  flex:1; min-width:0;
-  font-family:inherit; font-size:11.5px; font-weight:500; color:var(--ink);
-  background:rgba(255,255,255,0.36);
-  border:1px solid rgba(255,255,255,0.40);
-  border-radius:8px; padding:5px 9px; outline:none;
-  transition:background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+.quicklinks-title{ font-family:var(--font-display); font-size:10.5px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:3px; }
+.quicklink-row{
+  display:flex; align-items:center; gap:9px;
+  padding:5px 4px;
+  border-radius:8px;
+  text-decoration:none;
+  transition:background var(--dur) var(--ease);
 }
-.leadership-input::placeholder{ color:var(--ink-faint); }
-.leadership-input:focus{ background:rgba(255,255,255,0.6); border-color:rgba(124,122,224,0.4); }
-.app.sidebar-collapsed .leadership-card{ display:none; }
+.quicklink-row:hover{ background:rgba(124,122,224,0.08); }
+.quicklink-row i{ width:13px; height:13px; stroke-width:1.9; color:var(--ink-faint); flex-shrink:0; }
+.quicklink-label{ font-size:11.5px; font-weight:540; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.app.sidebar-collapsed .quicklinks-card{ display:none; }
 
 /* ---------- Main column ---------- */
 .main{
@@ -526,6 +524,7 @@ body{
 }
 .snapshot-row{ display:flex; flex-wrap:wrap; align-items:center; gap:5px 16px; padding:1px 0; }
 .snapshot-field{ flex:1 1 45%; min-width:0; display:flex; align-items:baseline; gap:8px; }
+.snapshot-field:has(#snapRisk){ flex:1 1 100%; }
 .snapshot-label{ font-family:var(--font-display); font-size:9px; font-weight:660; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); flex-shrink:0; }
 .snapshot-field input{ flex:1; min-width:0; border:none; background:none; box-shadow:none; padding:2px 0; font-size:11.5px; }
 .snapshot-field input:focus{ background:none; box-shadow:none; border-color:transparent; }
@@ -546,9 +545,13 @@ body.is-planning .planning-collapse-btn{ display:none; }
 
 /* Mission — attached to execution, stronger than Planning, always visible */
 .mission-row{ display:flex; align-items:center; gap:16px; padding-top:4px; border-top:1px solid rgba(124,122,224,0.12); }
-/* Key Conversation field removed from view per request — snapConversation
-   stays wired in JS/state, just not rendered. */
+/* Key Conversation, Objective, and Deliverable removed from view per request —
+   Mission (Primary/Secondary) already covers "what must move" and "what you
+   hand off," so Planning's only distinct job left is Risk. Fields stay wired
+   in JS/state, just not rendered. */
 .snapshot-field:has(#snapConversation){ display:none; }
+.snapshot-field:has(#snapObjective){ display:none; }
+.snapshot-field:has(#snapDeliverable){ display:none; }
 .mission-label{ font-family:var(--font-display); font-size:10px; font-weight:660; letter-spacing:0.11em; text-transform:uppercase; color:var(--apricot-deep); flex-shrink:0; }
 .mission-field{ flex:1; display:flex; align-items:center; gap:10px; position:relative; }
 .mission-field input{ flex:1; border:none; background:none; box-shadow:none; padding:2px 0; font-size:12px; font-weight:520; }
@@ -1409,20 +1412,26 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
       <div class="clock-mode" id="clockMode"><span class="mode-dot"></span><span id="clockModeText">Deep work</span></div>
     </div>
 
-    <div class="leadership-card glass-soft">
-      <div class="leadership-title">Leadership</div>
-      <div class="leadership-row">
-        <span class="leadership-name">Enrique</span>
-        <input class="leadership-input" id="leadEnrique" placeholder="What he needs from you">
-      </div>
-      <div class="leadership-row">
-        <span class="leadership-name">Karin</span>
-        <input class="leadership-input" id="leadKarin" placeholder="What she needs from you">
-      </div>
-      <div class="leadership-row">
-        <span class="leadership-name">Juan</span>
-        <input class="leadership-input" id="leadJuan" placeholder="—">
-      </div>
+    <div class="quicklinks-card glass-soft">
+      <div class="quicklinks-title">Quick Links</div>
+      <a class="quicklink-row" href="https://repsolprod.service-now.com/now/platform-analytics-workspace/dashboards/params/edit/false/tab-sys-id/f87edc468328c3505cbeee4198da1ea4/sys-id/2ac4daecee3608f41bec56f807e9a7e6/__state__/b64~eyI5MjNhOTEzYjUzMmMwMTEwYWFiOWRkZWVmZjdiMTI0MyI6eyJsaXN0X2NvbnRyb2xsZXJfMyI6eyJfIjp7InF1ZXJ5IjoiYWN0aXZlPXRydWVeYXNzaWduZWRfdG9EWU5BTUlDOTBkMTkyMWU1ZjUxMDEwMGE5YWQyNTcyZjJiNDc3ZmVeY2xvc2Vfbm90ZXNJU0VNUFRZXk9SREVSQllERVNDc3lzX3VwZGF0ZWRfb24ifX19fQ%3D%3D" target="_blank" rel="noopener noreferrer" title="UNITY Control Center — Platform Analytics">
+        <i data-lucide="layout-dashboard"></i><span class="quicklink-label">UNITY Queue</span>
+      </a>
+      <a class="quicklink-row" href="https://repsol365.sharepoint.com/sites/1-IT-USTS/Lists/Mobile%20Device%20Assignments/Sierra%20Stone%20%20All%20Items.aspx?env=WebViewList" target="_blank" rel="noopener noreferrer" title="Mobility Line Assignments">
+        <i data-lucide="smartphone"></i><span class="quicklink-label">MLA</span>
+      </a>
+      <a class="quicklink-row" href="https://repsol365.sharepoint.com/sites/1-IT-USTS/Lists/Mobile%20Inventory/AllItems.aspx?env=WebViewList" target="_blank" rel="noopener noreferrer" title="Mobile Device Inventory">
+        <i data-lucide="tablet-smartphone"></i><span class="quicklink-label">Device Inventory</span>
+      </a>
+      <a class="quicklink-row" href="https://repsol365.sharepoint.com/sites/TM_USIT/Lists/IT%20Asset%20Manager/IT%20Deskside%20Laptop%20Inventory.aspx?env=WebViewList" target="_blank" rel="noopener noreferrer" title="IT Deskside Laptop Inventory">
+        <i data-lucide="laptop"></i><span class="quicklink-label">Laptop Inventory</span>
+      </a>
+      <a class="quicklink-row" href="https://repsolprod.service-now.com/now/nav/ui/classic/params/target/cmdb_ci_computer_list.do%3Fsysparm_userpref_module%3D90ff7af5c0a80164017577f98aac7799%26sysparm_clear_stack%3Dtrue" target="_blank" rel="noopener noreferrer" title="CMDB — Computers">
+        <i data-lucide="database"></i><span class="quicklink-label">CMDB</span>
+      </a>
+      <a class="quicklink-row" href="https://intune.microsoft.com/#home" target="_blank" rel="noopener noreferrer" title="Microsoft Intune Admin Center">
+        <i data-lucide="shield-check"></i><span class="quicklink-label">Intune</span>
+      </a>
     </div>
   </aside>
 
@@ -1643,7 +1652,7 @@ textarea.notes-input::placeholder{ color:var(--ink-faint); }
         <!-- Recent Days -->
         <section class="glass tier-ref panel-full" style="margin-bottom:4px;">
           <div class="recent-row">
-            <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">This Week</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
+            <div class="flex gap-1"><i data-lucide="calendar-days" class="head-icon"></i><span class="section-title" style="font-size:14px;">Follow-ups</span><span class="section-sub" style="margin:0;">What needs attention right now</span></div>
             <div class="task-collapse-btn" id="recentCollapseBtn" title="Collapse"><i data-lucide="chevron-down"></i></div>
           </div>
           <div id="recentDaysList" class="panel-body"></div>
@@ -1868,12 +1877,7 @@ Object.entries({ leadEnrique:'enrique', leadKarin:'karin', leadJuan:'juan' }).fo
 let planningExpanded = false;
 function planningSummaryLine(){
   const s = state.snapshot || {};
-  const parts = [];
-  if(s.objective) parts.push(s.objective);
-  if(s.risk) parts.push('Risk: ' + s.risk);
-  if(s.conversation) parts.push('Talk to: ' + s.conversation);
-  if(s.deliverable) parts.push('Hand off: ' + s.deliverable);
-  return parts.length ? parts.join('  ·  ') : 'No objective set — click to add';
+  return s.risk ? 'Risk: ' + s.risk : 'No risk noted — click to add';
 }
 function renderWorkspaceState(){
   const executing = state.today.length > 0;
@@ -2807,15 +2811,25 @@ document.getElementById('restoreInput').addEventListener('change', e=>{
       const parsed = JSON.parse(evt.target.result);
       if(!confirm('Restore this backup? It will replace everything currently on screen.')) return;
       Object.assign(state, {
-        commitments: parsed.commitments || [],
-        focus: parsed.focus || null,
-        queue: parsed.queue || [],
+        today: parsed.today || [],
+        week: parsed.week || [],
+        someday: parsed.someday || [],
         pending: parsed.pending || [],
+        onhold: parsed.onhold || [],
+        subDone: parsed.subDone || [],
+        push: parsed.push || { primary:'', secondary:'' },
+        snapshot: parsed.snapshot || { objective:'', risk:'', conversation:'', deliverable:'' },
+        leadership: parsed.leadership || { enrique:'', karin:'', juan:'' },
         done: parsed.done || [],
         doneHistory: parsed.doneHistory || [],
         notes: parsed.notes || '',
         settings: parsed.settings || { snowTemplate: '' }
       });
+      // Legacy backup compatibility — older exports used pre-migration field
+      // names; carry them over so migrateItems() below can still convert them.
+      if(Array.isArray(parsed.queue)) state.queue = parsed.queue;
+      if(Array.isArray(parsed.commitments)) state.commitments = parsed.commitments;
+      if(Array.isArray(parsed.progress)) state.progress = parsed.progress;
       migrateItems();
       save(); renderAll();
     }catch(err){
@@ -2902,6 +2916,7 @@ document.getElementById('cleanSessionBtn').addEventListener('click', ()=>{
   state.onhold = [];
   state.subDone = [];
   state.push = { primary:'', secondary:'' };
+  state.snapshot = { objective:'', risk:'', conversation:'', deliverable:'' };
   state.notes = '';
   save(); renderAll();
 });
