@@ -192,10 +192,11 @@ input, textarea{ font-family:inherit; }
 .exec-field{ min-width:0; }
 .exec-field label{ display:block; font-size:9.5px; font-weight:650; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:5px; }
 .exec-editable{
+  display:block; width:100%; border:none; background:transparent;
   font-size:12.5px; font-weight:540; color:var(--ink); line-height:1.4;
   min-height:18px; outline:none; border-radius:8px; padding:3px 5px; margin:-3px -5px;
 }
-.exec-editable:empty::before{ content:attr(data-placeholder); color:var(--ink-faint); font-weight:480; }
+.exec-editable::placeholder{ color:var(--ink-faint); font-weight:480; }
 .exec-editable:hover{ background:rgba(255,255,255,0.4); }
 .exec-editable:focus{ background:rgba(255,255,255,0.7); box-shadow:0 0 0 2px rgba(124,130,201,0.25); }
 .leader-row{ display:flex; align-items:baseline; gap:6px; font-size:12.5px; }
@@ -248,10 +249,10 @@ input, textarea{ font-family:inherit; }
 .check.done{ background:var(--success); border-color:var(--success); }
 .task-main{ flex:1; min-width:0; }
 .task-title-row{ display:flex; align-items:center; gap:7px; }
-.task-title{ font-size:12.5px; font-weight:560; color:var(--ink); outline:none; border-radius:5px; padding:1px 3px; margin:-1px -3px; }
+.task-title{ display:block; width:100%; border:none; background:transparent; font-size:12.5px; font-weight:560; color:var(--ink); outline:none; border-radius:5px; padding:1px 3px; margin:-1px -3px; }
 .task-title:focus{ background:rgba(255,255,255,0.7); }
-.task-next{ font-size:11px; color:var(--ink-soft); margin-top:2px; outline:none; border-radius:5px; padding:1px 3px; margin-left:-3px; }
-.task-next:empty::before{ content:'+ next action'; color:var(--ink-faint); }
+.task-next{ display:block; width:100%; border:none; background:transparent; font-size:11px; color:var(--ink-soft); margin-top:2px; outline:none; border-radius:5px; padding:1px 3px; margin-left:-3px; }
+.task-next::placeholder{ color:var(--ink-faint); }
 .task-next:focus{ background:rgba(255,255,255,0.6); }
 .task-meta{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
 .chip{
@@ -269,17 +270,21 @@ input, textarea{ font-family:inherit; }
 .chip.priority-low{ background:rgba(255,255,255,0.5); color:var(--ink-faint); }
 .chip-add{ font-size:10px; color:var(--ink-faint); font-weight:600; cursor:pointer; padding:3px 7px; }
 .chip-add:hover{ color:var(--accent); }
-.expand-toggle{ margin-left:auto; color:var(--ink-faint); flex-shrink:0; }
+.expand-toggle{ margin-left:auto; color:var(--ink-faint); flex-shrink:0; display:flex; align-items:center; gap:2px; }
 .expand-toggle svg{ width:13px; height:13px; stroke-width:1.6; transition:transform var(--dur) var(--ease); }
-.task.expanded .expand-toggle svg{ transform:rotate(180deg); }
+.task.expanded .expand-toggle svg.chev{ transform:rotate(180deg); }
+.task-delete{ width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); opacity:0; transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease); }
+.task-row:hover .task-delete{ opacity:1; }
+.task-delete:hover{ background:var(--danger-tint); color:var(--danger); }
+.task-delete svg{ width:13px; height:13px; stroke-width:1.6; }
 
 .task-detail{ max-height:0; overflow:hidden; transition:max-height var(--dur) var(--ease); padding:0 6px; }
-.task.expanded .task-detail{ max-height:260px; }
+.task.expanded .task-detail{ max-height:320px; }
 .detail-inner{ padding:4px 34px 12px 33px; display:flex; flex-direction:column; gap:9px; }
 .detail-field{ display:flex; flex-direction:column; gap:3px; }
 .detail-field label{ font-size:9.5px; font-weight:650; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
-.detail-field .val{ font-size:12px; color:var(--ink); outline:none; border-radius:6px; padding:4px 6px; margin:-4px -6px; background:rgba(255,255,255,0.35); }
-.detail-field .val:empty::before{ content:attr(data-placeholder); color:var(--ink-faint); }
+.detail-field .val{ display:block; width:100%; border:none; font-family:inherit; font-size:12px; color:var(--ink); outline:none; border-radius:6px; padding:4px 6px; margin:-4px -6px; background:rgba(255,255,255,0.35); resize:none; }
+.detail-field .val::placeholder{ color:var(--ink-faint); }
 .detail-field .val:focus{ background:rgba(255,255,255,0.7); }
 .detail-row2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
 .status-row{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:2px; }
@@ -288,6 +293,10 @@ input, textarea{ font-family:inherit; }
   background:rgba(255,255,255,0.5); color:var(--ink-soft); border:1px solid transparent;
 }
 .status-btn.current{ background:var(--accent); color:#fff; }
+.delete-row{ margin-top:4px; padding-top:9px; border-top:1px solid rgba(41,43,53,0.06); }
+.delete-task-btn{ display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:650; color:var(--danger); cursor:pointer; padding:5px 4px; }
+.delete-task-btn svg{ width:12px; height:12px; stroke-width:1.6; }
+.delete-task-btn:hover{ text-decoration:underline; }
 .subtask-list{ display:flex; flex-direction:column; gap:5px; }
 .subtask-row{ display:flex; align-items:center; gap:7px; font-size:11.5px; }
 .subtask-row .check{ width:13px; height:13px; }
@@ -372,6 +381,10 @@ input, textarea{ font-family:inherit; }
       <input id="captureInput" type="text" placeholder="Capture a task, update, decision, or note…">
       <div class="health-row" id="healthRow"></div>
       <button class="icon-btn" title="Ask AI"><svg data-i="sparkles"></svg></button>
+      <button class="pill-btn" id="cleanSessionBtn" title="Wipe Today, Backlog, and Waiting, plus Mission/Risk/EOD — Blocked and Completed stay">Clean Session</button>
+      <button class="icon-btn" id="backupBtn" title="Download a backup file"><svg data-i="download"></svg></button>
+      <input type="file" id="restoreInput" accept="application/json" style="display:none;">
+      <button class="icon-btn" id="restoreBtn" title="Restore from a backup file"><svg data-i="upload"></svg></button>
       <button class="pill-btn primary" id="addTaskBtn"><svg data-i="plus"></svg>Add task</button>
     </div>
 
@@ -384,11 +397,11 @@ input, textarea{ font-family:inherit; }
       <div class="exec-grid">
         <div class="exec-field">
           <label>Mission</label>
-          <div class="exec-editable" contenteditable data-placeholder="What today needs to accomplish" id="fldMission"></div>
+          <input class="exec-editable" placeholder="What today needs to accomplish" id="fldMission">
         </div>
         <div class="exec-field">
           <label>Top Risk</label>
-          <div class="exec-editable" contenteditable data-placeholder="What could derail it" id="fldRisk"></div>
+          <input class="exec-editable" placeholder="What could derail it" id="fldRisk">
         </div>
         <div class="exec-field">
           <label>Leadership Needs</label>
@@ -396,7 +409,7 @@ input, textarea{ font-family:inherit; }
         </div>
         <div class="exec-field">
           <label>Must Be True by EOD</label>
-          <div class="exec-editable" contenteditable data-placeholder="The one non-negotiable" id="fldEod"></div>
+          <input class="exec-editable" placeholder="The one non-negotiable" id="fldEod">
         </div>
       </div>
     </div>
@@ -482,7 +495,10 @@ const ICONS = {
   'layers': '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path>',
   'compass': '<circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>',
   'corner-down-right': '<polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path>',
-  'search': '<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>'
+  'search': '<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>',
+  'trash-2': '<path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>',
+  'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>',
+  'upload': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>'
 };
 
 const lucide = {
@@ -644,9 +660,9 @@ function taskRowHTML(t){
       <div class="check ${t.status==='completed'?'done':''}" data-role="check"></div>
       <div class="task-main">
         <div class="task-title-row">
-          <div class="task-title" contenteditable data-role="title">${t.title}</div>
+          <input class="task-title" data-role="title" value="${escAttr(t.title)}">
         </div>
-        <div class="task-next" contenteditable data-role="next">${t.nextAction||''}</div>
+        <input class="task-next" data-role="next" placeholder="+ next action" value="${escAttr(t.nextAction||'')}">
         <div class="task-meta">
           ${t.ticket?`<span class="chip ticket">${t.ticket}</span>`:''}
           ${t.due?`<span class="chip due ${isOverdue(t.due)?'overdue':''}">${t.due}</span>`:''}
@@ -654,20 +670,21 @@ function taskRowHTML(t){
           <span class="chip-add" data-role="add-priority">+ priority</span>
         </div>
       </div>
-      <div class="expand-toggle" data-role="toggle"><svg data-i="chevron-down"></svg></div>
+      <div class="task-delete" data-role="delete" title="Delete task"><svg data-i="trash-2"></svg></div>
+      <div class="expand-toggle" data-role="toggle"><svg data-i="chevron-down" class="chev"></svg></div>
     </div>
     <div class="task-detail">
       <div class="detail-inner">
         <div class="detail-row2">
-          <div class="detail-field"><label>Ticket</label><div class="val" contenteditable data-placeholder="RITM / INC" data-role="ticket">${t.ticket||''}</div></div>
-          <div class="detail-field"><label>Due</label><div class="val" contenteditable data-placeholder="mm/dd/yyyy" data-role="due">${t.due||''}</div></div>
+          <div class="detail-field"><label>Ticket</label><input class="val" placeholder="RITM / INC" data-role="ticket" value="${escAttr(t.ticket||'')}"></div>
+          <div class="detail-field"><label>Due</label><input class="val" placeholder="mm/dd/yyyy" data-role="due" value="${escAttr(t.due||'')}"></div>
         </div>
-        <div class="detail-field"><label>Context</label><div class="val" contenteditable data-placeholder="Add context or notes" data-role="context">${t.context||''}</div></div>
+        <div class="detail-field"><label>Context</label><textarea class="val" rows="2" placeholder="Add context or notes" data-role="context">${t.context||''}</textarea></div>
         <div class="subtask-list" data-role="subs">
           ${t.subs.map(s=>`
             <div class="subtask-row" data-sub="${s.id}">
               <div class="check ${s.done?'done':''}" data-role="sub-check"></div>
-              <div class="val" contenteditable data-role="sub-text">${s.t}</div>
+              <input class="val" data-role="sub-text" value="${escAttr(s.t)}">
             </div>`).join('')}
           <div class="subtask-add" data-role="add-sub">+ subtask</div>
         </div>
@@ -675,10 +692,14 @@ function taskRowHTML(t){
           ${['today','queue','waiting','onhold','completed'].map(s=>`
             <div class="status-btn ${t.status===s?'current':''}" data-role="status" data-status="${s}">${labelFor(s)}</div>`).join('')}
         </div>
+        <div class="delete-row">
+          <div class="delete-task-btn" data-role="delete-full"><svg data-i="trash-2"></svg>Delete task</div>
+        </div>
       </div>
     </div>
   </div>`;
 }
+function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
 function labelFor(s){
   return {today:'Attention', queue:'Backlog', waiting:'Waiting', onhold:'Blocked', completed:'Done'}[s];
 }
@@ -690,7 +711,7 @@ function wireRowEvents(){
     if(!t) return;
 
     taskEl.querySelector('[data-role="row"]').addEventListener('click', (e)=>{
-      if(e.target.closest('[data-role="check"]') || e.target.isContentEditable) return;
+      if(e.target.closest('[data-role="check"]') || e.target.closest('[data-role="delete"]') || ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
       expandedId = expandedId === id ? null : id;
       render();
     });
@@ -699,12 +720,25 @@ function wireRowEvents(){
       t.status = t.status === 'completed' ? 'today' : 'completed';
       render();
     });
+
+    function deleteThis(){
+      if(!confirm(`Delete "${t.title}"? This can't be undone.`)) return;
+      tasks = tasks.filter(x=>x.id!==id);
+      if(expandedId===id) expandedId = null;
+      render();
+    }
+    taskEl.querySelector('[data-role="delete"]')?.addEventListener('click', e=>{ e.stopPropagation(); deleteThis(); });
+    taskEl.querySelector('[data-role="delete-full"]')?.addEventListener('click', e=>{ e.stopPropagation(); deleteThis(); });
+
     const title = taskEl.querySelector('[data-role="title"]');
-    title.addEventListener('blur', ()=>{ t.title = title.textContent.trim(); render(); });
+    title.addEventListener('blur', ()=>{ t.title = title.value.trim() || t.title; render(); });
     title.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); title.blur(); } });
+    title.addEventListener('click', e=> e.stopPropagation());
 
     const next = taskEl.querySelector('[data-role="next"]');
-    next.addEventListener('blur', ()=>{ t.nextAction = next.textContent.trim(); render(); });
+    next.addEventListener('blur', ()=>{ t.nextAction = next.value.trim(); render(); });
+    next.addEventListener('click', e=> e.stopPropagation());
+    next.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); next.blur(); } });
 
     taskEl.querySelector('[data-role="add-priority"]')?.addEventListener('click', e=>{
       e.stopPropagation();
@@ -714,11 +748,13 @@ function wireRowEvents(){
     });
 
     const ticket = taskEl.querySelector('[data-role="ticket"]');
-    ticket?.addEventListener('blur', ()=>{ t.ticket = ticket.textContent.trim(); render(); });
+    ticket?.addEventListener('blur', ()=>{ t.ticket = ticket.value.trim(); render(); });
+    ticket?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); ticket.blur(); } });
     const due = taskEl.querySelector('[data-role="due"]');
-    due?.addEventListener('blur', ()=>{ t.due = due.textContent.trim(); render(); });
+    due?.addEventListener('blur', ()=>{ t.due = due.value.trim(); render(); });
+    due?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); due.blur(); } });
     const ctx = taskEl.querySelector('[data-role="context"]');
-    ctx?.addEventListener('blur', ()=>{ t.context = ctx.textContent.trim(); render(); });
+    ctx?.addEventListener('blur', ()=>{ t.context = ctx.value.trim(); render(); });
 
     taskEl.querySelectorAll('[data-role="status"]').forEach(btn=>{
       btn.addEventListener('click', e=>{
@@ -736,7 +772,8 @@ function wireRowEvents(){
         e.stopPropagation(); sub.done = !sub.done; render();
       });
       const txt = row.querySelector('[data-role="sub-text"]');
-      txt.addEventListener('blur', ()=>{ sub.t = txt.textContent.trim(); render(); });
+      txt.addEventListener('blur', ()=>{ sub.t = txt.value.trim(); render(); });
+      txt.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); txt.blur(); } });
     });
     taskEl.querySelector('[data-role="add-sub"]')?.addEventListener('click', e=>{
       e.stopPropagation();
@@ -772,6 +809,60 @@ function addTask(fromInput){
 }
 el('attnAddInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('attnAddInput')); });
 el('addTaskBtn').addEventListener('click', ()=> addTask(el('attnAddInput')));
+
+/* ---------- Clean Session ---------- */
+el('cleanSessionBtn').addEventListener('click', ()=>{
+  const wiping = tasks.filter(t=> ['today','queue','waiting'].includes(t.status));
+  if(!confirm(`Start a clean session?\n\nThis clears ${wiping.length} task${wiping.length===1?'':'s'} from Attention Now, Backlog, and Waiting On, plus Mission, Risk, and the EOD field.\n\nBlocked and Completed are left alone. This can't be undone.`)) return;
+  tasks = tasks.filter(t=> !['today','queue','waiting'].includes(t.status));
+  el('fldMission').value = '';
+  el('fldRisk').value = '';
+  el('fldEod').value = '';
+  if(expandedId && !tasks.find(t=>t.id===expandedId)) expandedId = null;
+  render();
+});
+
+/* ---------- Backup / Restore ---------- */
+function currentState(){
+  return {
+    tasks,
+    mission: el('fldMission').value,
+    risk: el('fldRisk').value,
+    eod: el('fldEod').value,
+    savedAt: new Date().toISOString()
+  };
+}
+el('backupBtn').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(currentState(), null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  a.download = `execution-tower-backup-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+el('restoreBtn').addEventListener('click', ()=> el('restoreInput').click());
+el('restoreInput').addEventListener('change', e=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      if(!Array.isArray(data.tasks)) throw new Error('missing tasks array');
+      if(!confirm(`Restore from this backup? It has ${data.tasks.length} task(s), saved ${data.savedAt ? new Date(data.savedAt).toLocaleString() : 'at an unknown time'}.\n\nThis replaces everything currently on screen.`)) return;
+      tasks = data.tasks;
+      el('fldMission').value = data.mission || '';
+      el('fldRisk').value = data.risk || '';
+      el('fldEod').value = data.eod || '';
+      expandedId = null;
+      render();
+    }catch(err){
+      alert('Could not read that file as a backup: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
 el('captureInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('captureInput')); });
 
 /* ---------- Exec strip collapse ---------- */
