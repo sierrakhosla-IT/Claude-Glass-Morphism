@@ -689,6 +689,7 @@ function taskRowHTML(t){
           <div class="detail-field"><label>Ticket</label><input class="val" placeholder="RITM / INC" data-role="ticket" value="${escAttr(t.ticket||'')}"></div>
           <div class="detail-field"><label>Due</label><input class="val" placeholder="mm/dd/yyyy" data-role="due" value="${escAttr(t.due||'')}"></div>
         </div>
+        <div class="detail-field"><label>Waiting On</label><input class="val" placeholder="Who or what this is blocked on" data-role="waitingOn" value="${escAttr(t.waitingOn||'')}"></div>
         <div class="detail-field"><label>Context</label><textarea class="val" rows="2" placeholder="Add context or notes" data-role="context">${t.context||''}</textarea></div>
         <div class="subtask-list" data-role="subs">
           ${t.subs.map(s=>`
@@ -763,6 +764,9 @@ function wireRowEvents(){
     const due = taskEl.querySelector('[data-role="due"]');
     due?.addEventListener('blur', ()=>{ t.due = due.value.trim(); render(); });
     due?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); due.blur(); } });
+    const waitingOn = taskEl.querySelector('[data-role="waitingOn"]');
+    waitingOn?.addEventListener('blur', ()=>{ t.waitingOn = waitingOn.value.trim(); render(); });
+    waitingOn?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); waitingOn.blur(); } });
     const ctx = taskEl.querySelector('[data-role="context"]');
     ctx?.addEventListener('blur', ()=>{ t.context = ctx.value.trim(); render(); });
 
