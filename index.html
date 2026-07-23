@@ -291,6 +291,14 @@ input, textarea{ font-family:inherit; }
 .task-delete svg{ width:13px; height:13px; stroke-width:1.6; }
 
 .drag-handle{ width:18px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); opacity:0; transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease); cursor:grab; flex-shrink:0; touch-action:none; }
+
+.focus-star{ width:20px; height:24px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); opacity:0.25; transition:opacity var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease); flex-shrink:0; cursor:pointer; }
+.focus-star svg{ width:13px; height:13px; stroke-width:1.6; }
+.task-row:hover .focus-star{ opacity:0.7; }
+.focus-star:hover{ opacity:1 !important; transform:scale(1.1); }
+.focus-star.on{ opacity:1; color:var(--warning); }
+.focus-star.on svg{ fill:var(--warning); }
+.focus-divider{ font-size:9.5px; font-weight:650; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); padding:10px 8px 4px; }
 .task-row:hover .drag-handle{ opacity:0.55; }
 .drag-handle:hover{ opacity:1 !important; background:var(--accent-tint); color:var(--accent-pressed); }
 .drag-handle:active{ cursor:grabbing; }
@@ -410,7 +418,7 @@ input, textarea{ font-family:inherit; }
       <svg data-i="plus" style="width:15px;height:15px;color:var(--ink-faint);flex-shrink:0;"></svg>
       <input id="captureInput" type="text" placeholder="Capture a task, update, decision, or note…">
       <div class="health-row" id="healthRow"></div>
-      <button class="icon-btn" title="Ask AI"><svg data-i="sparkles"></svg></button>
+      <button class="icon-btn" id="askAiBtn" title="Copy tasks to paste into a Claude chat"><svg data-i="sparkles"></svg></button>
       <button class="pill-btn" id="cleanSessionBtn" title="Wipe Today, Backlog, and Waiting, plus Mission/Risk/EOD — Blocked and Completed stay">Clean Session</button>
       <button class="icon-btn" id="backupBtn" title="Download a backup file"><svg data-i="download"></svg></button>
       <input type="file" id="restoreInput" accept="application/json" style="display:none;">
@@ -519,6 +527,7 @@ const ICONS = {
   'check-check': '<path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path>',
   'sparkles': '<path d="M12 3v4M12 17v4M5 12H1M23 12h-4M6.34 6.34 3.5 3.5M20.5 20.5l-2.84-2.84M6.34 17.66 3.5 20.5M20.5 3.5l-2.84 2.84"></path><circle cx="12" cy="12" r="3"></circle>',
   'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
+  'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>',
   'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>',
   'users': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
   'octagon-pause': '<path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86Z"></path><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line>',
@@ -641,7 +650,8 @@ function priorityChip(p){
 
 /* ---------- Rendering ---------- */
 function render(){
-  const attention = tasks.filter(t=>t.status==='today' || (t.status==='queue' && t.due));
+  const attention = tasks.filter(t=>t.status==='today' || (t.status==='queue' && t.due))
+    .sort((a,b)=> (b.focus?1:0) - (a.focus?1:0));
   const waiting = tasks.filter(t=>t.status==='waiting');
   const blocked = tasks.filter(t=>t.status==='onhold');
   const backlog = tasks.filter(t=>t.status==='queue' && !t.due);
@@ -667,7 +677,10 @@ function render(){
   `;
 
   el('listAttention').innerHTML = attention.length
-    ? attention.map(t=>taskRowHTML(t)).join('')
+    ? attention.map((t,i)=>{
+        const divider = (i>0 && attention[i-1].focus && !t.focus) ? `<div class="focus-divider">Everything else</div>` : '';
+        return divider + taskRowHTML(t);
+      }).join('')
     : `<div class="panel-empty">Nothing needs attention right now.</div>`;
 
   // Waiting — grouped by person, each item is the same full editable row as everywhere else
@@ -711,6 +724,7 @@ function taskRowHTML(t){
   <div class="task ${expanded?'expanded':''}" data-id="${t.id}">
     <div class="task-row" data-role="row">
       <div class="drag-handle" data-role="drag-handle" title="Drag to move or reorder"><svg data-i="grip-vertical"></svg></div>
+      <div class="focus-star ${t.focus?'on':''}" data-role="focus" title="${t.focus?'Remove from Focus':'Mark as Focus (max 3)'}"><svg data-i="star"></svg></div>
       <div class="check ${t.status==='completed'?'done':''}" data-role="check"></div>
       <div class="task-main">
         <div class="task-title-row">
@@ -766,13 +780,25 @@ function wireRowEvents(){
     if(!t) return;
 
     taskEl.querySelector('[data-role="row"]').addEventListener('click', (e)=>{
-      if(e.target.closest('[data-role="check"]') || e.target.closest('[data-role="delete"]') || ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+      if(e.target.closest('[data-role="check"]') || e.target.closest('[data-role="delete"]') || e.target.closest('[data-role="focus"]') || ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
       expandedId = expandedId === id ? null : id;
       render();
     });
     taskEl.querySelector('[data-role="check"]').addEventListener('click', (e)=>{
       e.stopPropagation();
       t.status = t.status === 'completed' ? 'today' : 'completed';
+      render();
+    });
+    taskEl.querySelector('[data-role="focus"]').addEventListener('click', (e)=>{
+      e.stopPropagation();
+      if(!t.focus){
+        const focusedCount = tasks.filter(x=>x.focus).length;
+        if(focusedCount >= 3){
+          alert('You can only Focus on 3 tasks at a time — unstar one first.');
+          return;
+        }
+      }
+      t.focus = !t.focus;
       render();
     });
 
@@ -881,6 +907,61 @@ function currentState(){
     savedAt: new Date().toISOString()
   };
 }
+/* ---------- Ask AI: copy tasks in a clean, chat-ready format ---------- */
+function tasksAsText(){
+  const lbl = {today:'ATTENTION NOW', queue:'BACKLOG', waiting:'WAITING ON', onhold:'BLOCKED', completed:'COMPLETED'};
+  const order = ['today','queue','waiting','onhold','completed'];
+  const lines = [];
+  lines.push(`EXECUTION TOWER — ${new Date().toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric', year:'numeric'})}`);
+  lines.push('');
+  const mission = el('fldMission').value.trim();
+  const risk = el('fldRisk').value.trim();
+  const eod = el('fldEod').value.trim();
+  if(mission) lines.push(`Mission: ${mission}`);
+  if(risk) lines.push(`Top Risk: ${risk}`);
+  if(leaders.length){
+    lines.push('Leadership Needs:');
+    leaders.forEach(l=>{ if(l.name || l.need) lines.push(`  - ${l.name || '(unnamed)'}: ${l.need || '(no detail yet)'}`); });
+  }
+  if(eod) lines.push(`Must be true by EOD: ${eod}`);
+  lines.push('');
+
+  order.forEach(status=>{
+    const items = tasks.filter(t=>t.status===status);
+    lines.push(`${lbl[status]} (${items.length})`);
+    if(!items.length){ lines.push('  (none)'); lines.push(''); return; }
+    items.forEach((t,i)=>{
+      const bits = [];
+      if(t.priority) bits.push(t.priority.toUpperCase());
+      if(t.due) bits.push(`due ${t.due}`);
+      if(t.ticket) bits.push(t.ticket);
+      lines.push(`  ${i+1}. [id:${t.id}] ${t.title}${bits.length ? ' — ' + bits.join(', ') : ''}`);
+      if(t.nextAction) lines.push(`     Next: ${t.nextAction}`);
+      if(t.waitingOn) lines.push(`     Waiting on: ${t.waitingOn}`);
+      if(t.context) lines.push(`     Context: ${t.context}`);
+      if(t.subs && t.subs.length) t.subs.forEach(s=> lines.push(`     ${s.done?'[x]':'[ ]'} ${s.t}`));
+    });
+    lines.push('');
+  });
+
+  return lines.join('\n');
+}
+el('askAiBtn').addEventListener('click', async ()=>{
+  const text = tasksAsText();
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(err){
+    // clipboard API can be blocked in some sandboxed previews — fall back to a manual-copy prompt
+    window.prompt('Copy this (Ctrl/Cmd+C, then Enter):', text);
+    return;
+  }
+  const icon = el('askAiBtn').querySelector('svg');
+  const original = icon.outerHTML;
+  el('askAiBtn').innerHTML = '<svg data-i="check-check" style="color:var(--success);"></svg>';
+  paintIcons();
+  setTimeout(()=>{ el('askAiBtn').innerHTML = original; paintIcons(); }, 1400);
+});
+
 el('backupBtn').addEventListener('click', ()=>{
   const blob = new Blob([JSON.stringify(currentState(), null, 2)], {type:'application/json'});
   const a = document.createElement('a');
