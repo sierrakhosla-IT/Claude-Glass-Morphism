@@ -29,17 +29,26 @@
   --waiting:#8B8478;
   --waiting-tint:#F1EFEA;
 
-  --glass-fill:rgba(255,253,249,0.72);
-  --glass-fill-strong:rgba(255,254,251,0.88);
-  --glass-fill-utility:rgba(255,252,247,0.58);
   --glass-border:rgba(40,37,31,0.09);
-  --glass-blur:16px;
 
   --r-sm:10px; --r-md:14px; --r-lg:18px; --r-xl:24px; --r-pill:999px;
 
-  /* single elevation recipe, reused everywhere — no per-surface shadow stacking */
-  --elevation: 0 1px 2px rgba(40,37,31,0.05), 0 12px 28px -6px rgba(90,80,70,0.12);
+  /* three fixed surface tiers — every glass element gets exactly one, no ad hoc shadows */
+  --tier-nav-fill:rgba(255,253,249,0.55);
+  --tier-nav-blur:10px;
+  --tier-nav-elevation: 0 1px 2px rgba(40,37,31,0.04), 0 6px 16px -4px rgba(90,80,70,0.08);
+
+  --tier-standard-fill:rgba(255,253,249,0.72);
+  --tier-standard-blur:16px;
+  --tier-standard-elevation: 0 1px 2px rgba(40,37,31,0.05), 0 12px 28px -6px rgba(90,80,70,0.12);
+
+  --tier-hero-fill:rgba(255,253,249,0.85);
+  --tier-hero-blur:28px;
+  --tier-hero-elevation: 0 24px 56px -12px rgba(124,130,201,0.18), 0 1px 2px rgba(40,37,31,0.05), 0 12px 28px -6px rgba(90,80,70,0.12);
+
   --elevation-inset: inset 0 1px 0 rgba(255,255,255,0.55);
+  /* kept as an alias so anything not yet migrated to a tier class still renders correctly */
+  --elevation: var(--tier-standard-elevation);
 
   --font-body:'Instrument Sans', system-ui, sans-serif;
   --font-display:'Outfit', 'Instrument Sans', system-ui, sans-serif;
@@ -66,14 +75,33 @@ input, textarea{ font-family:inherit; }
 ::-webkit-scrollbar-thumb{ background:rgba(124,130,201,0.20); border-radius:99px; }
 ::-webkit-scrollbar-track{ background:transparent; }
 
-/* ---------------- Glass primitive — one fill, one border, one elevation ---------------- */
+/* ---------------- Glass primitive — shared border/radius reset ---------------- */
 .glass{
-  background:var(--glass-fill);
   border:1px solid var(--glass-border);
   border-radius:var(--r-xl);
-  backdrop-filter:blur(var(--glass-blur)) saturate(108%);
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(108%);
-  box-shadow:var(--elevation-inset), var(--elevation);
+}
+
+/* ---------------- Three fixed surface tiers — every glass element gets exactly one ---------------- */
+/* nav: thinnest, structural chrome only — sidebar, cmdbar, the passive/reference row */
+.glass-nav{
+  background:var(--tier-nav-fill);
+  backdrop-filter:blur(var(--tier-nav-blur)) saturate(105%);
+  -webkit-backdrop-filter:blur(var(--tier-nav-blur)) saturate(105%);
+  box-shadow:var(--elevation-inset), var(--tier-nav-elevation);
+}
+/* standard: the workhorse card — Attention Now, Waiting, Blocked */
+.glass-standard{
+  background:var(--tier-standard-fill);
+  backdrop-filter:blur(var(--tier-standard-blur)) saturate(108%);
+  -webkit-backdrop-filter:blur(var(--tier-standard-blur)) saturate(108%);
+  box-shadow:var(--elevation-inset), var(--tier-standard-elevation);
+}
+/* hero: heaviest, reserved for exactly one surface — Mission */
+.glass-hero{
+  background:var(--tier-hero-fill);
+  backdrop-filter:blur(var(--tier-hero-blur)) saturate(130%);
+  -webkit-backdrop-filter:blur(var(--tier-hero-blur)) saturate(130%);
+  box-shadow:var(--elevation-inset), var(--tier-hero-elevation);
 }
 
 /* ---------------- App shell ---------------- */
@@ -89,11 +117,12 @@ input, textarea{ font-family:inherit; }
 .sidebar{
   display:flex; flex-direction:column; gap:24px;
   padding:26px 18px;
-  background:rgba(250,248,244,0.8);
+  background:var(--tier-nav-fill);
   border:1px solid var(--glass-border);
   border-radius:var(--r-xl);
-  backdrop-filter:blur(20px) saturate(108%);
-  box-shadow:var(--elevation-inset), var(--elevation);
+  backdrop-filter:blur(var(--tier-nav-blur)) saturate(105%);
+  -webkit-backdrop-filter:blur(var(--tier-nav-blur)) saturate(105%);
+  box-shadow:var(--elevation-inset), var(--tier-nav-elevation);
   color:var(--ink);
 }
 .brand{ display:flex; align-items:center; gap:10px; padding:0 4px; }
@@ -348,7 +377,6 @@ input, textarea{ font-family:inherit; }
 .low-panel{ flex:1; padding:0; overflow:hidden; }
 .low-panel.glass{
   border-radius:var(--r-lg);
-  background:var(--glass-fill-utility);
 }
 .low-head{
   display:flex; align-items:center; gap:9px; padding:13px 20px; cursor:pointer; user-select:none;
@@ -401,7 +429,7 @@ input, textarea{ font-family:inherit; }
 
   <main class="main">
 
-    <div class="cmdbar glass">
+    <div class="cmdbar glass glass-nav">
       <svg data-i="plus" style="width:15px;height:15px;color:var(--ink-faint);flex-shrink:0;"></svg>
       <input id="captureInput" type="text" placeholder="Capture a task, update, decision, or note…">
       <div class="health-row" id="healthRow"></div>
@@ -413,7 +441,7 @@ input, textarea{ font-family:inherit; }
       <button class="pill-btn primary" id="addTaskBtn"><svg data-i="plus"></svg>Add task</button>
     </div>
 
-    <div class="exec-strip glass" id="execStrip">
+    <div class="exec-strip glass glass-hero" id="execStrip">
       <div class="exec-strip-head" id="execStripHead">
         <svg data-i="compass" style="width:13px;height:13px;color:var(--accent-pressed);"></svg>
         <span class="exec-title">Execution Tower</span>
@@ -441,7 +469,7 @@ input, textarea{ font-family:inherit; }
 
     <div class="triage">
 
-      <section class="panel glass" id="panelAttention">
+      <section class="panel glass glass-standard" id="panelAttention">
         <div class="panel-head">
           <svg data-i="zap" class="pi" style="color:var(--accent);"></svg>
           <div><div class="panel-title">Attention Now</div><div class="panel-sub">Today, overdue, and due soon</div></div>
@@ -456,7 +484,7 @@ input, textarea{ font-family:inherit; }
         </div>
       </section>
 
-      <section class="panel glass" id="panelWaiting">
+      <section class="panel glass glass-standard" id="panelWaiting">
         <div class="panel-head">
           <svg data-i="users" class="pi" style="color:#8B8478;"></svg>
           <div><div class="panel-title">Waiting On</div><div class="panel-sub">Blocked by someone else</div></div>
@@ -465,7 +493,7 @@ input, textarea{ font-family:inherit; }
         <div class="panel-body" id="listWaiting"></div>
       </section>
 
-      <section class="panel glass" id="panelBlocked">
+      <section class="panel glass glass-standard" id="panelBlocked">
         <div class="panel-head">
           <svg data-i="octagon-pause" class="pi" style="color:var(--warning);"></svg>
           <div><div class="panel-title">Blocked</div><div class="panel-sub">On hold, internal constraint</div></div>
@@ -477,7 +505,7 @@ input, textarea{ font-family:inherit; }
     </div>
 
     <div class="low-strip">
-      <div class="low-panel glass" id="panelBacklog">
+      <div class="low-panel glass glass-nav" id="panelBacklog">
         <div class="low-head" data-toggle="panelBacklog">
           <svg data-i="layers" class="li"></svg>
           <span class="low-title">Backlog</span>
@@ -486,7 +514,7 @@ input, textarea{ font-family:inherit; }
         </div>
         <div class="low-body"><div class="low-body-inner" id="listBacklog"></div></div>
       </div>
-      <div class="low-panel glass" id="panelDone">
+      <div class="low-panel glass glass-nav" id="panelDone">
         <div class="low-head" data-toggle="panelDone">
           <svg data-i="check-check" class="li"></svg>
           <span class="low-title">Completed</span>
