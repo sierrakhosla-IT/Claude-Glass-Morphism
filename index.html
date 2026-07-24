@@ -131,6 +131,9 @@ input, textarea{ font-family:inherit; }
   display:flex; align-items:center; gap:10px;
   padding:9px 10px 9px 16px;
   border-radius:var(--r-pill) !important;
+  background:var(--glass-fill-strong) !important;
+  backdrop-filter:blur(34px) saturate(120%) !important;
+  -webkit-backdrop-filter:blur(34px) saturate(120%) !important;
 }
 .cmdbar input{
   flex:1; border:none; outline:none; background:transparent;
@@ -274,9 +277,9 @@ input, textarea{ font-family:inherit; }
   outline:none;
 }
 .chip:empty::before{ color:var(--ink-faint); font-weight:520; }
-.chip.due{ background:var(--warning-tint); color:var(--warning); }
+.chip.due{ background:#FBE4DC; color:#8A4A3A; }
 .chip.due.overdue{ background:var(--danger); color:#fff; }
-.chip.ticket{ background:rgba(124,130,201,0.16); color:var(--accent-pressed); }
+.chip.ticket{ background:#E3EFFB; color:#33587A; }
 .chip.priority-high{ background:var(--danger-tint); color:var(--danger); }
 .chip.priority-med{ background:var(--warning-tint); color:var(--warning); }
 .chip.priority-low{ background:rgba(255,255,255,0.5); color:var(--ink-faint); }
@@ -311,7 +314,13 @@ input, textarea{ font-family:inherit; }
 .panel-body.drag-active{ background:var(--accent-tint); border-radius:var(--r-md); }
 .low-body-inner.drag-active{ background:var(--accent-tint); border-radius:var(--r-md); }
 
-.task-detail{ max-height:0; overflow:hidden; transition:max-height var(--dur) var(--ease); padding:0 6px; }
+.task-detail{
+  max-height:0; overflow:hidden; transition:max-height var(--dur) var(--ease); padding:0 6px;
+  background:rgba(255,255,255,0.30);
+  backdrop-filter:blur(18px) saturate(115%);
+  -webkit-backdrop-filter:blur(18px) saturate(115%);
+  border-radius:var(--r-md);
+}
 .task.expanded .task-detail{ max-height:320px; }
 .detail-inner{ padding:4px 34px 12px 33px; display:flex; flex-direction:column; gap:9px; }
 .detail-field{ display:flex; flex-direction:column; gap:3px; }
@@ -410,6 +419,7 @@ input, textarea{ font-family:inherit; }
     </nav>
 
     <div class="sidebar-foot" id="clockFoot">—</div>
+    <div class="sidebar-foot" id="saveStatus" style="margin-top:-8px;">Not saved yet</div>
   </aside>
 
   <main class="main">
@@ -601,6 +611,53 @@ let tasks = [
 let expandedId = null;
 let leaders = [];
 
+/* ---------- Autosave — this is a real file in your own browser, not a
+   sandboxed preview, so localStorage persists it across closes/reloads. ---------- */
+const STORAGE_KEY = 'executionTower_v1';
+let saveTimer = null;
+
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{
+      const state = {
+        tasks,
+        mission: el('fldMission')?.value || '',
+        risk: el('fldRisk')?.value || '',
+        eod: el('fldEod')?.value || '',
+        leaders,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const dot = el('saveStatus');
+      if(dot){ dot.textContent = 'Saved ' + new Date().toLocaleTimeString('en-US',{hour:'numeric', minute:'2-digit'}); }
+    }catch(err){
+      const dot = el('saveStatus');
+      if(dot){ dot.textContent = "Couldn't save — storage may be full or blocked"; dot.style.color = 'var(--danger)'; }
+    }
+  }, 250);
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return false;
+    const data = JSON.parse(raw);
+    if(!Array.isArray(data.tasks)) return false;
+    tasks = data.tasks;
+    leaders = Array.isArray(data.leaders) ? data.leaders : [];
+    requestAnimationFrame(()=>{
+      if(el('fldMission')) el('fldMission').value = data.mission || '';
+      if(el('fldRisk')) el('fldRisk').value = data.risk || '';
+      if(el('fldEod')) el('fldEod').value = data.eod || '';
+    });
+    return true;
+  }catch(err){
+    return false;
+  }
+}
+const restoredFromStorage = loadState();
+
 function renderLeaders(){
   const container = el('leaderList');
   container.innerHTML = leaders.map(l=>`
@@ -615,13 +672,14 @@ function renderLeaders(){
     const leader = leaders.find(x=>x.id===lid);
     const nameInput = row.querySelector('[data-role="lname"]');
     const needInput = row.querySelector('[data-role="lneed"]');
-    nameInput.addEventListener('blur', ()=>{ leader.name = nameInput.value.trim(); });
-    needInput.addEventListener('blur', ()=>{ leader.need = needInput.value.trim(); });
+    nameInput.addEventListener('blur', ()=>{ leader.name = nameInput.value.trim(); saveState(); });
+    needInput.addEventListener('blur', ()=>{ leader.need = needInput.value.trim(); saveState(); });
     nameInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); needInput.focus(); } });
     needInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); needInput.blur(); } });
     row.querySelector('[data-role="lremove"]').addEventListener('click', ()=>{
       leaders = leaders.filter(x=>x.id!==lid);
       renderLeaders();
+      saveState();
     });
   });
   el('leaderAdd').addEventListener('click', ()=>{
@@ -716,6 +774,7 @@ function render(){
   paintIcons();
   wireRowEvents();
   wireDrag();
+  saveState();
 }
 
 function taskRowHTML(t){
@@ -881,6 +940,11 @@ function addTask(fromInput){
 }
 el('attnAddInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('attnAddInput')); });
 el('addTaskBtn').addEventListener('click', ()=> addTask(el('attnAddInput')));
+
+['fldMission','fldRisk','fldEod'].forEach(id=>{
+  el(id).addEventListener('blur', saveState);
+  el(id).addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); el(id).blur(); } });
+});
 
 /* ---------- Clean Session ---------- */
 el('cleanSessionBtn').addEventListener('click', ()=>{
