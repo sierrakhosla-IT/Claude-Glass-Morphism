@@ -231,6 +231,15 @@ input, textarea{ font-family:inherit; }
 .leader-row{ display:flex; align-items:baseline; gap:6px; font-size:13px; }
 .leader-row + .leader-row{ margin-top:5px; }
 .leader-name{ font-weight:650; color:var(--ink-soft); flex-shrink:0; }
+.leader-ask{ flex:1; }
+.leader-remove{ margin-left:auto; flex-shrink:0; width:16px; height:16px; border-radius:50%; border:none; background:transparent; color:var(--ink-faint); font-size:12px; line-height:1; cursor:pointer; opacity:0; transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease); }
+.leader-row:hover .leader-remove{ opacity:1; }
+.leader-remove:hover{ background:var(--danger-tint); color:var(--danger); }
+.leader-add{ display:flex; gap:8px; margin-bottom:8px; }
+.leader-add input.exec-editable{ padding:3px 5px; margin:-3px -5px; }
+.leader-add input.leader-name-input{ flex:0 0 74px; min-width:0; }
+.leader-add input.leader-ask-input{ flex:1; min-width:0; }
+.leader-empty{ font-size:12px; color:var(--ink-faint); font-weight:480; }
 
 /* Triage grid */
 .triage{
@@ -458,6 +467,10 @@ input, textarea{ font-family:inherit; }
         </div>
         <div class="exec-field">
           <label>Leadership Needs</label>
+          <div class="leader-add">
+            <input class="exec-editable leader-name-input" placeholder="Who" id="leaderNameInput">
+            <input class="exec-editable leader-ask-input" placeholder="What's needed from them" id="leaderAskInput">
+          </div>
           <div id="leaderList"></div>
         </div>
         <div class="exec-field">
@@ -613,6 +626,7 @@ let tasks = [
 ];
 
 let expandedId = null;
+let leaders = [];
 
 const el = id => document.getElementById(id);
 
@@ -694,7 +708,20 @@ function render(){
   paintIcons();
   wireRowEvents();
   wireDrag();
+  renderLeaders();
 }
+
+function renderLeaders(){
+  el('leaderList').innerHTML = leaders.length
+    ? leaders.map((l,i)=>`
+        <div class="leader-row">
+          <span class="leader-name">${escHtml(l.name)}</span>
+          <span class="leader-ask">${escHtml(l.ask)}</span>
+          <button class="leader-remove" data-role="leader-remove" data-idx="${i}" title="Remove">&times;</button>
+        </div>`).join('')
+    : `<span class="leader-empty">Nothing pending from leadership.</span>`;
+}
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function taskRowHTML(t){
   const expanded = expandedId === t.id;
@@ -843,6 +870,26 @@ function addTask(fromInput){
 el('attnAddInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('attnAddInput')); });
 el('addTaskBtn').addEventListener('click', ()=> addTask(el('attnAddInput')));
 
+/* ---------- Leadership Needs ---------- */
+function addLeader(){
+  const name = el('leaderNameInput').value.trim();
+  const ask = el('leaderAskInput').value.trim();
+  if(!name || !ask) return;
+  leaders.push({ name, ask });
+  el('leaderNameInput').value = '';
+  el('leaderAskInput').value = '';
+  el('leaderNameInput').focus();
+  renderLeaders();
+}
+el('leaderNameInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); el('leaderAskInput').focus(); } });
+el('leaderAskInput').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); addLeader(); } });
+el('leaderList').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-role="leader-remove"]');
+  if(!btn) return;
+  leaders.splice(Number(btn.dataset.idx), 1);
+  renderLeaders();
+});
+
 /* ---------- Clean Session ---------- */
 el('cleanSessionBtn').addEventListener('click', ()=>{
   const wiping = tasks.filter(t=> ['today','queue','waiting'].includes(t.status));
@@ -851,6 +898,8 @@ el('cleanSessionBtn').addEventListener('click', ()=>{
   el('fldMission').value = '';
   el('fldRisk').value = '';
   el('fldEod').value = '';
+  leaders = [];
+  renderLeaders();
   if(expandedId && !tasks.find(t=>t.id===expandedId)) expandedId = null;
   render();
 });
@@ -862,6 +911,7 @@ function currentState(){
     mission: el('fldMission').value,
     risk: el('fldRisk').value,
     eod: el('fldEod').value,
+    leaders,
     savedAt: new Date().toISOString()
   };
 }
@@ -887,6 +937,7 @@ el('restoreInput').addEventListener('change', e=>{
       el('fldMission').value = data.mission || '';
       el('fldRisk').value = data.risk || '';
       el('fldEod').value = data.eod || '';
+      leaders = Array.isArray(data.leaders) ? data.leaders : [];
       expandedId = null;
       render();
     }catch(err){
