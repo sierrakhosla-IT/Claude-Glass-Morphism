@@ -187,6 +187,23 @@ input, textarea{ font-family:inherit; }
 }
 .pill-btn svg{ width:14px; height:14px; stroke-width:1.6; }
 
+/* cmdbar grouping — Capture / Status / View / Utilities / Primary read as distinct zones, not peers */
+.cmdbar-divider{ width:1px; height:22px; background:var(--glass-border); flex-shrink:0; margin:0 1px; }
+
+/* View control — a presentation preference lives in its own quiet popover, not a command-bar peer */
+.view-control{ position:relative; }
+.view-popover{
+  display:none; position:absolute; top:calc(100% + 10px); left:0; z-index:40;
+  min-width:180px; padding:12px 14px; border-radius:var(--r-md);
+  background:rgba(255,253,249,0.96); border:1px solid var(--glass-border);
+  backdrop-filter:blur(16px) saturate(108%); -webkit-backdrop-filter:blur(16px) saturate(108%);
+  box-shadow:var(--elevation-inset), var(--tier-standard-elevation);
+}
+.view-popover.open{ display:block; }
+.view-popover-label{ font-size:9.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:9px; }
+.view-toggle{ display:flex; align-items:center; gap:9px; font-size:12.5px; color:var(--ink); cursor:pointer; }
+.view-toggle input{ accent-color:var(--accent); width:14px; height:14px; cursor:pointer; }
+
 /* Health pills — status signal, color earned by state */
 .health-row{ display:flex; align-items:center; gap:7px; }
 .health-pill{
@@ -285,6 +302,19 @@ input, textarea{ font-family:inherit; }
 }
 .check:hover{ border-color:var(--accent); }
 .check.done{ background:var(--success); border-color:var(--success); }
+.star-btn{
+  width:17px; height:17px; margin-top:1px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  border:none; background:transparent; padding:0; cursor:pointer;
+  color:var(--ink-faint); opacity:0.35;
+  transition:opacity var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.star-btn svg{ width:15px; height:15px; }
+.task-row:hover .star-btn{ opacity:0.75; }
+.star-btn:hover{ opacity:1 !important; color:var(--warning); transform:scale(1.08); }
+.star-btn.starred{ opacity:1; color:var(--warning); }
+.star-btn.starred svg{ fill:var(--warning); stroke:var(--warning); }
+.task.starred-task{ background:rgba(176,140,87,0.06); border-radius:var(--r-md); box-shadow:inset 3px 0 0 var(--warning); }
 .task-main{ flex:1; min-width:0; }
 .task-title-row{ display:flex; align-items:center; gap:7px; }
 .task-title{ display:block; width:100%; border:none; background:transparent; font-size:13px; font-weight:560; color:var(--ink); outline:none; border-radius:5px; padding:1px 3px; margin:-1px -3px; }
@@ -442,11 +472,24 @@ input, textarea{ font-family:inherit; }
       <svg data-i="plus" style="width:15px;height:15px;color:var(--ink-faint);flex-shrink:0;"></svg>
       <input id="captureInput" type="text" placeholder="Capture a task, update, decision, or note…">
       <div class="health-row" id="healthRow"></div>
+      <div class="cmdbar-divider"></div>
+      <div class="view-control" id="viewControl">
+        <button class="icon-btn" id="viewBtn" title="View preferences"><svg data-i="sliders"></svg></button>
+        <div class="view-popover" id="viewPopover">
+          <div class="view-popover-label">Display</div>
+          <label class="view-toggle">
+            <input type="checkbox" id="starToggleCheckbox">
+            <span>Starred first</span>
+          </label>
+        </div>
+      </div>
+      <div class="cmdbar-divider"></div>
       <button class="icon-btn" title="Ask AI"><svg data-i="sparkles"></svg></button>
       <button class="pill-btn" id="cleanSessionBtn" title="Wipe Today, Backlog, and Waiting, plus Mission/Risk/EOD — Blocked and Completed stay">Clean Session</button>
       <button class="icon-btn" id="backupBtn" title="Download a backup file"><svg data-i="download"></svg></button>
       <input type="file" id="restoreInput" accept="application/json" style="display:none;">
       <button class="icon-btn" id="restoreBtn" title="Restore from a backup file"><svg data-i="upload"></svg></button>
+      <div class="cmdbar-divider"></div>
       <button class="pill-btn primary" id="addTaskBtn"><svg data-i="plus"></svg>Add task</button>
     </div>
 
@@ -565,7 +608,9 @@ const ICONS = {
   'trash-2': '<path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>',
   'grip-vertical': '<circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="19" r="1"></circle>',
   'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>',
-  'upload': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>'
+  'upload': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>',
+  'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>',
+  'sliders': '<line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line>'
 };
 
 const lucide = {
@@ -606,27 +651,12 @@ function paintIcons(){
 
 /* ---------- Data model ----------
    Single Task Queue. status: 'today' | 'queue' | 'waiting' | 'onhold' | 'completed'
-   Ported from the real backup — nothing fabricated. */
-let tasks = [
-  { id:'z706q2z', title:'Validate Carrier and Device Inventory Exceptions', ticket:'', due:'', nextAction:'', status:'today', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'bhv4zv0', title:'Add User email to the inventory intake process form', ticket:'', due:'', nextAction:'', status:'queue', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'rspopck', title:'Gather thoughts and questions about new plan', ticket:'', due:'7/21/2026', nextAction:'', status:'waiting', priority:'',
-    waitingOn:'Tavia — her ideas and the migration',
-    context:'Instead of thinking about a line migration & device refresh, treat them as two separate projects.',
-    subs:[
-      {id:'nw4ixem', t:'Brainstorm the plan for only line migration', done:false},
-      {id:'wxut790', t:'Brainstorm the plan for only device refresh', done:false},
-      {id:'3pksoeg', t:'Document complications', done:false},
-      {id:'38lyfl6', t:'Document questions', done:false},
-    ]},
-  { id:'lvf9jxz', title:"Disconnect Brooke William's line", status:'completed', due:'', ticket:'', nextAction:'', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'0k9o3x6', title:'Disconnect Terry Oswalds line', status:'completed', due:'', ticket:'', nextAction:'', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'010z75q', title:"Inventory Pierre Brunelle's laptop", status:'completed', due:'', ticket:'', nextAction:'', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'j2uqafu', title:'Cleanup Intune Report', status:'completed', due:'', ticket:'', nextAction:'Pull updated report', priority:'', context:'', waitingOn:'', subs:[] },
-];
+   Empty on load — use Restore to load a backup, or Add Task to start fresh. */
+let tasks = [];
 
 let expandedId = null;
 let leaders = [];
+let showStarredFirst = true; // presentation preference only — never mutates task order
 
 const el = id => document.getElementById(id);
 
@@ -646,13 +676,16 @@ function priorityChip(p){
 
 /* ---------- Rendering ---------- */
 function render(){
-  const attention = tasks.filter(t=>t.status==='today' || (t.status==='queue' && t.due));
-  const waiting = tasks.filter(t=>t.status==='waiting');
-  const blocked = tasks.filter(t=>t.status==='onhold');
-  const backlog = tasks.filter(t=>t.status==='queue' && !t.due);
+  const byStarred = (a,b)=> (b.starred?1:0) - (a.starred?1:0);
+  const applyView = list => showStarredFirst ? [...list].sort(byStarred) : list;
+  const attention = applyView(tasks.filter(t=>t.status==='today' || (t.status==='queue' && t.due)));
+  const waiting = applyView(tasks.filter(t=>t.status==='waiting'));
+  const blocked = applyView(tasks.filter(t=>t.status==='onhold'));
+  const backlog = applyView(tasks.filter(t=>t.status==='queue' && !t.due));
   const done = tasks.filter(t=>t.status==='completed');
 
   el('cntAttention').textContent = attention.length;
+  el('starToggleCheckbox').checked = showStarredFirst;
   el('cntWaiting').textContent = waiting.length;
   el('cntBlocked').textContent = blocked.length;
   el('cntBacklog').textContent = backlog.length;
@@ -726,10 +759,11 @@ function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
 function taskRowHTML(t){
   const expanded = expandedId === t.id;
   return `
-  <div class="task ${expanded?'expanded':''}" data-id="${t.id}">
+  <div class="task ${expanded?'expanded':''} ${t.starred?'starred-task':''}" data-id="${t.id}">
     <div class="task-row" data-role="row">
       <div class="drag-handle" data-role="drag-handle" title="Drag to move or reorder"><svg data-i="grip-vertical"></svg></div>
       <div class="check ${t.status==='completed'?'done':''}" data-role="check"></div>
+      <div class="star-btn ${t.starred?'starred':''}" data-role="star" title="${t.starred?'Remove your attention marker':'Mark for your personal attention'}"><svg data-i="star"></svg></div>
       <div class="task-main">
         <div class="task-title-row">
           <input class="task-title" data-role="title" value="${escAttr(t.title)}">
@@ -783,13 +817,18 @@ function wireRowEvents(){
     if(!t) return;
 
     taskEl.querySelector('[data-role="row"]').addEventListener('click', (e)=>{
-      if(e.target.closest('[data-role="check"]') || e.target.closest('[data-role="delete"]') || ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+      if(e.target.closest('[data-role="check"]') || e.target.closest('[data-role="delete"]') || e.target.closest('[data-role="star"]') || e.target.closest('[data-role="drag-handle"]') || ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
       expandedId = expandedId === id ? null : id;
       render();
     });
     taskEl.querySelector('[data-role="check"]').addEventListener('click', (e)=>{
       e.stopPropagation();
       t.status = t.status === 'completed' ? 'today' : 'completed';
+      render();
+    });
+    taskEl.querySelector('[data-role="star"]')?.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      t.starred = !t.starred;
       render();
     });
 
@@ -869,6 +908,9 @@ function addTask(fromInput){
 }
 el('attnAddInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('attnAddInput')); });
 el('addTaskBtn').addEventListener('click', ()=> addTask(el('attnAddInput')));
+el('viewBtn').addEventListener('click', e=>{ e.stopPropagation(); el('viewPopover').classList.toggle('open'); });
+document.addEventListener('click', e=>{ if(!e.target.closest('#viewControl')) el('viewPopover').classList.remove('open'); });
+el('starToggleCheckbox').addEventListener('change', ()=>{ showStarredFirst = el('starToggleCheckbox').checked; render(); });
 
 /* ---------- Leadership Needs ---------- */
 function addLeader(){
