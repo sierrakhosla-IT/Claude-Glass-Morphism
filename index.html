@@ -239,8 +239,9 @@ input, textarea{ font-family:inherit; }
 .exec-field label{ display:block; font-size:9.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:7px; }
 .exec-editable{
   display:block; width:100%; border:none; background:transparent;
-  font-size:13px; font-weight:540; color:var(--ink); line-height:1.4;
+  font-family:inherit; font-size:13px; font-weight:540; color:var(--ink); line-height:1.4;
   min-height:18px; outline:none; border-radius:8px; padding:3px 5px; margin:-3px -5px;
+  resize:none; overflow:hidden; white-space:pre-wrap; word-wrap:break-word;
 }
 .exec-editable::placeholder{ color:var(--ink-faint); font-weight:480; }
 .exec-editable:hover{ background:rgba(255,255,255,0.4); }
@@ -502,11 +503,11 @@ input, textarea{ font-family:inherit; }
       <div class="exec-grid">
         <div class="exec-field">
           <label>Mission</label>
-          <input class="exec-editable" placeholder="What today needs to accomplish" id="fldMission">
+          <textarea class="exec-editable" rows="1" placeholder="What today needs to accomplish" id="fldMission"></textarea>
         </div>
         <div class="exec-field">
           <label>Top Risk</label>
-          <input class="exec-editable" placeholder="What could derail it" id="fldRisk">
+          <textarea class="exec-editable" rows="1" placeholder="What could derail it" id="fldRisk"></textarea>
         </div>
         <div class="exec-field">
           <label>Leadership Needs</label>
@@ -518,7 +519,7 @@ input, textarea{ font-family:inherit; }
         </div>
         <div class="exec-field">
           <label>Must Be True by EOD</label>
-          <input class="exec-editable" placeholder="The one non-negotiable" id="fldEod">
+          <textarea class="exec-editable" rows="1" placeholder="The one non-negotiable" id="fldEod"></textarea>
         </div>
       </div>
     </div>
@@ -785,6 +786,7 @@ function taskRowHTML(t){
           <div class="detail-field"><label>Ticket</label><input class="val" placeholder="RITM / INC" data-role="ticket" value="${escAttr(t.ticket||'')}"></div>
           <div class="detail-field"><label>Due</label><input class="val" placeholder="mm/dd/yyyy" data-role="due" value="${escAttr(t.due||'')}"></div>
         </div>
+        ${t.status==='waiting' ? `<div class="detail-field"><label>Waiting On</label><input class="val" placeholder="Name — what you need from them" data-role="waitingOn" value="${escAttr(t.waitingOn||'')}"></div>` : ''}
         <div class="detail-field"><label>Context</label><textarea class="val" rows="2" placeholder="Add context or notes" data-role="context">${t.context||''}</textarea></div>
         <div class="subtask-list" data-role="subs">
           ${t.subs.map(s=>`
@@ -864,6 +866,9 @@ function wireRowEvents(){
     const due = taskEl.querySelector('[data-role="due"]');
     due?.addEventListener('blur', ()=>{ t.due = due.value.trim(); render(); });
     due?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); due.blur(); } });
+    const waitingOn = taskEl.querySelector('[data-role="waitingOn"]');
+    waitingOn?.addEventListener('blur', ()=>{ t.waitingOn = waitingOn.value.trim(); render(); });
+    waitingOn?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); waitingOn.blur(); } });
     const ctx = taskEl.querySelector('[data-role="context"]');
     ctx?.addEventListener('blur', ()=>{ t.context = ctx.value.trim(); render(); });
 
@@ -912,6 +917,12 @@ el('viewBtn').addEventListener('click', e=>{ e.stopPropagation(); el('viewPopove
 document.addEventListener('click', e=>{ if(!e.target.closest('#viewControl')) el('viewPopover').classList.remove('open'); });
 el('starToggleCheckbox').addEventListener('change', ()=>{ showStarredFirst = el('starToggleCheckbox').checked; render(); });
 
+function autoGrow(field){ field.style.height='auto'; field.style.height=field.scrollHeight+'px'; }
+[el('fldMission'), el('fldRisk'), el('fldEod')].forEach(field=>{
+  field.addEventListener('input', ()=> autoGrow(field));
+  autoGrow(field);
+});
+
 /* ---------- Leadership Needs ---------- */
 function addLeader(){
   const name = el('leaderNameInput').value.trim();
@@ -940,6 +951,7 @@ el('cleanSessionBtn').addEventListener('click', ()=>{
   el('fldMission').value = '';
   el('fldRisk').value = '';
   el('fldEod').value = '';
+  [el('fldMission'), el('fldRisk'), el('fldEod')].forEach(autoGrow);
   leaders = [];
   renderLeaders();
   if(expandedId && !tasks.find(t=>t.id===expandedId)) expandedId = null;
@@ -982,6 +994,7 @@ el('restoreInput').addEventListener('change', e=>{
       leaders = Array.isArray(data.leaders) ? data.leaders : [];
       expandedId = null;
       render();
+      [el('fldMission'), el('fldRisk'), el('fldEod')].forEach(autoGrow);
     }catch(err){
       alert('Could not read that file as a backup: ' + err.message);
     }
