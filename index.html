@@ -4,1190 +4,677 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Execution Tower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;560;600;650&display=swap');
-
 :root{
-  --canvas:#F7F7FB;
-  --canvas-2:#FCFBFF;
-  --ink:#292B35;
-  --ink-soft:#6F7280;
-  --ink-faint:#A6A8B3;
-  --white:#FFFFFF;
+  --ink:#2B2A28;
+  --ink-soft:#6B6862;
+  --ink-faint:#A6A29A;
+  --canvas:#F6F3EE;
+  --paper:#FDFCFA;
+  --accent:#7C82C9;
+  --accent-deep:#5C61A8;
+  --accent-tint:#EDEEF7;
+  --line:#E4E0D8;
+  --danger:#B4614A;
+  --danger-tint:#F5E7E2;
+  --amber:#B08A4E;
+  --amber-tint:#F3ECDD;
+  --sage:#7C9070;
+  --sage-tint:#E9EEE5;
+  --done:#8B9A7E;
 
-  --accent:#7C82C9;        /* muted periwinkle — brand primary */
-  --accent-soft:#AEB4E6;   /* secondary */
-  --accent-pressed:#6269AE;
-  --accent-tint:#EEF0FC;
-
-  --success:#6F927C;
-  --success-tint:#EEF3EF;
-  --warning:#B28A55;
-  --warning-tint:#FAF1E6;
-  --danger:#B86F75;
-  --danger-tint:#FAECEC;
-  --waiting:#8188A8;
-  --waiting-tint:#EFF0F6;
-
-  --glass-fill:rgba(255,255,255,0.74);
-  --glass-fill-strong:rgba(255,255,255,0.86);
-  --glass-fill-utility:rgba(255,255,255,0.62);
-  --glass-border:rgba(255,255,255,0.82);
-  --glass-blur:24px;
-
-  --r-sm:12px; --r-md:14px; --r-lg:20px; --r-xl:24px; --r-pill:999px;
-
-  --shadow-1:0 1px 2px rgba(45,47,63,0.03);
-  --shadow-2:0 14px 36px rgba(91,93,125,0.07);
-
-  --font-body:'Instrument Sans', system-ui, sans-serif;
-  --font-display:'Instrument Sans', system-ui, sans-serif;
-
-  --ease:cubic-bezier(.4,0,.2,1);
-  --dur:210ms;
+  --sp1:8px; --sp2:16px; --sp3:24px; --sp4:40px; --sp5:64px;
+  --radius:14px; --radius-sm:9px;
+  --shadow: 0 1px 2px rgba(43,42,40,.04), 0 8px 24px -12px rgba(43,42,40,.14);
+  --glass-blur: blur(18px);
 }
-
-*{ box-sizing:border-box; }
-html,body{ height:100%; margin:0; }
+*{box-sizing:border-box;}
 body{
-  font-family:var(--font-body);
-  color:var(--ink);
-  overflow:hidden;
+  margin:0;
   background:
-    radial-gradient(ellipse 1500px 1000px at 92% 6%, rgba(220,214,244,0.34), transparent 52%),
-    radial-gradient(ellipse 1300px 950px at 4% 92%, rgba(214,226,244,0.30), transparent 50%),
-    radial-gradient(ellipse 1100px 850px at 50% 42%, rgba(248,228,222,0.20), transparent 55%),
-    linear-gradient(150deg, var(--canvas-2), var(--canvas));
-}
-button{ font-family:inherit; cursor:pointer; }
-input, textarea{ font-family:inherit; }
-
-::-webkit-scrollbar{ width:7px; height:7px; }
-::-webkit-scrollbar-thumb{ background:rgba(124,130,201,0.20); border-radius:99px; }
-::-webkit-scrollbar-track{ background:transparent; }
-
-/* ---------------- Glass primitive (porcelain, not glossy glass) ---------------- */
-.glass{
-  background:var(--glass-fill);
-  border:1px solid var(--glass-border);
-  border-radius:var(--r-xl);
-  backdrop-filter:blur(var(--glass-blur)) saturate(115%);
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(115%);
-  box-shadow:var(--shadow-1), var(--shadow-2);
-}
-
-/* ---------------- App shell ---------------- */
-.app{
-  display:grid;
-  grid-template-columns:210px 1fr;
-  height:100vh;
-  padding:14px;
-  gap:14px;
-}
-
-/* ---------------- Sidebar ---------------- */
-.sidebar{
-  display:flex; flex-direction:column; gap:18px;
-  padding:20px 14px;
-  background:rgba(246,246,251,0.82);
-  border:1px solid rgba(255,255,255,0.85);
-  border-radius:var(--r-xl);
-  backdrop-filter:blur(24px);
-  box-shadow:var(--shadow-1), var(--shadow-2);
+    radial-gradient(900px 500px at 12% -10%, rgba(124,130,201,.10), transparent 60%),
+    radial-gradient(700px 500px at 100% 0%, rgba(176,138,78,.07), transparent 55%),
+    var(--canvas);
   color:var(--ink);
+  font-family:'Instrument Sans', sans-serif;
+  -webkit-font-smoothing:antialiased;
 }
-.brand{ display:flex; align-items:center; gap:9px; padding:0 4px; }
-.brand-mark{ width:26px; height:26px; border-radius:9px; background:linear-gradient(150deg, var(--accent-soft), var(--accent)); flex-shrink:0; }
-.brand-text{ font-family:var(--font-display); font-size:13px; font-weight:600; letter-spacing:0.04em; line-height:1.15; color:var(--ink); }
-.brand-text small{ display:block; font-size:9px; font-weight:500; opacity:0.55; letter-spacing:0.12em; color:var(--ink-soft); }
+h1,h2,h3,.display{font-family:'Outfit',sans-serif;}
+.eyebrow{
+  font-family:'Instrument Sans',sans-serif;
+  font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-faint);
+}
+button{font-family:inherit; cursor:pointer;}
+input,textarea,select{font-family:inherit; font-size:13.5px; background:transparent; border:none; color:var(--ink);}
+input:focus,textarea:focus,select:focus{outline:none;}
+::placeholder{color:var(--ink-faint);}
 
-.nav{ display:flex; flex-direction:column; gap:3px; }
-.nav-item{
-  display:flex; align-items:center; gap:10px;
-  padding:9px 10px; border-radius:13px;
-  font-size:12.5px; font-weight:540; color:var(--ink-soft);
-  transition:background var(--dur) var(--ease), color var(--dur) var(--ease);
-}
-.nav-item svg{ width:15px; height:15px; stroke-width:1.4; flex-shrink:0; }
-.nav-item span.label{ flex:1; }
-.nav-item .count{
-  font-size:10.5px; font-weight:650; min-width:19px; height:19px;
-  display:flex; align-items:center; justify-content:center;
-  border-radius:99px; background:rgba(41,43,53,0.06); color:var(--ink-soft);
-}
-.nav-item:hover{ background:var(--accent-tint); color:var(--ink); }
-.nav-item.active{ background:var(--accent-tint); color:var(--accent-pressed); box-shadow:none; }
-.nav-item.active .count{ background:rgba(124,130,201,0.16); color:var(--accent-pressed); }
-.nav-item.urgent .count{ background:var(--danger); color:#fff; }
+.app{ display:grid; grid-template-columns:230px 1fr; min-height:100vh; }
 
-.nav-divider{ height:1px; background:rgba(41,43,53,0.07); margin:2px 4px; }
-.sidebar-foot{ margin-top:auto; font-size:10px; color:var(--ink-faint); padding:0 4px; }
+/* ---------- SIDEBAR : glass-nav tier ---------- */
+.sidebar{
+  padding:var(--sp3) var(--sp2);
+  display:flex; flex-direction:column; gap:var(--sp4);
+  border-right:1px solid var(--line);
+  position:sticky; top:0; height:100vh;
+}
+.brand{display:flex; align-items:center; gap:10px; margin-bottom:var(--sp2);}
+.brand-mark{
+  width:30px; height:30px; border-radius:9px;
+  background:linear-gradient(135deg,var(--accent),#A9A8F0);
+  box-shadow:0 4px 10px -3px rgba(124,130,201,.55);
+}
+.brand-name{font-weight:600; font-size:15px;}
+.brand-sub{font-size:10.5px; color:var(--ink-faint); margin-top:-2px;}
 
-/* ---------------- Main column ---------------- */
-.main{ display:flex; flex-direction:column; gap:12px; min-height:0; min-width:0; }
+.attention{display:flex; flex-direction:column; gap:10px;}
+.attention-item{
+  display:flex; gap:8px; align-items:flex-start;
+  font-size:12.5px; line-height:1.4; color:var(--ink);
+  padding:8px 0; border-bottom:1px solid var(--line);
+}
+.attention-item:last-child{border-bottom:none;}
+.dot{width:6px; height:6px; border-radius:50%; margin-top:5px; flex:none;}
+.dot.overdue{background:var(--danger);}
+.dot.waiting{background:var(--amber);}
+.dot.due{background:var(--accent);}
+.attention-empty{font-size:12px; color:var(--ink-faint); padding:6px 0;}
 
-/* Command bar */
-.cmdbar{
-  display:flex; align-items:center; gap:10px;
-  padding:9px 10px 9px 16px;
-  border-radius:var(--r-pill) !important;
-  background:var(--glass-fill-strong) !important;
-  backdrop-filter:blur(34px) saturate(120%) !important;
-  -webkit-backdrop-filter:blur(34px) saturate(120%) !important;
+.nav{display:flex; flex-direction:column; gap:2px; margin-top:auto;}
+.nav a{
+  display:block; text-decoration:none; color:var(--ink-soft); font-size:13px; font-weight:500;
+  padding:7px 10px; border-radius:8px;
 }
-.cmdbar input{
-  flex:1; border:none; outline:none; background:transparent;
-  font-size:13px; color:var(--ink); font-weight:500;
-}
-.cmdbar input::placeholder{ color:var(--ink-faint); }
-.cmdbar .icon-btn{
-  width:34px; height:34px; border-radius:50%; border:none;
-  background:rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center;
-  color:var(--ink-soft); transition:background var(--dur) var(--ease);
-}
-.cmdbar .icon-btn:hover{ background:rgba(255,255,255,0.85); }
-.cmdbar .icon-btn svg{ width:16px; height:16px; stroke-width:1.4; }
+.nav a:hover{background:var(--accent-tint); color:var(--accent-deep);}
+.nav a.active{background:var(--accent-tint); color:var(--accent-deep); font-weight:600;}
 
-.pill-btn{
-  display:inline-flex; align-items:center; gap:6px;
-  padding:9px 16px; border-radius:var(--r-pill); border:1px solid rgba(255,255,255,0.5);
-  background:rgba(255,255,255,0.5); color:var(--ink-soft); font-size:12.5px; font-weight:600;
-  transition:transform var(--dur) var(--ease), background var(--dur) var(--ease);
-}
-.pill-btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,0.85); }
-.pill-btn.primary{
-  background:linear-gradient(160deg, var(--accent-soft), var(--accent));
-  color:#fff; border:none; box-shadow:0 8px 20px rgba(124,130,201,0.28);
-}
-.pill-btn svg{ width:14px; height:14px; stroke-width:1.6; }
+/* ---------- MAIN ---------- */
+.main{padding:var(--sp3) var(--sp4) var(--sp5); max-width:1400px;}
 
-/* Health pills */
-.health-row{ display:flex; align-items:center; gap:7px; }
-.health-pill{
-  display:flex; align-items:center; gap:6px;
-  padding:5px 11px 5px 8px; border-radius:var(--r-pill);
-  font-size:11px; font-weight:650; color:var(--ink-soft);
-  background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.5);
+/* Mission strip - glass-hero */
+.mission{
+  border-radius:20px;
+  padding:var(--sp3) var(--sp3);
+  margin-bottom:var(--sp3);
+  background:linear-gradient(120deg,#EADFF4 0%, #DCE0F6 45%, #DCEAF7 100%);
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  position:relative;
 }
-.health-pill .dot{ width:6px; height:6px; border-radius:50%; }
-.health-pill.attn .dot{ background:var(--accent); }
-.health-pill.wait .dot{ background:#8C93A6; }
-.health-pill.block .dot{ background:var(--warning); }
-.health-pill.over .dot{ background:var(--danger); }
-.health-pill.over{ color:var(--danger); background:var(--danger-tint); border-color:transparent; }
+.mission-head{
+  grid-column:1/-1; display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;
+}
+.mission-head h1{font-size:19px; margin:0; font-weight:600; color:#2E2C4A;}
+.mtile{
+  background:rgba(30,28,58,.42);
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  border-radius:var(--radius-sm);
+  padding:12px 14px;
+  color:#F4F2FA;
+  min-height:88px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.mtile .eyebrow{color:#D6D4F0;}
+.mtile textarea{
+  color:#fff; font-size:13px; line-height:1.45; resize:none; width:100%; flex:1;
+  background:transparent;
+}
+.mtile textarea::placeholder{color:rgba(255,255,255,.45);}
 
-/* Executive Tower strip */
-.exec-strip{
-  padding:14px 20px;
-  transition:padding var(--dur) var(--ease), max-height var(--dur) var(--ease);
+/* Desk layout */
+.desk{
+  display:grid;
+  grid-template-columns:63% 1fr;
+  gap:var(--sp3);
+  align-items:start;
 }
-.exec-strip-head{ display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
-.exec-strip-head svg.chev{ width:13px; height:13px; stroke-width:1.6; color:var(--ink-faint); transition:transform var(--dur) var(--ease); margin-left:auto; }
-.exec-strip.collapsed .chev{ transform:rotate(-90deg); }
-.exec-title{ font-family:var(--font-display); font-size:12px; font-weight:650; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-pressed); }
-.exec-grid{
-  display:grid; grid-template-columns:repeat(4,1fr); gap:18px;
-  margin-top:12px;
-  max-height:120px; overflow:hidden; opacity:1;
-  transition:max-height var(--dur) var(--ease), opacity var(--dur) var(--ease), margin var(--dur) var(--ease);
-}
-.exec-strip.collapsed .exec-grid{ max-height:0; opacity:0; margin-top:0; }
-.exec-field{ min-width:0; }
-.exec-field label{ display:block; font-size:9.5px; font-weight:650; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:5px; }
-.exec-editable{
-  display:block; width:100%; border:none; background:transparent;
-  font-size:12.5px; font-weight:540; color:var(--ink); line-height:1.4;
-  min-height:18px; outline:none; border-radius:8px; padding:3px 5px; margin:-3px -5px;
-}
-.exec-editable::placeholder{ color:var(--ink-faint); font-weight:480; }
-.exec-editable:hover{ background:rgba(255,255,255,0.4); }
-.exec-editable:focus{ background:rgba(255,255,255,0.7); box-shadow:0 0 0 2px rgba(124,130,201,0.25); }
-.leader-row{ display:flex; align-items:center; gap:6px; font-size:12px; }
-.leader-row + .leader-row{ margin-top:5px; }
-.leader-name-input{ width:88px; flex-shrink:0; border:none; background:rgba(255,255,255,0.4); border-radius:6px; padding:3px 6px; font-size:11.5px; font-weight:650; color:var(--ink); outline:none; }
-.leader-name-input::placeholder{ color:var(--ink-faint); font-weight:520; }
-.leader-name-input:focus{ background:rgba(255,255,255,0.75); }
-.leader-need-input{ flex:1; min-width:0; border:none; background:transparent; padding:3px 4px; font-size:12px; color:var(--ink); outline:none; border-radius:6px; }
-.leader-need-input::placeholder{ color:var(--ink-faint); }
-.leader-need-input:focus{ background:rgba(255,255,255,0.55); }
-.leader-remove{ width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); flex-shrink:0; opacity:0; transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease); }
-.leader-row:hover .leader-remove{ opacity:1; }
-.leader-remove:hover{ background:var(--danger-tint); color:var(--danger); }
-.leader-remove svg{ width:11px; height:11px; stroke-width:1.8; }
-.leader-add{ font-size:10.5px; color:var(--ink-faint); font-weight:650; cursor:pointer; margin-top:5px; display:inline-block; }
-.leader-add:hover{ color:var(--accent); }
-.leader-name{ font-weight:650; color:var(--ink-soft); flex-shrink:0; }
 
-/* Triage grid */
-.triage{
-  display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:12px;
-  flex:1; min-height:0;
+.panel{
+  background:var(--paper);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:var(--sp2) var(--sp2) var(--sp3);
 }
-.panel{ display:flex; flex-direction:column; min-height:0; padding:0; }
 .panel-head{
-  display:flex; align-items:center; gap:9px;
-  padding:16px 18px 12px;
-  flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:2px 2px var(--sp1);
 }
-.panel-head svg.pi{ width:16px; height:16px; stroke-width:1.4; }
-.panel-title{ font-family:var(--font-display); font-size:14.5px; font-weight:650; color:var(--ink); }
-.panel-sub{ font-size:10.5px; color:var(--ink-faint); font-weight:520; margin-top:1px; }
-.panel-count{
-  min-width:22px; height:22px; padding:0 6px; border-radius:99px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:10.5px; font-weight:700; color:var(--ink-soft); background:rgba(255,255,255,0.5);
+.panel-head h2{font-size:14.5px; font-weight:600; margin:0;}
+.panel-count{font-size:11px; color:var(--ink-faint); font-weight:500;}
+
+/* Today - hero workspace */
+.today-panel{min-height:640px;}
+.quickadd{
+  display:flex; align-items:center; gap:8px;
+  border:1px solid var(--line); border-radius:10px;
+  padding:9px 12px; margin:6px 2px var(--sp2);
 }
-.panel-body{ flex:1; overflow-y:auto; padding:2px 12px 14px; }
-.panel-empty{ font-size:11.5px; color:var(--ink-faint); padding:20px 8px; text-align:center; }
-
-/* Attention panel: hero */
-.attn-add{
-  display:flex; align-items:center; gap:8px; margin:0 6px 10px;
-  padding:9px 12px; border-radius:var(--r-md);
-  background:rgba(255,255,255,0.4); border:1px dashed rgba(124,130,201,0.35);
+.quickadd input{flex:1; font-size:13.5px;}
+.quickadd .kbd{
+  font-size:10px; color:var(--ink-faint); border:1px solid var(--line); border-radius:5px; padding:1px 6px;
 }
-.attn-add svg{ width:14px; height:14px; color:var(--accent); stroke-width:1.6; flex-shrink:0; }
-.attn-add input{ flex:1; border:none; background:transparent; outline:none; font-size:12.5px; color:var(--ink); font-weight:500; }
-.attn-add input::placeholder{ color:var(--ink-faint); }
-
-/* Task row (Attention Now) */
-.task{ border-bottom:1px solid rgba(20,20,30,0.06); }
-.task:last-child{ border-bottom:none; }
-.task-row{ display:flex; align-items:flex-start; gap:10px; padding:10px 6px; border-radius:var(--r-md); transition:background var(--dur) var(--ease); cursor:pointer; }
-.task-row:hover{ background:var(--accent-tint); }
-.check{
-  width:17px; height:17px; border-radius:50%; margin-top:1px; flex-shrink:0;
-  border:1.5px solid var(--ink-faint); background:rgba(255,255,255,0.5);
-  transition:background var(--dur), border-color var(--dur);
+.plan-btn{
+  background:var(--accent); color:#fff; border:none; border-radius:8px;
+  padding:6px 12px; font-size:12px; font-weight:600;
 }
-.check:hover{ border-color:var(--accent); }
-.check.done{ background:var(--success); border-color:var(--success); }
-.task-main{ flex:1; min-width:0; }
-.task-title-row{ display:flex; align-items:center; gap:7px; }
-.task-title{ display:block; width:100%; border:none; background:transparent; font-size:12.5px; font-weight:560; color:var(--ink); outline:none; border-radius:5px; padding:1px 3px; margin:-1px -3px; }
-.task-title:focus{ background:rgba(255,255,255,0.7); }
-.task-next{ display:block; width:100%; border:none; background:transparent; font-size:11px; color:var(--ink-soft); margin-top:2px; outline:none; border-radius:5px; padding:1px 3px; margin-left:-3px; }
-.task-next::placeholder{ color:var(--ink-faint); }
-.task-next:focus{ background:rgba(255,255,255,0.6); }
-.task-meta{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
-.chip{
-  display:inline-flex; align-items:center; gap:4px;
-  font-size:10px; font-weight:600; letter-spacing:0.01em;
-  padding:3px 9px; border-radius:99px; background:rgba(255,255,255,0.5); color:var(--ink-soft);
-  outline:none;
+.plan-btn:hover{background:var(--accent-deep);}
+
+.task{
+  display:flex; gap:10px; align-items:flex-start;
+  padding:11px 4px; border-bottom:1px solid var(--line);
 }
-.chip:empty::before{ color:var(--ink-faint); font-weight:520; }
-.chip.due{ background:#FBE4DC; color:#8A4A3A; }
-.chip.due.overdue{ background:var(--danger); color:#fff; }
-.chip.ticket{ background:#E3EFFB; color:#33587A; }
-.chip.priority-high{ background:var(--danger-tint); color:var(--danger); }
-.chip.priority-med{ background:var(--warning-tint); color:var(--warning); }
-.chip.priority-low{ background:rgba(255,255,255,0.5); color:var(--ink-faint); }
-.chip-add{ font-size:10px; color:var(--ink-faint); font-weight:600; cursor:pointer; padding:3px 7px; }
-.chip-add:hover{ color:var(--accent); }
-.expand-toggle{ margin-left:auto; color:var(--ink-faint); flex-shrink:0; display:flex; align-items:center; gap:2px; }
-.expand-toggle svg{ width:13px; height:13px; stroke-width:1.6; transition:transform var(--dur) var(--ease); }
-.task.expanded .expand-toggle svg.chev{ transform:rotate(180deg); }
-.task-delete{ width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); opacity:0; transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease); }
-.task-row:hover .task-delete{ opacity:1; }
-.task-delete:hover{ background:var(--danger-tint); color:var(--danger); }
-.task-delete svg{ width:13px; height:13px; stroke-width:1.6; }
-
-.drag-handle{ width:18px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); opacity:0; transition:opacity var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease); cursor:grab; flex-shrink:0; touch-action:none; }
-
-.focus-star{ width:20px; height:24px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); opacity:0.25; transition:opacity var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease); flex-shrink:0; cursor:pointer; }
-.focus-star svg{ width:13px; height:13px; stroke-width:1.6; }
-.task-row:hover .focus-star{ opacity:0.7; }
-.focus-star:hover{ opacity:1 !important; transform:scale(1.1); }
-.focus-star.on{ opacity:1; color:var(--warning); }
-.focus-star.on svg{ fill:var(--warning); }
-.focus-divider{ font-size:9.5px; font-weight:650; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); padding:10px 8px 4px; }
-.task-row:hover .drag-handle{ opacity:0.55; }
-.drag-handle:hover{ opacity:1 !important; background:var(--accent-tint); color:var(--accent-pressed); }
-.drag-handle:active{ cursor:grabbing; }
-.drag-handle svg{ width:13px; height:13px; stroke-width:1.6; pointer-events:none; }
-
-.task, .low-item, .wait-item, .block-item{ transition:opacity var(--dur) var(--ease); }
-.task.dragging, .low-item.dragging, .wait-item.dragging, .block-item.dragging{ opacity:0.35; }
-.task.drop-before, .low-item.drop-before, .wait-item.drop-before, .block-item.drop-before{ box-shadow:inset 0 2px 0 0 var(--accent); }
-.task.drop-after, .low-item.drop-after, .wait-item.drop-after, .block-item.drop-after{ box-shadow:inset 0 -2px 0 0 var(--accent); }
-.panel-body.drag-active{ background:var(--accent-tint); border-radius:var(--r-md); }
-.low-body-inner.drag-active{ background:var(--accent-tint); border-radius:var(--r-md); }
-
-.task-detail{
-  max-height:0; overflow:hidden; transition:max-height var(--dur) var(--ease); padding:0 6px;
-  background:rgba(255,255,255,0.30);
-  backdrop-filter:blur(18px) saturate(115%);
-  -webkit-backdrop-filter:blur(18px) saturate(115%);
-  border-radius:var(--r-md);
+.task:last-child{border-bottom:none;}
+.task-check{
+  width:16px; height:16px; border-radius:5px; border:1.5px solid var(--ink-faint);
+  margin-top:2px; flex:none; background:transparent;
 }
-.task.expanded .task-detail{ max-height:320px; }
-.detail-inner{ padding:4px 34px 12px 33px; display:flex; flex-direction:column; gap:9px; }
-.detail-field{ display:flex; flex-direction:column; gap:3px; }
-.detail-field label{ font-size:9.5px; font-weight:650; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-faint); }
-.detail-field .val{ display:block; width:100%; border:none; font-family:inherit; font-size:12px; color:var(--ink); outline:none; border-radius:6px; padding:4px 6px; margin:-4px -6px; background:rgba(255,255,255,0.35); resize:none; }
-.detail-field .val::placeholder{ color:var(--ink-faint); }
-.detail-field .val:focus{ background:rgba(255,255,255,0.7); }
-.detail-row2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
-.status-row{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:2px; }
-.status-btn{
-  font-size:10px; font-weight:650; padding:5px 11px; border-radius:99px;
-  background:rgba(255,255,255,0.5); color:var(--ink-soft); border:1px solid transparent;
+.task-check.done{background:var(--sage); border-color:var(--sage);}
+.task-body{flex:1; min-width:0;}
+.task-title{font-size:13.5px; font-weight:500; line-height:1.3;}
+.task-title input{width:100%; font-weight:500; font-size:13.5px;}
+.task-meta{display:flex; gap:10px; margin-top:4px; flex-wrap:wrap;}
+.meta-chip{
+  font-size:10.5px; font-weight:600; letter-spacing:.03em; text-transform:uppercase;
+  color:var(--ink-faint);
 }
-.status-btn.current{ background:var(--accent); color:#fff; }
-.delete-row{ margin-top:4px; padding-top:9px; border-top:1px solid rgba(41,43,53,0.06); }
-.delete-task-btn{ display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:650; color:var(--danger); cursor:pointer; padding:5px 4px; }
-.delete-task-btn svg{ width:12px; height:12px; stroke-width:1.6; }
-.delete-task-btn:hover{ text-decoration:underline; }
-.subtask-list{ display:flex; flex-direction:column; gap:5px; }
-.subtask-row{ display:flex; align-items:center; gap:7px; font-size:11.5px; }
-.subtask-row .check{ width:13px; height:13px; }
-.subtask-row .val{ flex:1; }
-.subtask-row .done + .val{ color:var(--ink-faint); text-decoration:line-through; }
-.subtask-add{ font-size:10.5px; color:var(--ink-faint); font-weight:600; cursor:pointer; }
-.subtask-add:hover{ color:var(--accent); }
-
-/* Waiting-on grouping */
-.wait-group{ margin-bottom:6px; }
-.wait-group-head{ display:flex; align-items:center; gap:7px; padding:9px 6px 5px; }
-.wait-avatar{
-  width:20px; height:20px; border-radius:50%; flex-shrink:0;
-  background:linear-gradient(150deg, var(--accent-soft), var(--accent));
-  color:#fff; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center;
+.meta-chip.overdue{color:var(--danger);}
+.meta-chip.tier-project{color:var(--accent-deep);}
+.task-actions{display:flex; gap:6px; opacity:0; transition:opacity .1s;}
+.task:hover .task-actions{opacity:1;}
+.task-actions button{
+  background:none; border:none; color:var(--ink-faint); font-size:11px; padding:2px 4px;
 }
-.wait-name{ font-size:12px; font-weight:650; color:var(--ink); }
-.wait-count{ font-size:10px; color:var(--ink-faint); font-weight:600; margin-left:auto; }
-.wait-item{ padding:7px 6px 9px 33px; border-bottom:1px solid rgba(20,20,30,0.05); position:relative; }
-.wait-item:hover .drag-handle{ opacity:0.55; }
-.wait-item .drag-handle{ position:absolute; left:2px; top:8px; }
-.wait-item:last-child{ border-bottom:none; }
-.wait-item .task-title{ display:block; font-size:12px; font-weight:550; }
-.wait-item .task-meta{ margin-top:5px; }
+.task-actions button:hover{color:var(--danger);}
+.empty-state{color:var(--ink-faint); font-size:12.5px; padding:14px 4px;}
 
-/* Blocked panel */
-.block-item{ padding:9px 6px 9px 26px; border-bottom:1px solid rgba(20,20,30,0.05); position:relative; }
-.block-item:hover .drag-handle{ opacity:0.55; }
-.block-item .drag-handle{ position:absolute; left:2px; top:8px; }
-.block-item:last-child{ border-bottom:none; }
-.block-item .task-title{ display:block; font-size:12px; font-weight:550; }
-.block-item .task-meta{ margin-top:5px; }
+/* Rail */
+.rail{display:flex; flex-direction:column; gap:var(--sp3);}
+.rail-active .panel{padding:var(--sp2);}
+.rail-compact .panel{padding:14px 16px; }
+.rail-compact .task{padding:8px 2px; font-size:12.5px;}
+.rail-compact .task-title{font-size:12.5px;}
 
-/* Bottom low-weight strip */
-.low-strip{ display:flex; gap:12px; flex-shrink:0; }
-.low-panel{ flex:1; padding:0; overflow:hidden; }
-.low-head{
-  display:flex; align-items:center; gap:8px; padding:11px 16px; cursor:pointer; user-select:none;
+/* Reference belt */
+.belt{
+  margin-top:var(--sp3);
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:var(--sp2);
 }
-.low-head svg.li{ width:14px; height:14px; stroke-width:1.4; color:var(--ink-faint); }
-.low-title{ font-size:12px; font-weight:650; color:var(--ink-soft); }
-.low-count{ font-size:10.5px; font-weight:650; color:var(--ink-faint); }
-.low-head svg.chev{ width:12px; height:12px; stroke-width:1.6; color:var(--ink-faint); margin-left:auto; transition:transform var(--dur) var(--ease); }
-.low-panel.open .chev{ transform:rotate(180deg); }
-.low-body{ max-height:0; overflow:hidden; transition:max-height var(--dur) var(--ease); }
-.low-panel.open .low-body{ max-height:180px; overflow-y:auto; }
-.low-body-inner{ padding:0 14px 12px; }
-.low-item{ display:flex; align-items:center; gap:8px; padding:6px 4px; font-size:11.5px; color:var(--ink-soft); border-bottom:1px solid rgba(20,20,30,0.04); position:relative; }
-.low-item:hover .drag-handle{ opacity:0.55; }
-.low-item:last-child{ border-bottom:none; }
-.low-item.completed{ color:var(--ink-faint); }
-.low-item.completed .check{ width:12px; height:12px; background:var(--success); border-color:var(--success); }
-.low-item .task-title{ font-size:11.5px; flex:1; }
+.belt .panel{padding:14px 16px;}
+.belt h3{font-size:12.5px; margin:0 0 8px; font-weight:600; color:var(--ink-soft);}
+.belt textarea{
+  width:100%; min-height:70px; font-size:12.5px; line-height:1.5; resize:vertical; color:var(--ink);
+}
+.done-row{font-size:12px; padding:5px 0; color:var(--ink-soft); border-bottom:1px solid var(--line);}
+.done-row:last-child{border-bottom:none;}
 
-@media (max-width:1180px){
-  .triage{ grid-template-columns:1.3fr 1fr; }
-  .triage .panel:nth-child(3){ grid-column:1 / -1; }
+/* Decision log & Leadership brief section */
+.section-block{margin-top:var(--sp4);}
+.section-block > .eyebrow{margin-bottom:8px; display:block;}
+.brief{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:14px;
+  background:var(--paper); border-radius:var(--radius); box-shadow:var(--shadow); padding:var(--sp2);
+}
+.brief-field label{display:block; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); margin-bottom:5px;}
+.brief-field textarea{width:100%; min-height:60px; font-size:12.5px; border:1px solid var(--line); border-radius:8px; padding:8px;}
+
+.decision-row{
+  display:grid; grid-template-columns:110px 1fr 120px 90px; gap:12px; align-items:start;
+  padding:12px 4px; border-bottom:1px solid var(--line); font-size:12.5px;
+}
+.decision-row:last-child{border-bottom:none;}
+.dtype{
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--accent-deep); background:var(--accent-tint); border-radius:6px; padding:3px 7px; display:inline-block;
+}
+.dstatus{font-size:10.5px; font-weight:600; color:var(--ink-faint);}
+.dstatus.active{color:var(--sage);}
+.add-decision{
+  display:flex; gap:8px; padding:10px 4px 2px;
+}
+.add-decision input{flex:1; border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:12.5px;}
+.small-btn{
+  border:1px solid var(--line); background:var(--paper); border-radius:8px; padding:7px 12px; font-size:12px; font-weight:600; color:var(--ink-soft);
+}
+.small-btn:hover{border-color:var(--accent); color:var(--accent-deep);}
+
+@media (max-width:1100px){
+  .desk{grid-template-columns:1fr;}
+  .app{grid-template-columns:1fr;}
+  .sidebar{position:relative; height:auto; flex-direction:row; overflow-x:auto;}
+  .belt, .brief{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
 <div class="app">
-
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark"></div>
-      <div class="brand-text">EXECUTION<small>TOWER</small></div>
+      <div>
+        <div class="brand-name">Execution Tower</div>
+        <div class="brand-sub">Daily Operating System</div>
+      </div>
     </div>
 
-    <nav class="nav" id="mainNav">
-      <div class="nav-item active" data-scroll="panelAttention"><svg data-i="zap"></svg><span class="label">Attention Now</span><span class="count" id="navAttnCount">0</span></div>
-      <div class="nav-item" data-scroll="panelWaiting"><svg data-i="users"></svg><span class="label">Waiting On</span><span class="count" id="navWaitCount">0</span></div>
-      <div class="nav-item" data-scroll="panelBlocked"><svg data-i="octagon-pause"></svg><span class="label">Blocked</span><span class="count" id="navBlockCount">0</span></div>
-      <div class="nav-divider"></div>
-      <div class="nav-item" data-scroll="panelBacklog"><svg data-i="layers"></svg><span class="label">Backlog</span><span class="count" id="navBacklogCount">0</span></div>
-      <div class="nav-item" data-scroll="panelDone"><svg data-i="check-check"></svg><span class="label">Completed</span><span class="count" id="navDoneCount">0</span></div>
-    </nav>
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px;">Needs Attention</div>
+      <div class="attention" id="attentionList"></div>
+    </div>
 
-    <div class="sidebar-foot" id="clockFoot">—</div>
-    <div class="sidebar-foot" id="saveStatus" style="margin-top:-8px;">Not saved yet</div>
+    <nav class="nav">
+      <a href="#mission" class="active">Mission</a>
+      <a href="#today">Today</a>
+      <a href="#secondary">Secondary Execution</a>
+      <a href="#supporting">Waiting &amp; Someday</a>
+      <a href="#decisions">Decision Log</a>
+      <a href="#brief">Leadership Brief</a>
+      <a href="#reference">Reference</a>
+    </nav>
   </aside>
 
   <main class="main">
 
-    <div class="cmdbar glass">
-      <svg data-i="plus" style="width:15px;height:15px;color:var(--ink-faint);flex-shrink:0;"></svg>
-      <input id="captureInput" type="text" placeholder="Capture a task, update, decision, or note…">
-      <div class="health-row" id="healthRow"></div>
-      <button class="icon-btn" id="askAiBtn" title="Copy tasks to paste into a Claude chat"><svg data-i="sparkles"></svg></button>
-      <button class="pill-btn" id="cleanSessionBtn" title="Wipe Today, Backlog, and Waiting, plus Mission/Risk/EOD — Blocked and Completed stay">Clean Session</button>
-      <button class="icon-btn" id="backupBtn" title="Download a backup file"><svg data-i="download"></svg></button>
-      <input type="file" id="restoreInput" accept="application/json" style="display:none;">
-      <button class="icon-btn" id="restoreBtn" title="Restore from a backup file"><svg data-i="upload"></svg></button>
-      <button class="pill-btn primary" id="addTaskBtn"><svg data-i="plus"></svg>Add task</button>
-    </div>
-
-    <div class="exec-strip glass" id="execStrip">
-      <div class="exec-strip-head" id="execStripHead">
-        <svg data-i="compass" style="width:13px;height:13px;color:var(--accent-pressed);"></svg>
-        <span class="exec-title">Execution Tower</span>
-        <svg data-i="chevron-down" class="chev"></svg>
+    <!-- MISSION STRIP -->
+    <section class="mission" id="mission">
+      <div class="mission-head">
+        <h1>Mission Control</h1>
+        <span class="eyebrow" id="todayDate" style="color:#4B4A78;"></span>
       </div>
-      <div class="exec-grid">
-        <div class="exec-field">
-          <label>Mission</label>
-          <input class="exec-editable" placeholder="What today needs to accomplish" id="fldMission">
-        </div>
-        <div class="exec-field">
-          <label>Top Risk</label>
-          <input class="exec-editable" placeholder="What could derail it" id="fldRisk">
-        </div>
-        <div class="exec-field">
-          <label>Leadership Needs</label>
-          <div id="leaderList"></div>
-        </div>
-        <div class="exec-field">
-          <label>Must Be True by EOD</label>
-          <input class="exec-editable" placeholder="The one non-negotiable" id="fldEod">
-        </div>
+      <div class="mtile">
+        <span class="eyebrow">Mission</span>
+        <textarea id="f-mission" placeholder="What today is actually about"></textarea>
       </div>
-    </div>
+      <div class="mtile">
+        <span class="eyebrow">Top Risk</span>
+        <textarea id="f-risk" placeholder="What could go sideways"></textarea>
+      </div>
+      <div class="mtile">
+        <span class="eyebrow">Leadership Needs</span>
+        <textarea id="f-leadership" placeholder="Who / what's needed from them"></textarea>
+      </div>
+      <div class="mtile">
+        <span class="eyebrow">Must Be True by EOD</span>
+        <textarea id="f-eod" placeholder="Definition of a won day"></textarea>
+      </div>
+    </section>
 
-    <div class="triage">
-
-      <section class="panel glass" id="panelAttention">
+    <!-- DESK LAYOUT -->
+    <div class="desk">
+      <!-- TODAY : hero workspace -->
+      <section class="panel today-panel" id="today">
         <div class="panel-head">
-          <svg data-i="zap" class="pi" style="color:var(--accent);"></svg>
-          <div><div class="panel-title">Attention Now</div><div class="panel-sub">Today, overdue, and due soon</div></div>
-          <div class="panel-count" id="cntAttention">0</div>
+          <h2>Today</h2>
+          <button class="plan-btn" id="planDayBtn">Plan My Day</button>
         </div>
-        <div class="panel-body">
-          <div class="attn-add">
-            <svg data-i="corner-down-right"></svg>
-            <input id="attnAddInput" placeholder="Add to Attention Now…">
-          </div>
-          <div id="listAttention"></div>
+        <div class="quickadd">
+          <input id="quickAddInput" placeholder="Capture a task — press Enter to add to Today">
+          <span class="kbd">/</span>
         </div>
+        <div id="todayList"></div>
       </section>
 
-      <section class="panel glass" id="panelWaiting">
-        <div class="panel-head">
-          <svg data-i="users" class="pi" style="color:#8C93A6;"></svg>
-          <div><div class="panel-title">Waiting On</div><div class="panel-sub">Blocked by someone else</div></div>
-          <div class="panel-count" id="cntWaiting">0</div>
+      <!-- RAIL -->
+      <div class="rail">
+        <div class="rail-active" id="secondary">
+          <section class="panel">
+            <div class="panel-head"><h2>This Week</h2><span class="panel-count" id="weekCount"></span></div>
+            <div id="weekList"></div>
+          </section>
+          <section class="panel" style="margin-top:var(--sp2);">
+            <div class="panel-head"><h2>Pending / Queue</h2><span class="panel-count" id="queueCount"></span></div>
+            <div id="queueList"></div>
+          </section>
         </div>
-        <div class="panel-body" id="listWaiting"></div>
-      </section>
 
-      <section class="panel glass" id="panelBlocked">
-        <div class="panel-head">
-          <svg data-i="octagon-pause" class="pi" style="color:var(--warning);"></svg>
-          <div><div class="panel-title">Blocked</div><div class="panel-sub">On hold, internal constraint</div></div>
-          <div class="panel-count" id="cntBlocked">0</div>
+        <div class="rail-compact" id="supporting">
+          <section class="panel">
+            <div class="panel-head"><h2>Waiting On</h2><span class="panel-count" id="waitingCount"></span></div>
+            <div id="waitingList"></div>
+          </section>
+          <section class="panel" style="margin-top:var(--sp2);">
+            <div class="panel-head"><h2>Someday</h2><span class="panel-count" id="somedayCount"></span></div>
+            <div id="somedayList"></div>
+          </section>
         </div>
-        <div class="panel-body" id="listBlocked"></div>
-      </section>
-
+      </div>
     </div>
 
-    <div class="low-strip">
-      <div class="low-panel glass" id="panelBacklog">
-        <div class="low-head" data-toggle="panelBacklog">
-          <svg data-i="layers" class="li"></svg>
-          <span class="low-title">Backlog</span>
-          <span class="low-count" id="cntBacklog">0</span>
-          <svg data-i="chevron-down" class="chev"></svg>
-        </div>
-        <div class="low-body"><div class="low-body-inner" id="listBacklog"></div></div>
+    <!-- REFERENCE BELT -->
+    <div class="belt" id="reference">
+      <div class="panel">
+        <h3>Work Notes</h3>
+        <textarea id="f-notes" placeholder="Loose context, running notes"></textarea>
       </div>
-      <div class="low-panel glass" id="panelDone">
-        <div class="low-head" data-toggle="panelDone">
-          <svg data-i="check-check" class="li"></svg>
-          <span class="low-title">Completed</span>
-          <span class="low-count" id="cntDone">0</span>
-          <svg data-i="chevron-down" class="chev"></svg>
-        </div>
-        <div class="low-body"><div class="low-body-inner" id="listDone"></div></div>
+      <div class="panel">
+        <h3>Done Today</h3>
+        <div id="doneList"></div>
       </div>
+      <div class="panel">
+        <h3>Follow-ups</h3>
+        <textarea id="f-followups" placeholder="Things to circle back on"></textarea>
+      </div>
+    </div>
+
+    <!-- LEADERSHIP BRIEF -->
+    <div class="section-block" id="brief">
+      <span class="eyebrow">Leadership Brief</span>
+      <div class="brief">
+        <div class="brief-field"><label>Score / Status</label><textarea id="b-score" placeholder="Green / Yellow / Red + one line"></textarea></div>
+        <div class="brief-field"><label>Risk</label><textarea id="b-risk" placeholder="Top exposure right now"></textarea></div>
+        <div class="brief-field"><label>Assumptions</label><textarea id="b-assumptions" placeholder="What we're taking as given"></textarea></div>
+        <div class="brief-field"><label>Recommendation</label><textarea id="b-rec" placeholder="What you're asking for / proposing"></textarea></div>
+      </div>
+    </div>
+
+    <!-- DECISION LOG -->
+    <div class="section-block" id="decisions">
+      <span class="eyebrow">Decision Log</span>
+      <section class="panel">
+        <div class="add-decision">
+          <input id="d-decision" placeholder="Decision">
+          <input id="d-type" placeholder="Type (e.g. Vendor)" style="max-width:140px;">
+          <input id="d-owner" placeholder="Owner" style="max-width:110px;">
+          <button class="small-btn" id="addDecisionBtn">Log it</button>
+        </div>
+        <div id="decisionList"></div>
+      </section>
     </div>
 
   </main>
 </div>
 
 <script>
-/* ============================================================
-   INLINE ICON SET — self-contained replacement for the lucide
-   CDN script. Same API (lucide.createIcons()), zero network
-   dependency, so this never breaks in a sandboxed preview,
-   offline, or behind a corporate proxy.
-   ============================================================ */
-const ICONS = {
-  'plus': '<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>',
-  'chevron-down': '<polyline points="6 9 12 15 18 9"></polyline>',
-  'chevron-left': '<polyline points="15 18 9 12 15 6"></polyline>',
-  'check-check': '<path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path>',
-  'sparkles': '<path d="M12 3v4M12 17v4M5 12H1M23 12h-4M6.34 6.34 3.5 3.5M20.5 20.5l-2.84-2.84M6.34 17.66 3.5 20.5M20.5 3.5l-2.84 2.84"></path><circle cx="12" cy="12" r="3"></circle>',
-  'x': '<path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>',
-  'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>',
-  'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>',
-  'users': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
-  'octagon-pause': '<path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86Z"></path><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line>',
-  'layers': '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"></path><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"></path><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"></path>',
-  'compass': '<circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>',
-  'corner-down-right': '<polyline points="15 10 20 15 15 20"></polyline><path d="M4 4v7a4 4 0 0 0 4 4h12"></path>',
-  'search': '<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>',
-  'trash-2': '<path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>',
-  'grip-vertical': '<circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="19" r="1"></circle>',
-  'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line>',
-  'upload': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line>'
-};
+const STORAGE_KEY_TASKS = 'et:tasks';
+const STORAGE_KEY_MISSION = 'et:mission';
+const STORAGE_KEY_DECISIONS = 'et:decisions';
+const STORAGE_KEY_BRIEF = 'et:brief';
 
-const lucide = {
-  createIcons(){
-    document.querySelectorAll('[data-lucide]').forEach(el=>{
-      const name = el.getAttribute('data-lucide');
-      const inner = ICONS[name];
-      if(!inner) return;
-      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
-      svg.setAttribute('viewBox','0 0 24 24');
-      svg.setAttribute('width','20');
-      svg.setAttribute('height','20');
-      svg.setAttribute('fill','none');
-      svg.setAttribute('stroke','currentColor');
-      svg.setAttribute('stroke-width','1.5');
-      svg.setAttribute('stroke-linecap','round');
-      svg.setAttribute('stroke-linejoin','round');
-      for(const attr of el.attributes){
-        if(attr.name === 'data-lucide') continue;
-        svg.setAttribute(attr.name, attr.value);
-      }
-      svg.innerHTML = inner;
-      el.replaceWith(svg);
-    });
-  }
-};
-</script>
-<script>
-/* ---------- Icon rendering (svg data-i -> lucide) ---------- */
-function paintIcons(){
-  document.querySelectorAll('svg[data-i]').forEach(el=>{
-    const name = el.getAttribute('data-i');
-    el.removeAttribute('data-i');
-    el.setAttribute('data-lucide', name);
-  });
-  lucide.createIcons();
-}
+let tasks = [];
+let decisions = [];
 
-/* ---------- Data model ----------
-   Single Task Queue. status: 'today' | 'queue' | 'waiting' | 'onhold' | 'completed'
-   Ported from the real backup — nothing fabricated. */
-let tasks = [
-  { id:'z706q2z', title:'Validate Carrier and Device Inventory Exceptions', ticket:'', due:'', nextAction:'', status:'today', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'bhv4zv0', title:'Add User email to the inventory intake process form', ticket:'', due:'', nextAction:'', status:'queue', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'rspopck', title:'Gather thoughts and questions about new plan', ticket:'', due:'7/21/2026', nextAction:'', status:'waiting', priority:'',
-    waitingOn:'Tavia — her ideas and the migration',
-    context:'Instead of thinking about a line migration & device refresh, treat them as two separate projects.',
-    subs:[
-      {id:'nw4ixem', t:'Brainstorm the plan for only line migration', done:false},
-      {id:'wxut790', t:'Brainstorm the plan for only device refresh', done:false},
-      {id:'3pksoeg', t:'Document complications', done:false},
-      {id:'38lyfl6', t:'Document questions', done:false},
-    ]},
-  { id:'lvf9jxz', title:"Disconnect Brooke William's line", status:'completed', due:'', ticket:'', nextAction:'', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'0k9o3x6', title:'Disconnect Terry Oswalds line', status:'completed', due:'', ticket:'', nextAction:'', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'010z75q', title:"Inventory Pierre Brunelle's laptop", status:'completed', due:'', ticket:'', nextAction:'', priority:'', context:'', waitingOn:'', subs:[] },
-  { id:'j2uqafu', title:'Cleanup Intune Report', status:'completed', due:'', ticket:'', nextAction:'Pull updated report', priority:'', context:'', waitingOn:'', subs:[] },
-];
+function uid(){ return 't'+Math.random().toString(36).slice(2,10); }
 
-let expandedId = null;
-let leaders = [];
-
-/* ---------- Autosave — this is a real file in your own browser, not a
-   sandboxed preview, so localStorage persists it across closes/reloads. ---------- */
-const STORAGE_KEY = 'executionTower_v1';
-let saveTimer = null;
-
-function saveState(){
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    try{
-      const state = {
-        tasks,
-        mission: el('fldMission')?.value || '',
-        risk: el('fldRisk')?.value || '',
-        eod: el('fldEod')?.value || '',
-        leaders,
-        savedAt: new Date().toISOString()
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      const dot = el('saveStatus');
-      if(dot){ dot.textContent = 'Saved ' + new Date().toLocaleTimeString('en-US',{hour:'numeric', minute:'2-digit'}); }
-    }catch(err){
-      const dot = el('saveStatus');
-      if(dot){ dot.textContent = "Couldn't save — storage may be full or blocked"; dot.style.color = 'var(--danger)'; }
-    }
-  }, 250);
-}
-
-function loadState(){
+async function loadAll(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return false;
-    const data = JSON.parse(raw);
-    if(!Array.isArray(data.tasks)) return false;
-    tasks = data.tasks;
-    leaders = Array.isArray(data.leaders) ? data.leaders : [];
-    requestAnimationFrame(()=>{
-      if(el('fldMission')) el('fldMission').value = data.mission || '';
-      if(el('fldRisk')) el('fldRisk').value = data.risk || '';
-      if(el('fldEod')) el('fldEod').value = data.eod || '';
-    });
-    return true;
-  }catch(err){
-    return false;
-  }
-}
-const restoredFromStorage = loadState();
-
-function renderLeaders(){
-  const container = el('leaderList');
-  container.innerHTML = leaders.map(l=>`
-    <div class="leader-row" data-lid="${l.id}">
-      <input class="leader-name-input" placeholder="Who" data-role="lname" value="${escAttr(l.name)}">
-      <input class="leader-need-input" placeholder="What's needed from them" data-role="lneed" value="${escAttr(l.need)}">
-      <div class="leader-remove" data-role="lremove" title="Remove"><svg data-i="x"></svg></div>
-    </div>`).join('') + `<div class="leader-add" id="leaderAdd">+ add</div>`;
-  paintIcons();
-  container.querySelectorAll('.leader-row').forEach(row=>{
-    const lid = row.dataset.lid;
-    const leader = leaders.find(x=>x.id===lid);
-    const nameInput = row.querySelector('[data-role="lname"]');
-    const needInput = row.querySelector('[data-role="lneed"]');
-    nameInput.addEventListener('blur', ()=>{ leader.name = nameInput.value.trim(); saveState(); });
-    needInput.addEventListener('blur', ()=>{ leader.need = needInput.value.trim(); saveState(); });
-    nameInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); needInput.focus(); } });
-    needInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); needInput.blur(); } });
-    row.querySelector('[data-role="lremove"]').addEventListener('click', ()=>{
-      leaders = leaders.filter(x=>x.id!==lid);
-      renderLeaders();
-      saveState();
-    });
-  });
-  el('leaderAdd').addEventListener('click', ()=>{
-    leaders.push({id:'l'+Math.random().toString(36).slice(2,8), name:'', need:''});
-    renderLeaders();
-    const rows = container.querySelectorAll('.leader-row');
-    rows[rows.length-1]?.querySelector('[data-role="lname"]')?.focus();
-  });
-}
-
-const el = id => document.getElementById(id);
-
-function isOverdue(due){
-  if(!due) return false;
-  const d = new Date(due);
-  if(isNaN(d)) return false;
-  const today = new Date(); today.setHours(0,0,0,0);
-  return d < today;
-}
-
-function priorityChip(p){
-  if(!p) return '';
-  const cls = p==='high'?'priority-high':p==='med'?'priority-med':'priority-low';
-  return `<span class="chip ${cls}">${p==='high'?'High':p==='med'?'Medium':'Low'}</span>`;
-}
-
-/* ---------- Rendering ---------- */
-function render(){
-  const attention = tasks.filter(t=>t.status==='today' || (t.status==='queue' && t.due))
-    .sort((a,b)=> (b.focus?1:0) - (a.focus?1:0));
-  const waiting = tasks.filter(t=>t.status==='waiting');
-  const blocked = tasks.filter(t=>t.status==='onhold');
-  const backlog = tasks.filter(t=>t.status==='queue' && !t.due);
-  const done = tasks.filter(t=>t.status==='completed');
-
-  el('cntAttention').textContent = attention.length;
-  el('cntWaiting').textContent = waiting.length;
-  el('cntBlocked').textContent = blocked.length;
-  el('cntBacklog').textContent = backlog.length;
-  el('cntDone').textContent = done.length;
-  el('navAttnCount').textContent = attention.length;
-  el('navWaitCount').textContent = waiting.length;
-  el('navBlockCount').textContent = blocked.length;
-  el('navBacklogCount').textContent = backlog.length;
-  el('navDoneCount').textContent = done.length;
-
-  const overdueCount = tasks.filter(t=>isOverdue(t.due) && t.status!=='completed').length;
-  el('healthRow').innerHTML = `
-    <div class="health-pill attn"><span class="dot"></span>${attention.length} Attention</div>
-    <div class="health-pill wait"><span class="dot"></span>${waiting.length} Waiting</div>
-    <div class="health-pill block"><span class="dot"></span>${blocked.length} Blocked</div>
-    ${overdueCount ? `<div class="health-pill over"><span class="dot"></span>${overdueCount} Overdue</div>` : ''}
-  `;
-
-  el('listAttention').innerHTML = attention.length
-    ? attention.map((t,i)=>{
-        const divider = (i>0 && attention[i-1].focus && !t.focus) ? `<div class="focus-divider">Everything else</div>` : '';
-        return divider + taskRowHTML(t);
-      }).join('')
-    : `<div class="panel-empty">Nothing needs attention right now.</div>`;
-
-  // Waiting — grouped by person, each item is the same full editable row as everywhere else
-  const groups = {};
-  waiting.forEach(t=>{
-    const who = (t.waitingOn||'Unspecified').split('—')[0].split('-')[0].trim() || 'Unspecified';
-    (groups[who] = groups[who]||[]).push(t);
-  });
-  el('listWaiting').innerHTML = waiting.length
-    ? Object.entries(groups).map(([name, items])=>`
-        <div class="wait-group">
-          <div class="wait-group-head">
-            <div class="wait-avatar">${name.slice(0,2).toUpperCase()}</div>
-            <div class="wait-name">${name}</div>
-            <div class="wait-count">${items.length}</div>
-          </div>
-          ${items.map(t=>taskRowHTML(t)).join('')}
-        </div>`).join('')
-    : `<div class="panel-empty">Nothing waiting on anyone.</div>`;
-
-  el('listBlocked').innerHTML = blocked.length
-    ? blocked.map(t=>taskRowHTML(t)).join('')
-    : `<div class="panel-empty">Nothing blocked.</div>`;
-
-  el('listBacklog').innerHTML = backlog.length
-    ? backlog.map(t=>taskRowHTML(t)).join('')
-    : `<div class="panel-empty">Backlog is empty.</div>`;
-
-  el('listDone').innerHTML = done.length
-    ? done.map(t=>taskRowHTML(t)).join('')
-    : `<div class="panel-empty">Nothing completed yet.</div>`;
-
-  paintIcons();
-  wireRowEvents();
-  wireDrag();
-  saveState();
-}
-
-function taskRowHTML(t){
-  const expanded = expandedId === t.id;
-  return `
-  <div class="task ${expanded?'expanded':''}" data-id="${t.id}">
-    <div class="task-row" data-role="row">
-      <div class="drag-handle" data-role="drag-handle" title="Drag to move or reorder"><svg data-i="grip-vertical"></svg></div>
-      <div class="focus-star ${t.focus?'on':''}" data-role="focus" title="${t.focus?'Remove from Focus':'Mark as Focus (max 3)'}"><svg data-i="star"></svg></div>
-      <div class="check ${t.status==='completed'?'done':''}" data-role="check"></div>
-      <div class="task-main">
-        <div class="task-title-row">
-          <input class="task-title" data-role="title" value="${escAttr(t.title)}">
-        </div>
-        <input class="task-next" data-role="next" placeholder="+ next action" value="${escAttr(t.nextAction||'')}">
-        <div class="task-meta">
-          ${t.ticket?`<span class="chip ticket">${t.ticket}</span>`:''}
-          ${t.due?`<span class="chip due ${isOverdue(t.due)?'overdue':''}">${t.due}</span>`:''}
-          ${priorityChip(t.priority)}
-          <span class="chip-add" data-role="add-priority">+ priority</span>
-        </div>
-      </div>
-      <div class="task-delete" data-role="delete" title="Delete task"><svg data-i="trash-2"></svg></div>
-      <div class="expand-toggle" data-role="toggle"><svg data-i="chevron-down" class="chev"></svg></div>
-    </div>
-    <div class="task-detail">
-      <div class="detail-inner">
-        <div class="detail-row2">
-          <div class="detail-field"><label>Ticket</label><input class="val" placeholder="RITM / INC" data-role="ticket" value="${escAttr(t.ticket||'')}"></div>
-          <div class="detail-field"><label>Due</label><input class="val" placeholder="mm/dd/yyyy" data-role="due" value="${escAttr(t.due||'')}"></div>
-        </div>
-        <div class="detail-field"><label>Waiting On</label><input class="val" placeholder="Who or what this is blocked on" data-role="waitingOn" value="${escAttr(t.waitingOn||'')}"></div>
-        <div class="detail-field"><label>Context</label><textarea class="val" rows="2" placeholder="Add context or notes" data-role="context">${t.context||''}</textarea></div>
-        <div class="subtask-list" data-role="subs">
-          ${t.subs.map(s=>`
-            <div class="subtask-row" data-sub="${s.id}">
-              <div class="check ${s.done?'done':''}" data-role="sub-check"></div>
-              <input class="val" data-role="sub-text" value="${escAttr(s.t)}">
-            </div>`).join('')}
-          <div class="subtask-add" data-role="add-sub">+ subtask</div>
-        </div>
-        <div class="status-row">
-          ${['today','queue','waiting','onhold','completed'].map(s=>`
-            <div class="status-btn ${t.status===s?'current':''}" data-role="status" data-status="${s}">${labelFor(s)}</div>`).join('')}
-        </div>
-        <div class="delete-row">
-          <div class="delete-task-btn" data-role="delete-full"><svg data-i="trash-2"></svg>Delete task</div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
-function labelFor(s){
-  return {today:'Attention', queue:'Backlog', waiting:'Waiting', onhold:'Blocked', completed:'Done'}[s];
-}
-
-function wireRowEvents(){
-  document.querySelectorAll('.task').forEach(taskEl=>{
-    const id = taskEl.dataset.id;
-    const t = tasks.find(x=>x.id===id);
-    if(!t) return;
-
-    taskEl.querySelector('[data-role="row"]').addEventListener('click', (e)=>{
-      if(e.target.closest('[data-role="check"]') || e.target.closest('[data-role="delete"]') || e.target.closest('[data-role="focus"]') || ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
-      expandedId = expandedId === id ? null : id;
-      render();
-    });
-    taskEl.querySelector('[data-role="check"]').addEventListener('click', (e)=>{
-      e.stopPropagation();
-      t.status = t.status === 'completed' ? 'today' : 'completed';
-      render();
-    });
-    taskEl.querySelector('[data-role="focus"]').addEventListener('click', (e)=>{
-      e.stopPropagation();
-      if(!t.focus){
-        const focusedCount = tasks.filter(x=>x.focus).length;
-        if(focusedCount >= 3){
-          alert('You can only Focus on 3 tasks at a time — unstar one first.');
-          return;
-        }
-      }
-      t.focus = !t.focus;
-      render();
-    });
-
-    function deleteThis(){
-      if(!confirm(`Delete "${t.title}"? This can't be undone.`)) return;
-      tasks = tasks.filter(x=>x.id!==id);
-      if(expandedId===id) expandedId = null;
-      render();
+    const t = await window.storage.get(STORAGE_KEY_TASKS);
+    tasks = t ? JSON.parse(t.value) : [];
+  }catch(e){ tasks = []; }
+  try{
+    const d = await window.storage.get(STORAGE_KEY_DECISIONS);
+    decisions = d ? JSON.parse(d.value) : [];
+  }catch(e){ decisions = []; }
+  try{
+    const m = await window.storage.get(STORAGE_KEY_MISSION);
+    if(m){
+      const mv = JSON.parse(m.value);
+      document.getElementById('f-mission').value = mv.mission||'';
+      document.getElementById('f-risk').value = mv.risk||'';
+      document.getElementById('f-leadership').value = mv.leadership||'';
+      document.getElementById('f-eod').value = mv.eod||'';
+      document.getElementById('f-notes').value = mv.notes||'';
+      document.getElementById('f-followups').value = mv.followups||'';
     }
-    taskEl.querySelector('[data-role="delete"]')?.addEventListener('click', e=>{ e.stopPropagation(); deleteThis(); });
-    taskEl.querySelector('[data-role="delete-full"]')?.addEventListener('click', e=>{ e.stopPropagation(); deleteThis(); });
-
-    const title = taskEl.querySelector('[data-role="title"]');
-    title.addEventListener('blur', ()=>{ t.title = title.value.trim() || t.title; render(); });
-    title.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); title.blur(); } });
-    title.addEventListener('click', e=> e.stopPropagation());
-
-    const next = taskEl.querySelector('[data-role="next"]');
-    next.addEventListener('blur', ()=>{ t.nextAction = next.value.trim(); render(); });
-    next.addEventListener('click', e=> e.stopPropagation());
-    next.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); next.blur(); } });
-
-    taskEl.querySelector('[data-role="add-priority"]')?.addEventListener('click', e=>{
-      e.stopPropagation();
-      const order = ['', 'low', 'med', 'high'];
-      t.priority = order[(order.indexOf(t.priority)+1) % order.length];
-      render();
-    });
-
-    const ticket = taskEl.querySelector('[data-role="ticket"]');
-    ticket?.addEventListener('blur', ()=>{ t.ticket = ticket.value.trim(); render(); });
-    ticket?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); ticket.blur(); } });
-    const due = taskEl.querySelector('[data-role="due"]');
-    due?.addEventListener('blur', ()=>{ t.due = due.value.trim(); render(); });
-    due?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); due.blur(); } });
-    const waitingOn = taskEl.querySelector('[data-role="waitingOn"]');
-    waitingOn?.addEventListener('blur', ()=>{ t.waitingOn = waitingOn.value.trim(); render(); });
-    waitingOn?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); waitingOn.blur(); } });
-    const ctx = taskEl.querySelector('[data-role="context"]');
-    ctx?.addEventListener('blur', ()=>{ t.context = ctx.value.trim(); render(); });
-
-    taskEl.querySelectorAll('[data-role="status"]').forEach(btn=>{
-      btn.addEventListener('click', e=>{
-        e.stopPropagation();
-        t.status = btn.dataset.status;
-        expandedId = null;
-        render();
-      });
-    });
-
-    taskEl.querySelectorAll('.subtask-row').forEach(row=>{
-      const subId = row.dataset.sub;
-      const sub = t.subs.find(s=>s.id===subId);
-      row.querySelector('[data-role="sub-check"]').addEventListener('click', e=>{
-        e.stopPropagation(); sub.done = !sub.done; render();
-      });
-      const txt = row.querySelector('[data-role="sub-text"]');
-      txt.addEventListener('blur', ()=>{ sub.t = txt.value.trim(); render(); });
-      txt.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); txt.blur(); } });
-    });
-    taskEl.querySelector('[data-role="add-sub"]')?.addEventListener('click', e=>{
-      e.stopPropagation();
-      t.subs.push({id:'s'+Math.random().toString(36).slice(2,8), t:'', done:false});
-      render();
-      setTimeout(()=>{
-        const rows = document.querySelectorAll(`.task[data-id="${id}"] .subtask-row`);
-        rows[rows.length-1]?.querySelector('[data-role="sub-text"]')?.focus();
-      },0);
-    });
-  });
-}
-
-/* ---------- Add task ---------- */
-function addTask(fromInput){
-  const val = fromInput.value.trim();
-  if(!val) return;
-  tasks.unshift({ id:'t'+Math.random().toString(36).slice(2,9), title:val, ticket:'', due:'', nextAction:'', status:'today', priority:'', context:'', waitingOn:'', subs:[] });
-  fromInput.value = '';
+  }catch(e){}
+  try{
+    const b = await window.storage.get(STORAGE_KEY_BRIEF);
+    if(b){
+      const bv = JSON.parse(b.value);
+      document.getElementById('b-score').value = bv.score||'';
+      document.getElementById('b-risk').value = bv.risk||'';
+      document.getElementById('b-assumptions').value = bv.assumptions||'';
+      document.getElementById('b-rec').value = bv.rec||'';
+    }
+  }catch(e){}
   render();
 }
-el('attnAddInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('attnAddInput')); });
-el('addTaskBtn').addEventListener('click', ()=> addTask(el('attnAddInput')));
 
-['fldMission','fldRisk','fldEod'].forEach(id=>{
-  el(id).addEventListener('blur', saveState);
-  el(id).addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); el(id).blur(); } });
-});
-
-/* ---------- Clean Session ---------- */
-el('cleanSessionBtn').addEventListener('click', ()=>{
-  const wiping = tasks.filter(t=> ['today','queue','waiting'].includes(t.status));
-  if(!confirm(`Start a clean session?\n\nThis clears ${wiping.length} task${wiping.length===1?'':'s'} from Attention Now, Backlog, and Waiting On, plus Mission, Risk, Leadership Needs, and the EOD field.\n\nBlocked and Completed are left alone. This can't be undone.`)) return;
-  tasks = tasks.filter(t=> !['today','queue','waiting'].includes(t.status));
-  el('fldMission').value = '';
-  el('fldRisk').value = '';
-  el('fldEod').value = '';
-  leaders = [];
-  renderLeaders();
-  if(expandedId && !tasks.find(t=>t.id===expandedId)) expandedId = null;
-  render();
-});
-
-/* ---------- Backup / Restore ---------- */
-function currentState(){
-  return {
-    tasks,
-    mission: el('fldMission').value,
-    risk: el('fldRisk').value,
-    eod: el('fldEod').value,
-    leaders,
-    savedAt: new Date().toISOString()
+async function saveTasks(){
+  try{ await window.storage.set(STORAGE_KEY_TASKS, JSON.stringify(tasks)); }catch(e){}
+}
+async function saveDecisions(){
+  try{ await window.storage.set(STORAGE_KEY_DECISIONS, JSON.stringify(decisions)); }catch(e){}
+}
+async function saveMission(){
+  const mv = {
+    mission: document.getElementById('f-mission').value,
+    risk: document.getElementById('f-risk').value,
+    leadership: document.getElementById('f-leadership').value,
+    eod: document.getElementById('f-eod').value,
+    notes: document.getElementById('f-notes').value,
+    followups: document.getElementById('f-followups').value,
   };
+  try{ await window.storage.set(STORAGE_KEY_MISSION, JSON.stringify(mv)); }catch(e){}
 }
-/* ---------- Ask AI: copy tasks in a clean, chat-ready format ---------- */
-function tasksAsText(){
-  const lbl = {today:'ATTENTION NOW', queue:'BACKLOG', waiting:'WAITING ON', onhold:'BLOCKED', completed:'COMPLETED'};
-  const order = ['today','queue','waiting','onhold','completed'];
-  const lines = [];
-  lines.push(`EXECUTION TOWER — ${new Date().toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric', year:'numeric'})}`);
-  lines.push('');
-  const mission = el('fldMission').value.trim();
-  const risk = el('fldRisk').value.trim();
-  const eod = el('fldEod').value.trim();
-  if(mission) lines.push(`Mission: ${mission}`);
-  if(risk) lines.push(`Top Risk: ${risk}`);
-  if(leaders.length){
-    lines.push('Leadership Needs:');
-    leaders.forEach(l=>{ if(l.name || l.need) lines.push(`  - ${l.name || '(unnamed)'}: ${l.need || '(no detail yet)'}`); });
-  }
-  if(eod) lines.push(`Must be true by EOD: ${eod}`);
-  lines.push('');
+async function saveBrief(){
+  const bv = {
+    score: document.getElementById('b-score').value,
+    risk: document.getElementById('b-risk').value,
+    assumptions: document.getElementById('b-assumptions').value,
+    rec: document.getElementById('b-rec').value,
+  };
+  try{ await window.storage.set(STORAGE_KEY_BRIEF, JSON.stringify(bv)); }catch(e){}
+}
 
-  order.forEach(status=>{
-    const items = tasks.filter(t=>t.status===status);
-    lines.push(`${lbl[status]} (${items.length})`);
-    if(!items.length){ lines.push('  (none)'); lines.push(''); return; }
-    items.forEach((t,i)=>{
-      const bits = [];
-      if(t.priority) bits.push(t.priority.toUpperCase());
-      if(t.due) bits.push(`due ${t.due}`);
-      if(t.ticket) bits.push(t.ticket);
-      lines.push(`  ${i+1}. [id:${t.id}] ${t.title}${bits.length ? ' — ' + bits.join(', ') : ''}`);
-      if(t.nextAction) lines.push(`     Next: ${t.nextAction}`);
-      if(t.waitingOn) lines.push(`     Waiting on: ${t.waitingOn}`);
-      if(t.context) lines.push(`     Context: ${t.context}`);
-      if(t.subs && t.subs.length) t.subs.forEach(s=> lines.push(`     ${s.done?'[x]':'[ ]'} ${s.t}`));
-    });
-    lines.push('');
+document.querySelectorAll('.mtile textarea, #f-notes, #f-followups').forEach(el=>{
+  el.addEventListener('input', ()=>{ saveMission(); });
+});
+document.querySelectorAll('.brief-field textarea').forEach(el=>{
+  el.addEventListener('input', ()=>{ saveBrief(); });
+});
+
+const PRIORITY_ORDER = ['Leadership','Deadline','Vendor','Juan','Ticket','Strategic','Admin'];
+
+function isOverdue(t){
+  if(!t.due) return false;
+  const d = new Date(t.due+'T23:59:59');
+  return d < new Date() && t.status !== 'Completed';
+}
+
+function addTask(name, status){
+  tasks.unshift({
+    id: uid(), name, ticket:'', due:'', nextAction:'', waitingOn:'',
+    status: status || 'Today', category:'', tier:'Standard', notes:'',
+    createdAt: Date.now()
   });
-
-  return lines.join('\n');
+  saveTasks(); render();
 }
-el('askAiBtn').addEventListener('click', async ()=>{
-  const text = tasksAsText();
-  try{
-    await navigator.clipboard.writeText(text);
-  }catch(err){
-    // clipboard API can be blocked in some sandboxed previews — fall back to a manual-copy prompt
-    window.prompt('Copy this (Ctrl/Cmd+C, then Enter):', text);
+
+function toggleDone(id){
+  const t = tasks.find(x=>x.id===id);
+  if(!t) return;
+  t.status = t.status === 'Completed' ? 'Today' : 'Completed';
+  saveTasks(); render();
+}
+function removeTask(id){
+  tasks = tasks.filter(x=>x.id!==id);
+  saveTasks(); render();
+}
+function renameTask(id, val){
+  const t = tasks.find(x=>x.id===id);
+  if(t){ t.name = val; saveTasks(); }
+}
+
+function taskRow(t, compact){
+  const row = document.createElement('div');
+  row.className = 'task';
+  const overdue = isOverdue(t);
+  row.innerHTML = `
+    <button class="task-check ${t.status==='Completed'?'done':''}" data-id="${t.id}"></button>
+    <div class="task-body">
+      <div class="task-title"><input value="${escapeHtml(t.name)}" data-id="${t.id}" ${t.status==='Completed'?'style="text-decoration:line-through;color:var(--ink-faint);"':''}></div>
+      <div class="task-meta">
+        ${t.ticket ? `<span class="meta-chip">${escapeHtml(t.ticket)}</span>`:''}
+        ${t.due ? `<span class="meta-chip ${overdue?'overdue':''}">${overdue?'OVERDUE ':''}${formatDate(t.due)}</span>`:''}
+        ${t.tier==='Project' ? `<span class="meta-chip tier-project">PROJECT</span>`:''}
+        ${t.waitingOn ? `<span class="meta-chip">WAITING: ${escapeHtml(t.waitingOn)}</span>`:''}
+      </div>
+    </div>
+    <div class="task-actions">
+      <button class="del-btn" data-id="${t.id}">Remove</button>
+    </div>
+  `;
+  row.querySelector('.task-check').addEventListener('click', ()=>toggleDone(t.id));
+  row.querySelector('input[data-id]').addEventListener('change', (e)=>renameTask(t.id, e.target.value));
+  row.querySelector('.del-btn').addEventListener('click', ()=>removeTask(t.id));
+  return row;
+}
+
+function formatDate(d){
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+}
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderList(containerId, list, emptyMsg){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  if(list.length===0){
+    const e = document.createElement('div');
+    e.className = 'empty-state';
+    e.textContent = emptyMsg;
+    el.appendChild(e);
     return;
   }
-  const icon = el('askAiBtn').querySelector('svg');
-  const original = icon.outerHTML;
-  el('askAiBtn').innerHTML = '<svg data-i="check-check" style="color:var(--success);"></svg>';
-  paintIcons();
-  setTimeout(()=>{ el('askAiBtn').innerHTML = original; paintIcons(); }, 1400);
-});
-
-el('backupBtn').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(currentState(), null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  const d = new Date();
-  a.download = `execution-tower-backup-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-});
-el('restoreBtn').addEventListener('click', ()=> el('restoreInput').click());
-el('restoreInput').addEventListener('change', e=>{
-  const file = e.target.files[0]; if(!file) return;
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    try{
-      const data = JSON.parse(reader.result);
-      if(!Array.isArray(data.tasks)) throw new Error('missing tasks array');
-      if(!confirm(`Restore from this backup? It has ${data.tasks.length} task(s), saved ${data.savedAt ? new Date(data.savedAt).toLocaleString() : 'at an unknown time'}.\n\nThis replaces everything currently on screen.`)) return;
-      tasks = data.tasks;
-      el('fldMission').value = data.mission || '';
-      el('fldRisk').value = data.risk || '';
-      el('fldEod').value = data.eod || '';
-      leaders = Array.isArray(data.leaders) ? data.leaders : [];
-      renderLeaders();
-      expandedId = null;
-      render();
-    }catch(err){
-      alert('Could not read that file as a backup: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
-el('captureInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(el('captureInput')); });
-
-/* ---------- Exec strip collapse ---------- */
-el('execStripHead').addEventListener('click', ()=> el('execStrip').classList.toggle('collapsed'));
-
-/* ---------- Low-strip toggles ---------- */
-document.querySelectorAll('[data-toggle]').forEach(h=>{
-  h.addEventListener('click', ()=> el(h.dataset.toggle).classList.toggle('open'));
-});
-el('panelBacklog').classList.remove('open');
-el('panelDone').classList.remove('open');
-
-/* ---------- Sidebar nav scroll ---------- */
-document.querySelectorAll('.nav-item[data-scroll]').forEach(n=>{
-  n.addEventListener('click', ()=>{
-    document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-    n.classList.add('active');
-    const target = el(n.dataset.scroll);
-    target?.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
-  });
-});
-
-/* ---------- Clock ---------- */
-function tickClock(){
-  const now = new Date();
-  el('clockFoot').textContent = now.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'});
-}
-tickClock(); setInterval(tickClock, 60000);
-
-/* ---------- Drag and drop ---------- */
-let draggedId = null;
-const STATUS_FOR_LIST = {
-  listAttention: 'today',
-  listWaiting: 'waiting',
-  listBlocked: 'onhold',
-  listBacklog: 'queue',
-  listDone: 'completed'
-};
-
-function clearDropIndicators(){
-  document.querySelectorAll('.drop-before,.drop-after').forEach(r=> r.classList.remove('drop-before','drop-after'));
-  document.querySelectorAll('.drag-active').forEach(r=> r.classList.remove('drag-active'));
+  list.forEach(t => el.appendChild(taskRow(t)));
 }
 
-function moveTask(id, targetId, before, newStatus){
-  const idx = tasks.findIndex(x=>x.id===id);
-  if(idx===-1) return;
-  const [item] = tasks.splice(idx,1);
-  item.status = newStatus;
-  if(targetId){
-    let ti = tasks.findIndex(x=>x.id===targetId);
-    tasks.splice(ti===-1 ? tasks.length : (before ? ti : ti+1), 0, item);
+function render(){
+  const today = tasks.filter(t=>t.status==='Today');
+  const queue = tasks.filter(t=>t.status==='Queue');
+  const waiting = tasks.filter(t=>t.status==='Waiting');
+  const someday = tasks.filter(t=>t.status==='Someday');
+  const done = tasks.filter(t=>t.status==='Completed');
+  const week = tasks.filter(t=>t.due && !isOverdue(t) && t.status!=='Completed' && daysUntil(t.due) <= 7 && daysUntil(t.due) >= 0 && t.status!=='Today');
+
+  renderList('todayList', today, 'Nothing queued for today. Add something above or Plan My Day.');
+  renderList('queueList', queue, 'Queue is clear.');
+  renderList('waitingList', waiting, 'Nothing waiting on anyone.');
+  renderList('somedayList', someday, 'Someday list is empty.');
+  renderList('weekList', week, 'Nothing due this week.');
+
+  document.getElementById('weekCount').textContent = week.length || '';
+  document.getElementById('queueCount').textContent = queue.length || '';
+  document.getElementById('waitingCount').textContent = waiting.length || '';
+  document.getElementById('somedayCount').textContent = someday.length || '';
+
+  const doneEl = document.getElementById('doneList');
+  doneEl.innerHTML = '';
+  if(done.length===0){
+    doneEl.innerHTML = '<div class="empty-state">Nothing closed out yet.</div>';
   } else {
-    tasks.push(item);
+    done.forEach(t=>{
+      const r = document.createElement('div');
+      r.className = 'done-row';
+      r.textContent = t.name;
+      doneEl.appendChild(r);
+    });
   }
-  render();
+
+  renderAttention();
+  renderDecisions();
 }
 
-function wireDrag(){
-  document.querySelectorAll('[data-role="drag-handle"]').forEach(handle=>{
-    if(handle._wired) return;
-    handle._wired = true;
-    handle.setAttribute('draggable','true');
-    handle.addEventListener('dragstart', e=>{
-      const row = handle.closest('[data-id]');
-      if(!row) return;
-      draggedId = row.dataset.id;
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', draggedId);
-      try{ e.dataTransfer.setDragImage(row, 24, 18); }catch(_){}
-      requestAnimationFrame(()=> row.classList.add('dragging'));
-    });
-    handle.addEventListener('dragend', ()=>{
-      const row = handle.closest('[data-id]');
-      row?.classList.remove('dragging');
-      clearDropIndicators();
-      draggedId = null;
-    });
-  });
+function daysUntil(due){
+  const d = new Date(due+'T00:00:00');
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.round((d-now)/86400000);
+}
 
-  document.querySelectorAll('[data-id]').forEach(row=>{
-    if(row._dropWired) return;
-    row._dropWired = true;
-    row.addEventListener('dragover', e=>{
-      if(!draggedId || draggedId===row.dataset.id) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const rect = row.getBoundingClientRect();
-      const before = (e.clientY - rect.top) < rect.height/2;
-      document.querySelectorAll('.drop-before,.drop-after').forEach(r=>{ if(r!==row) r.classList.remove('drop-before','drop-after'); });
-      row.classList.toggle('drop-before', before);
-      row.classList.toggle('drop-after', !before);
-    });
-    row.addEventListener('drop', e=>{
-      if(!draggedId || draggedId===row.dataset.id) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const before = row.classList.contains('drop-before');
-      const list = row.closest('#listAttention,#listWaiting,#listBlocked,#listBacklog,#listDone');
-      const status = STATUS_FOR_LIST[list?.id] ?? tasks.find(t=>t.id===row.dataset.id)?.status;
-      moveTask(draggedId, row.dataset.id, before, status);
-      clearDropIndicators();
-    });
-  });
+function renderAttention(){
+  const el = document.getElementById('attentionList');
+  el.innerHTML = '';
+  const items = [];
+  tasks.filter(t=>isOverdue(t)).forEach(t=> items.push({type:'overdue', text: t.name}));
+  tasks.filter(t=>t.status==='Waiting').forEach(t=> items.push({type:'waiting', text: `Waiting: ${t.name}`}));
+  tasks.filter(t=>t.due && !isOverdue(t) && daysUntil(t.due)===0).forEach(t=> items.push({type:'due', text: `Due today: ${t.name}`}));
 
-  Object.keys(STATUS_FOR_LIST).forEach(listId=>{
-    const container = el(listId);
-    if(!container || container._dropWired) return;
-    container._dropWired = true;
-    container.addEventListener('dragover', e=>{
-      if(!draggedId) return;
-      e.preventDefault();
-      container.classList.add('drag-active');
-    });
-    container.addEventListener('dragleave', e=>{
-      if(!container.contains(e.relatedTarget)) container.classList.remove('drag-active');
-    });
-    container.addEventListener('drop', e=>{
-      if(!draggedId) return;
-      e.preventDefault();
-      moveTask(draggedId, null, false, STATUS_FOR_LIST[listId]);
-      container.classList.remove('drag-active');
-    });
+  if(items.length===0){
+    el.innerHTML = '<div class="attention-empty">Clear. Nothing needs attention.</div>';
+    return;
+  }
+  items.slice(0,8).forEach(i=>{
+    const row = document.createElement('div');
+    row.className = 'attention-item';
+    row.innerHTML = `<span class="dot ${i.type}"></span><span>${escapeHtml(i.text)}</span>`;
+    el.appendChild(row);
   });
 }
 
-/* ---------- Init ---------- */
-render();
-renderLeaders();
+function renderDecisions(){
+  const el = document.getElementById('decisionList');
+  el.innerHTML = '';
+  if(decisions.length===0){
+    el.innerHTML = '<div class="empty-state">No decisions logged yet.</div>';
+    return;
+  }
+  decisions.forEach(d=>{
+    const row = document.createElement('div');
+    row.className = 'decision-row';
+    row.innerHTML = `
+      <span class="dtype">${escapeHtml(d.type||'Process')}</span>
+      <span>${escapeHtml(d.decision)}</span>
+      <span>${escapeHtml(d.owner||'—')}</span>
+      <span class="dstatus active">${d.status||'Active'}</span>
+    `;
+    el.appendChild(row);
+  });
+}
+
+// Quick add
+const quickInput = document.getElementById('quickAddInput');
+quickInput.addEventListener('keydown', (e)=>{
+  if(e.key==='Enter' && quickInput.value.trim()){
+    addTask(quickInput.value.trim(), 'Today');
+    quickInput.value='';
+  }
+});
+document.addEventListener('keydown', (e)=>{
+  if(e.key==='/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){
+    e.preventDefault();
+    quickInput.focus();
+  }
+});
+
+// Plan My Day: pull top items from Queue into Today, ranked by priority hierarchy then due date
+document.getElementById('planDayBtn').addEventListener('click', ()=>{
+  const queueTasks = tasks.filter(t=>t.status==='Queue');
+  queueTasks.sort((a,b)=>{
+    const pa = PRIORITY_ORDER.indexOf(a.category) === -1 ? 99 : PRIORITY_ORDER.indexOf(a.category);
+    const pb = PRIORITY_ORDER.indexOf(b.category) === -1 ? 99 : PRIORITY_ORDER.indexOf(b.category);
+    if(pa !== pb) return pa - pb;
+    if(a.due && b.due) return a.due.localeCompare(b.due);
+    if(a.due) return -1;
+    if(b.due) return 1;
+    return 0;
+  });
+  queueTasks.slice(0,5).forEach(t=> t.status = 'Today');
+  saveTasks(); render();
+});
+
+// Decision log add
+document.getElementById('addDecisionBtn').addEventListener('click', ()=>{
+  const decision = document.getElementById('d-decision').value.trim();
+  if(!decision) return;
+  decisions.unshift({
+    decision,
+    type: document.getElementById('d-type').value.trim() || 'Process',
+    owner: document.getElementById('d-owner').value.trim(),
+    status: 'Active',
+    date: new Date().toISOString().slice(0,10)
+  });
+  document.getElementById('d-decision').value='';
+  document.getElementById('d-type').value='';
+  document.getElementById('d-owner').value='';
+  saveDecisions(); render();
+});
+
+document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
+
+loadAll();
 </script>
 </body>
 </html>
