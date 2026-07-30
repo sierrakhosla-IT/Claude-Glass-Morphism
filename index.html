@@ -36,8 +36,9 @@
     font-family:'Instrument Sans', sans-serif;
     color:var(--ink);
     background:
-      radial-gradient(700px 500px at 15% 10%, rgba(232,147,74,0.06), transparent 60%),
-      radial-gradient(800px 600px at 50% 95%, rgba(232,147,74,0.05), transparent 60%),
+      radial-gradient(45vw 45vw at 8% 0%, rgba(217,134,63,0.14), transparent 60%),
+      radial-gradient(40vw 40vw at 95% 20%, rgba(124,142,111,0.10), transparent 60%),
+      radial-gradient(50vw 40vw at 40% 100%, rgba(217,134,63,0.10), transparent 60%),
       var(--canvas);
     min-height:100vh;
   }
@@ -59,7 +60,10 @@
     display:flex;
     flex-direction:column;
     gap:26px;
-    border-right:1px solid var(--line);
+    background:rgba(255,255,255,0.32);
+    backdrop-filter:blur(24px) saturate(1.4);
+    -webkit-backdrop-filter:blur(24px) saturate(1.4);
+    border-right:1px solid rgba(255,255,255,0.6);
   }
   .brand{display:flex; align-items:center; gap:10px; padding:0 6px;}
   .brand-mark{
@@ -94,6 +98,12 @@
     color:#fff; font-family:'Outfit',sans-serif; font-weight:600; font-size:13.5px;
     box-shadow:0 8px 20px -8px rgba(217,134,63,0.65);
   }
+  .clean-session-btn{
+    width:100%; padding:9px 14px; margin-top:8px; border-radius:12px; cursor:pointer;
+    background:transparent; border:1px solid var(--line);
+    color:var(--ink-soft); font-family:'Instrument Sans',sans-serif; font-weight:600; font-size:12.5px;
+  }
+  .clean-session-btn:hover{border-color:var(--ink-faint); color:var(--ink);}
 
   .main{
     padding:28px 32px 60px;
@@ -106,16 +116,19 @@
   .mission{
     border-radius:var(--radius-lg);
     padding:22px 26px;
-    background:linear-gradient(120deg, #EFE6DA 0%, #EAE0D2 100%);
-    box-shadow:var(--elevation);
+    background:rgba(255,255,255,0.4);
+    backdrop-filter:blur(26px) saturate(1.4);
+    -webkit-backdrop-filter:blur(26px) saturate(1.4);
+    border:1px solid rgba(255,255,255,0.85);
+    box-shadow:0 1px 1px rgba(255,255,255,0.6) inset, 0 20px 40px -18px rgba(43,36,28,0.16);
     display:grid;
     grid-template-columns:repeat(4, 1fr);
     gap:14px;
   }
   .mission-tile{
-    background:rgba(255,255,255,0.5);
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
+    background:rgba(255,255,255,0.45);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
     border:1px solid rgba(255,255,255,0.7);
     border-radius:var(--radius-md);
     padding:14px 16px;
@@ -127,12 +140,12 @@
   .mission-tile-value:empty:before{content:attr(data-placeholder); opacity:0.5; color:var(--ink-faint);}
 
   .glass{
-    background:var(--glass-fill);
-    backdrop-filter:blur(22px) saturate(1.3);
-    -webkit-backdrop-filter:blur(22px) saturate(1.3);
-    border:1px solid var(--glass-border);
+    background:rgba(255,255,255,0.42);
+    backdrop-filter:blur(28px) saturate(1.5);
+    -webkit-backdrop-filter:blur(28px) saturate(1.5);
+    border:1px solid rgba(255,255,255,0.85);
     border-radius:var(--radius-lg);
-    box-shadow:var(--elevation);
+    box-shadow:0 1px 1px rgba(255,255,255,0.6) inset, 0 -1px 12px rgba(255,255,255,0.3) inset, 0 20px 40px -18px rgba(43,36,28,0.16);
   }
 
   .desk{display:grid; grid-template-columns:1.7fr 1fr; gap:20px; align-items:start;}
@@ -160,8 +173,10 @@
 
   .task-list{display:flex; flex-direction:column; gap:9px; min-height:24px;}
   .task-card{
-    background:var(--glass-fill-soft);
-    border:1px solid rgba(43,36,28,0.06);
+    background:rgba(255,255,255,0.5);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.7);
     border-radius:var(--radius-sm);
     padding:13px 14px;
     cursor:grab;
@@ -256,6 +271,7 @@
 
     <div class="sidebar-footer">
       <button class="add-task-btn" onclick="openTaskModal()">+ New Task</button>
+      <button class="clean-session-btn" onclick="cleanSession()">Clean Session</button>
     </div>
   </div>
 
@@ -694,6 +710,16 @@ function saveDecision(){
   saveState();
   render();
   closeDecisionModal();
+}
+
+function cleanSession(){
+  const wiping = state.tasks.filter(t=> ['today','thisweek','pending'].includes(t.status));
+  const ok = confirm(`Start a clean session?\n\nThis clears ${wiping.length} task${wiping.length===1?'':'s'} from Today, This Week, and Pending, plus Mission, Top Risk, Leadership Needs, and EOD Target.\n\nSomeday and Done are left alone.`);
+  if(!ok) return;
+  state.tasks = state.tasks.filter(t=> !['today','thisweek','pending'].includes(t.status));
+  state.mission = { mission:'', risk:'', leadership:'', eod:'' };
+  saveState();
+  render();
 }
 
 document.querySelectorAll('.nav-item[data-scroll]').forEach(item=>{
